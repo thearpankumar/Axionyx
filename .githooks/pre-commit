@@ -7,8 +7,15 @@ set -e
 
 echo "🔍 Running pre-commit checks..."
 
-# Get list of changed files
-CHANGED_FILES=$(git diff --cached --name-only --diff-filter=ACM)
+# Get list of changed files (exclude .githooks and .git directories)
+CHANGED_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -v '^\.githooks/' | grep -v '^\.git/' || true)
+
+# If only .githooks files are being committed, skip all checks
+if [ -z "$CHANGED_FILES" ]; then
+    echo "ℹ️  Only .githooks files changed, skipping component checks..."
+    echo "✨ Pre-commit checks passed!"
+    exit 0
+fi
 
 # Flags to track which components changed
 BACKEND_CHANGED=false
@@ -16,9 +23,9 @@ FRONTEND_CHANGED=false
 MOBILE_CHANGED=false
 
 # Check which components have changes
-echo "$CHANGED_FILES" | grep -q "^backend/" && BACKEND_CHANGED=true
-echo "$CHANGED_FILES" | grep -q "^frontend/" && FRONTEND_CHANGED=true
-echo "$CHANGED_FILES" | grep -q "^mobile/" && MOBILE_CHANGED=true
+echo "$CHANGED_FILES" | grep -q "^backend/" && BACKEND_CHANGED=true || true
+echo "$CHANGED_FILES" | grep -q "^frontend/" && FRONTEND_CHANGED=true || true
+echo "$CHANGED_FILES" | grep -q "^mobile/" && MOBILE_CHANGED=true || true
 
 # Backend checks (Python)
 if [ "$BACKEND_CHANGED" = true ]; then
@@ -98,6 +105,32 @@ fi
 
 # General checks for all files
 echo "🔧 Running general checks..."
+
+# Check for API keys, secrets, and credentials
+echo "  → Checking for API keys and secrets..."
+if echo "$CHANGED_FILES" | xargs grep -nE '(API_KEY|SECRET_KEY|PASSWORD|TOKEN|PRIVATE_KEY|api_key|secret_key|password|token|private_key)\s*[:=]\s*["\047][^"\047]{8,}["\047]' 2>/dev/null; then
+    echo "❌ ERROR: Potential API keys or secrets detected!"
+    echo "Please remove sensitive data before committing."
+    exit 1
+fi
+
+# Check for AWS keys
+if echo "$CHANGED_FILES" | xargs grep -nE 'AKIA[0-9A-Z]{16}' 2>/dev/null; then
+    echo "❌ ERROR: AWS Access Key detected!"
+    exit 1
+fi
+
+# Check for private key files
+if echo "$CHANGED_FILES" | xargs grep -l 'BEGIN.*PRIVATE KEY' 2>/dev/null; then
+    echo "❌ ERROR: Private key content detected!"
+    exit 1
+fi
+
+# Check for Bearer tokens
+if echo "$CHANGED_FILES" | xargs grep -nE 'Bearer\s+[A-Za-z0-9\-\._~\+\/]+=*' 2>/dev/null; then
+    echo "❌ ERROR: Bearer token detected!"
+    exit 1
+fi
 
 # Check for trailing whitespace
 if echo "$CHANGED_FILES" | xargs grep -l '[[:space:]]$' 2>/dev/null; then

@@ -35,7 +35,11 @@ Runs automatically before each commit and performs the following checks:
 - ✅ Dart formatting
 - ✅ Flutter analyze
 
-#### General Checks
+#### General Checks (Security & Code Quality)
+- 🔐 API keys and secrets detection (blocks commit)
+- 🔐 AWS access keys detection (blocks commit)
+- 🔐 Private key content detection (blocks commit)
+- 🔐 Bearer token detection (blocks commit)
 - ⚠️ Trailing whitespace detection
 - ℹ️ TODO/FIXME comment detection
 
