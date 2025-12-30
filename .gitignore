@@ -200,6 +200,7 @@ next-env.d.ts
 .buildlog/
 .history
 .svn/
+.metadata
 
 # IntelliJ related
 *.iml
