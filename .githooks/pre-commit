@@ -7,6 +7,10 @@ set -e
 
 echo "🔍 Running pre-commit checks..."
 
+# Get the git root directory
+GIT_ROOT=$(git rev-parse --show-toplevel)
+cd "$GIT_ROOT"
+
 # Get list of changed files (exclude .githooks and .git directories)
 CHANGED_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -v '^\.githooks/' | grep -v '^\.git/' || true)
 
@@ -30,17 +34,16 @@ echo "$CHANGED_FILES" | grep -q "^mobile/" && MOBILE_CHANGED=true || true
 # Backend checks (Python)
 if [ "$BACKEND_CHANGED" = true ]; then
     echo "📦 Backend files changed - running Python checks..."
-    cd backend
 
     if command -v uv &> /dev/null; then
         echo "  → Running ruff lint..."
-        uv run ruff check . --fix || {
+        (cd "$GIT_ROOT/backend" && uv run ruff check . --fix) || {
             echo "❌ Ruff linting failed!"
             exit 1
         }
 
         echo "  → Running ruff format..."
-        uv run ruff format . || {
+        (cd "$GIT_ROOT/backend" && uv run ruff format .) || {
             echo "❌ Ruff formatting failed!"
             exit 1
         }
@@ -48,50 +51,46 @@ if [ "$BACKEND_CHANGED" = true ]; then
         echo "⚠️  uv not found, skipping Python checks"
     fi
 
-    cd ..
     echo "✅ Backend checks passed"
 fi
 
 # Frontend checks (TypeScript/Next.js)
 if [ "$FRONTEND_CHANGED" = true ]; then
     echo "⚛️  Frontend files changed - running TypeScript checks..."
-    cd frontend
 
-    if [ -d "node_modules" ]; then
+    if [ -d "$GIT_ROOT/frontend/node_modules" ]; then
         echo "  → Running ESLint..."
-        npm run lint || {
+        (cd "$GIT_ROOT/frontend" && npm run lint) || {
             echo "❌ ESLint failed!"
             exit 1
         }
 
         echo "  → Running type check..."
-        npm run typecheck || {
+        (cd "$GIT_ROOT/frontend" && npm run typecheck) || {
             echo "❌ Type check failed!"
             exit 1
         }
     else
-        echo "⚠️  node_modules not found, run 'npm install' first"
+        echo "⚠️  node_modules not found, run 'npm install' in frontend/ first"
         exit 1
     fi
 
-    cd ..
     echo "✅ Frontend checks passed"
 fi
 
 # Mobile checks (Flutter/Dart)
 if [ "$MOBILE_CHANGED" = true ]; then
     echo "📱 Mobile files changed - running Dart checks..."
-    cd mobile
 
     if command -v flutter &> /dev/null; then
         echo "  → Running dart format..."
-        dart format lib/ --set-exit-if-changed || {
-            echo "❌ Dart formatting failed! Run 'dart format lib/' to fix"
+        (cd "$GIT_ROOT/mobile" && dart format lib/ --set-exit-if-changed) || {
+            echo "❌ Dart formatting failed! Run 'cd mobile && dart format lib/' to fix"
             exit 1
         }
 
         echo "  → Running flutter analyze..."
-        flutter analyze || {
+        (cd "$GIT_ROOT/mobile" && flutter analyze) || {
             echo "❌ Flutter analyze failed!"
             exit 1
         }
@@ -99,7 +98,6 @@ if [ "$MOBILE_CHANGED" = true ]; then
         echo "⚠️  Flutter not found, skipping mobile checks"
     fi
 
-    cd ..
     echo "✅ Mobile checks passed"
 fi
 
