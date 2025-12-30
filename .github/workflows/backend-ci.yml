@@ -32,6 +32,14 @@ jobs:
       run: uv sync
       working-directory: ./backend
 
+    - name: Lint with ruff
+      run: uv run ruff check .
+      working-directory: ./backend
+
+    - name: Format check with ruff
+      run: uv run ruff format --check .
+      working-directory: ./backend
+
     - name: Run tests
       run: uv run pytest
       working-directory: ./backend
