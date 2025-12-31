@@ -151,7 +151,7 @@ bool DeviceConfig::fromJSON(const String& json) {
     }
 
     // Device information
-    if (doc.containsKey("device")) {
+    if (!doc["device"].isNull()) {
         JsonObject deviceObj = doc["device"];
         device.id = deviceObj["id"] | "";
         device.type = deviceObj["type"] | "";
@@ -161,7 +161,7 @@ bool DeviceConfig::fromJSON(const String& json) {
     }
 
     // WiFi configuration
-    if (doc.containsKey("wifi")) {
+    if (!doc["wifi"].isNull()) {
         JsonObject wifiObj = doc["wifi"];
         wifi.mode = static_cast<WiFiMode>(wifiObj["mode"] | AP_ONLY);
         wifi.ssid = wifiObj["ssid"] | "";
@@ -175,7 +175,7 @@ bool DeviceConfig::fromJSON(const String& json) {
     }
 
     // Network configuration
-    if (doc.containsKey("network")) {
+    if (!doc["network"].isNull()) {
         JsonObject networkObj = doc["network"];
         network.httpPort = networkObj["httpPort"] | 80;
         network.wsPort = networkObj["wsPort"] | 81;
@@ -184,13 +184,13 @@ bool DeviceConfig::fromJSON(const String& json) {
     }
 
     // Auth configuration
-    if (doc.containsKey("auth")) {
+    if (!doc["auth"].isNull()) {
         JsonObject authObj = doc["auth"];
         auth.pairingEnabled = authObj["pairingEnabled"] | true;
         auth.pairingToken = authObj["pairingToken"] | "";
 
         auth.allowedDevices.clear();
-        if (authObj.containsKey("allowedDevices")) {
+        if (!authObj["allowedDevices"].isNull()) {
             JsonArray allowedDevicesArr = authObj["allowedDevices"];
             for (JsonVariant deviceId : allowedDevicesArr) {
                 auth.allowedDevices.push_back(deviceId.as<String>());
@@ -199,7 +199,7 @@ bool DeviceConfig::fromJSON(const String& json) {
     }
 
     // Device settings
-    if (doc.containsKey("device_config")) {
+    if (!doc["device_config"].isNull()) {
         JsonObject settingsObj = doc["device_config"];
         deviceSettings.updateInterval = settingsObj["updateInterval"] | 1000;
         deviceSettings.sensorPollingRate = settingsObj["sensorPollingRate"] | 500;

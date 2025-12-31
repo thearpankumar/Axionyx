@@ -1,0 +1,25 @@
+{
+  "name": "Axionyx-Common",
+  "version": "1.0.0",
+  "description": "Common components for Axionyx ESP32 biomedical device firmware",
+  "keywords": "esp32, iot, biotech, wifi, http, websocket",
+  "authors": [
+    {
+      "name": "Axionyx Team",
+      "maintainer": true
+    }
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/axionyx/axionyx",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/axionyx/axionyx.git"
+  },
+  "frameworks": "arduino",
+  "platforms": "espressif32",
+  "dependencies": {
+    "bblanchon/ArduinoJson": "^7.0.0",
+    "ESP Async WebServer": "^1.2.3",
+    "Links2004/WebSockets": "^2.4.1"
+  }
+}

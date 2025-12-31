@@ -56,7 +56,7 @@ bool DummyDevice::start(JsonDocument& params) {
     Logger::info("DummyDevice: Starting");
 
     // Check if setpoint is provided
-    if (params.containsKey("setpoint")) {
+    if (!params["setpoint"].isNull()) {
         float setpoint = params["setpoint"];
         tempSensor.setSetpoint(setpoint);
         Logger::info("DummyDevice: Setpoint set to " + String(setpoint) + "°C");

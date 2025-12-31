@@ -112,7 +112,7 @@ void WebSocketServer::onWebSocketEvent(uint8_t clientNum, WStype_t type, uint8_t
             }
 
             // Handle different message types
-            if (doc.containsKey("type")) {
+            if (!doc["type"].isNull()) {
                 String type = doc["type"];
 
                 if (type == "command") {
@@ -152,7 +152,7 @@ void WebSocketServer::onWebSocketEvent(uint8_t clientNum, WStype_t type, uint8_t
 }
 
 void WebSocketServer::handleCommand(uint8_t clientNum, JsonDocument& doc) {
-    if (!doc.containsKey("command")) {
+    if (doc["command"].isNull()) {
         sendResponse(clientNum, false, "Missing command field");
         return;
     }
@@ -183,7 +183,7 @@ void WebSocketServer::handleCommand(uint8_t clientNum, JsonDocument& doc) {
         message = success ? "Device resumed" : "Failed to resume device";
 
     } else if (command == "setpoint") {
-        if (doc.containsKey("params")) {
+        if (!doc["params"].isNull()) {
             JsonObject params = doc["params"];
             uint8_t zone = params["zone"] | 0;
             float temperature = params["temperature"] | 0.0;

@@ -257,7 +257,7 @@ void HTTPServer::handleSetSetpoint(AsyncWebServerRequest* request, uint8_t* data
         return;
     }
 
-    if (!doc.containsKey("zone") || !doc.containsKey("temperature")) {
+    if (doc["zone"].isNull() || doc["temperature"].isNull()) {
         sendError(request, 400, "Missing required fields: zone, temperature");
         return;
     }
@@ -346,7 +346,7 @@ void HTTPServer::handleWiFiConfigure(AsyncWebServerRequest* request, uint8_t* da
         return;
     }
 
-    if (!doc.containsKey("ssid") || !doc.containsKey("password")) {
+    if (doc["ssid"].isNull() || doc["password"].isNull()) {
         sendError(request, 400, "Missing required fields: ssid, password");
         return;
     }

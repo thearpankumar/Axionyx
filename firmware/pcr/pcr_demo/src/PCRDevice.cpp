@@ -121,28 +121,28 @@ bool PCRDevice::start(JsonDocument& params) {
     Logger::info("PCRDevice: Starting PCR program");
 
     // Parse program parameters if provided
-    if (params.containsKey("program")) {
+    if (!params["program"].isNull()) {
         JsonObject programObj = params["program"];
 
-        if (programObj.containsKey("cycles")) {
+        if (!programObj["cycles"].isNull()) {
             currentProgram.cycles = programObj["cycles"];
         }
-        if (programObj.containsKey("denatureTemp")) {
+        if (!programObj["denatureTemp"].isNull()) {
             currentProgram.denatureTemp = programObj["denatureTemp"];
         }
-        if (programObj.containsKey("annealTemp")) {
+        if (!programObj["annealTemp"].isNull()) {
             currentProgram.annealTemp = programObj["annealTemp"];
         }
-        if (programObj.containsKey("extendTemp")) {
+        if (!programObj["extendTemp"].isNull()) {
             currentProgram.extendTemp = programObj["extendTemp"];
         }
-        if (programObj.containsKey("denatureTime")) {
+        if (!programObj["denatureTime"].isNull()) {
             currentProgram.denatureTime = programObj["denatureTime"];
         }
-        if (programObj.containsKey("annealTime")) {
+        if (!programObj["annealTime"].isNull()) {
             currentProgram.annealTime = programObj["annealTime"];
         }
-        if (programObj.containsKey("extendTime")) {
+        if (!programObj["extendTime"].isNull()) {
             currentProgram.extendTime = programObj["extendTime"];
         }
     }

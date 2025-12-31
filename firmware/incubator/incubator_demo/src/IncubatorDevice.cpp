@@ -97,13 +97,13 @@ bool IncubatorDevice::start(JsonDocument& params) {
     EnvironmentControl::EnvironmentParams envParams;
 
     // Parse environment parameters if provided
-    if (params.containsKey("temperature")) {
+    if (!params["temperature"].isNull()) {
         envParams.temperature = params["temperature"];
     }
-    if (params.containsKey("humidity")) {
+    if (!params["humidity"].isNull()) {
         envParams.humidity = params["humidity"];
     }
-    if (params.containsKey("co2Level")) {
+    if (!params["co2Level"].isNull()) {
         envParams.co2Level = params["co2Level"];
     }
 
