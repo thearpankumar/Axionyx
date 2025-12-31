@@ -5,7 +5,7 @@
  */
 
 #include "EnvironmentControl.h"
-#include "../../common/utils/Logger.h"
+#include "../../../common/utils/Logger.h"
 
 EnvironmentControl::EnvironmentControl()
     : tempSensor(25.0),

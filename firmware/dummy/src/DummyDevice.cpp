@@ -5,7 +5,7 @@
  */
 
 #include "DummyDevice.h"
-#include "../common/utils/Logger.h"
+#include "../../common/utils/Logger.h"
 
 DummyDevice::DummyDevice()
     : tempSensor(25.0),  // Start at room temperature

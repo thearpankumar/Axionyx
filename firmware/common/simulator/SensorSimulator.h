@@ -15,7 +15,7 @@
 class SensorSimulator {
 public:
     virtual ~SensorSimulator() = default;
-    virtual float read() = 0;
+    virtual float read() const = 0;
     virtual void update(float dt) = 0;
 };
 
@@ -46,7 +46,7 @@ public:
     TemperatureSimulator(float initialTemp = 25.0);
 
     // SensorSimulator interface
-    float read() override;
+    float read() const override;
     void update(float dt) override;
 
     // Temperature control
@@ -73,7 +73,7 @@ private:
     bool pidEnabled;
 
     // Noise generation
-    float getNoise();
+    float getNoise() const;
 
     // Thermal simulation
     void simulateThermalDynamics(float dt);
@@ -86,7 +86,7 @@ class HumiditySimulator : public SensorSimulator {
 public:
     HumiditySimulator(float initialHumidity = 50.0);
 
-    float read() override;
+    float read() const override;
     void update(float dt) override;
 
     void setSetpoint(float humidity);
@@ -97,7 +97,7 @@ private:
     float setpoint;
     float changeRate;      // %/second
 
-    float getNoise();
+    float getNoise() const;
 };
 
 /**
@@ -107,7 +107,7 @@ class CO2Simulator : public SensorSimulator {
 public:
     CO2Simulator(float initialLevel = 5.0);
 
-    float read() override;
+    float read() const override;
     void update(float dt) override;
 
     void setSetpoint(float level);
@@ -118,7 +118,7 @@ private:
     float setpoint;
     float changeRate;      // %/second
 
-    float getNoise();
+    float getNoise() const;
 };
 
 #endif // SENSOR_SIMULATOR_H

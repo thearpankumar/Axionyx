@@ -54,7 +54,4 @@ private:
     }
 };
 
-// Initialize static member
-Logger::Level Logger::currentLevel = Logger::INFO;
-
 #endif // LOGGER_H

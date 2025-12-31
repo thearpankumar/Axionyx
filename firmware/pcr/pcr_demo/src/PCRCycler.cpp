@@ -5,7 +5,7 @@
  */
 
 #include "PCRCycler.h"
-#include "../../common/utils/Logger.h"
+#include "../../../common/utils/Logger.h"
 
 PCRCycler::PCRCycler()
     : currentPhase(IDLE),

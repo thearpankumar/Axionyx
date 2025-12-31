@@ -1,26 +1,26 @@
 /**
- * incubator_demo.ino
- * Axionyx Incubator Demo Firmware
- * Environmental control system (temperature, humidity, CO2)
+ * pcr_demo.ino
+ * Axionyx PCR Machine Demo Firmware
+ * 3-zone thermal cycler with realistic PCR cycling
  *
  * ESP32-WROOM-32
  * Part of Axionyx Biotech IoT Platform
  */
 
-#include "IncubatorDevice.h"
-#include "../../common/config/Config.h"
-#include "../../common/wifi/WiFiManager.h"
-#include "../../common/network/HTTPServer.h"
-#include "../../common/network/WebSocketServer.h"
-#include "../../common/device/DeviceIdentity.h"
-#include "../../common/utils/Logger.h"
+#include "PCRDevice.h"
+#include "../../../common/config/Config.h"
+#include "../../../common/wifi/WiFiManager.h"
+#include "../../../common/network/HTTPServer.h"
+#include "../../../common/network/WebSocketServer.h"
+#include "../../../common/device/DeviceIdentity.h"
+#include "../../../common/utils/Logger.h"
 
 // Global instances
 DeviceConfig config;
 WiFiManager wifiManager(config);
-IncubatorDevice incubatorDevice;
-HTTPServer httpServer(config, incubatorDevice, wifiManager);
-WebSocketServer wsServer(incubatorDevice);
+PCRDevice pcrDevice;
+HTTPServer httpServer(config, pcrDevice, wifiManager);
+WebSocketServer wsServer(pcrDevice);
 
 void setup() {
     // Initialize serial communication
@@ -29,7 +29,7 @@ void setup() {
 
     Logger::setLevel(Logger::DEBUG);
     Logger::info("===========================================");
-    Logger::info("Axionyx Incubator Demo");
+    Logger::info("Axionyx PCR Machine Demo");
     Logger::info("Firmware Version: " + DeviceIdentity::getFirmwareVersion());
     Logger::info("===========================================");
 
@@ -38,14 +38,14 @@ void setup() {
         Logger::warning("No config found, using defaults");
 
         // Set device information
-        config.device.type = "INCUBATOR";
-        config.device.id = DeviceIdentity::getDeviceID("INCUBATOR");
-        config.device.name = "Lab Incubator #1";
-        config.device.serialNumber = DeviceIdentity::generateSerialNumber("INCUBATOR");
+        config.device.type = "PCR";
+        config.device.id = DeviceIdentity::getDeviceID("PCR");
+        config.device.name = "Lab PCR #1";
+        config.device.serialNumber = DeviceIdentity::generateSerialNumber("PCR");
         config.device.firmwareVersion = DeviceIdentity::getFirmwareVersion();
 
         // Set default WiFi configuration
-        config.wifi.apSSID = DeviceIdentity::generateAPSSID("INCUBATOR");
+        config.wifi.apSSID = DeviceIdentity::generateAPSSID("PCR");
         config.wifi.apPassword = "axionyx123";
         config.wifi.mode = DeviceConfig::AP_ONLY;
 
@@ -53,7 +53,7 @@ void setup() {
         config.network.httpPort = 80;
         config.network.wsPort = 81;
         config.network.mdnsEnabled = true;
-        config.network.mdnsName = DeviceIdentity::generateMDNSName("INCUBATOR");
+        config.network.mdnsName = DeviceIdentity::generateMDNSName("PCR");
 
         // Save default configuration
         config.save();
@@ -68,9 +68,9 @@ void setup() {
     Logger::info("Chip ID: " + DeviceIdentity::getChipID());
     Logger::info("MAC Address: " + DeviceIdentity::getMAC());
 
-    // Initialize incubator device
-    incubatorDevice.begin();
-    Logger::info("Incubator device initialized");
+    // Initialize PCR device
+    pcrDevice.begin();
+    Logger::info("PCR device initialized with 3 temperature zones");
 
     // Initialize WiFi
     wifiManager.begin();
@@ -91,10 +91,11 @@ void setup() {
     Logger::info("HTTP API: http://192.168.4.1/api/v1/");
     Logger::info("WebSocket: ws://192.168.4.1:" + String(config.network.wsPort));
     Logger::info("===========================================");
-    Logger::info("Default Environment:");
-    Logger::info("  Temperature: 37°C (cell culture standard)");
-    Logger::info("  Humidity: 95%");
-    Logger::info("  CO2: 5%");
+    Logger::info("PCR Program Defaults:");
+    Logger::info("  Cycles: 35");
+    Logger::info("  Denature: 95°C for 30s");
+    Logger::info("  Anneal: 60°C for 30s");
+    Logger::info("  Extend: 72°C for 60s");
     Logger::info("===========================================");
 }
 
@@ -102,8 +103,8 @@ void loop() {
     // Update WiFi manager
     wifiManager.loop();
 
-    // Update incubator device
-    incubatorDevice.loop();
+    // Update PCR device
+    pcrDevice.loop();
 
     // Update HTTP server
     httpServer.loop();
@@ -121,30 +122,21 @@ void loop() {
     // Display status periodically
     static unsigned long lastStatusPrint = 0;
     if (millis() - lastStatusPrint > 10000) { // Every 10 seconds
-        JsonDocument status = incubatorDevice.getStatus();
+        JsonDocument status = pcrDevice.getStatus();
 
         Logger::info("Status - WiFi: " + String(wifiManager.getState()) +
-                    ", Device: " + incubatorDevice.getStateString());
+                    ", Device: " + pcrDevice.getStateString() +
+                    ", Phase: " + status["currentPhase"].as<String>() +
+                    ", Cycle: " + String(status["cycleNumber"].as<int>()) + "/" +
+                    String(status["totalCycles"].as<int>()) +
+                    ", Progress: " + String(status["progress"].as<float>(), 1) + "%");
 
-        if (incubatorDevice.getState() == DeviceBase::RUNNING) {
-            Logger::info("Environment: Temp=" +
-                        String(status["temperature"].as<float>(), 1) + "°C (" +
-                        String(status["temperatureSetpoint"].as<float>(), 1) + "°C), " +
-                        "Humidity=" + String(status["humidity"].as<float>(), 1) + "% (" +
-                        String(status["humiditySetpoint"].as<float>(), 1) + "%), " +
-                        "CO2=" + String(status["co2Level"].as<float>(), 2) + "% (" +
-                        String(status["co2Setpoint"].as<float>(), 1) + "%)");
-
-            if (status["environmentStable"].as<bool>()) {
-                Logger::info("Environment STABLE for " +
-                            String(status["timeStable"].as<int>()) + " seconds");
-            } else {
-                String unstable = "Unstable: ";
-                if (!status["temperatureStable"].as<bool>()) unstable += "Temp ";
-                if (!status["humidityStable"].as<bool>()) unstable += "Humidity ";
-                if (!status["co2Stable"].as<bool>()) unstable += "CO2";
-                Logger::info(unstable);
-            }
+        if (pcrDevice.getState() == DeviceBase::RUNNING) {
+            Logger::info("Temperatures: [" +
+                        String(status["temperature"][0].as<float>(), 1) + ", " +
+                        String(status["temperature"][1].as<float>(), 1) + ", " +
+                        String(status["temperature"][2].as<float>(), 1) + "] °C");
+            Logger::info("Time remaining: " + String(status["totalTimeRemaining"].as<int>()) + "s");
         }
 
         if (wifiManager.isConnected()) {

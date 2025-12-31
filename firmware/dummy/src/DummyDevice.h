@@ -7,8 +7,8 @@
 #ifndef DUMMY_DEVICE_H
 #define DUMMY_DEVICE_H
 
-#include "../common/device/DeviceBase.h"
-#include "../common/simulator/SensorSimulator.h"
+#include "../../common/device/DeviceBase.h"
+#include "../../common/simulator/SensorSimulator.h"
 
 class DummyDevice : public DeviceBase {
 public:

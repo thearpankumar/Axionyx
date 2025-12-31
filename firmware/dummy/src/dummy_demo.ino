@@ -8,12 +8,12 @@
  */
 
 #include "DummyDevice.h"
-#include "../common/config/Config.h"
-#include "../common/wifi/WiFiManager.h"
-#include "../common/network/HTTPServer.h"
-#include "../common/network/WebSocketServer.h"
-#include "../common/device/DeviceIdentity.h"
-#include "../common/utils/Logger.h"
+#include "../../common/config/Config.h"
+#include "../../common/wifi/WiFiManager.h"
+#include "../../common/network/HTTPServer.h"
+#include "../../common/network/WebSocketServer.h"
+#include "../../common/device/DeviceIdentity.h"
+#include "../../common/utils/Logger.h"
 
 // Global instances
 DeviceConfig config;

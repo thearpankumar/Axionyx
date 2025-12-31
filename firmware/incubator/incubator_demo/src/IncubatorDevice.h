@@ -7,7 +7,7 @@
 #ifndef INCUBATOR_DEVICE_H
 #define INCUBATOR_DEVICE_H
 
-#include "../../common/device/DeviceBase.h"
+#include "../../../common/device/DeviceBase.h"
 #include "EnvironmentControl.h"
 
 class IncubatorDevice : public DeviceBase {

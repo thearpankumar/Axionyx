@@ -68,7 +68,7 @@ TemperatureSimulator::TemperatureSimulator(float initialTemp)
     pid.setSetpoint(setpoint);
 }
 
-float TemperatureSimulator::read() {
+float TemperatureSimulator::read() const {
     // Add realistic sensor noise (±0.1°C)
     return currentTemp + getNoise();
 }
@@ -105,7 +105,7 @@ void TemperatureSimulator::enablePID(bool enable) {
     }
 }
 
-float TemperatureSimulator::getNoise() {
+float TemperatureSimulator::getNoise() const {
     // Generate realistic sensor noise using random walk
     return (random(-100, 100) / 1000.0); // ±0.1°C
 }
@@ -143,7 +143,7 @@ HumiditySimulator::HumiditySimulator(float initialHumidity)
       changeRate(2.0) {  // 2% per second
 }
 
-float HumiditySimulator::read() {
+float HumiditySimulator::read() const {
     return constrain(currentHumidity + getNoise(), 0.0, 100.0);
 }
 
@@ -165,7 +165,7 @@ void HumiditySimulator::setSetpoint(float humidity) {
     setpoint = constrain(humidity, 0.0, 100.0);
 }
 
-float HumiditySimulator::getNoise() {
+float HumiditySimulator::getNoise() const {
     return (random(-50, 50) / 100.0); // ±0.5%
 }
 
@@ -179,7 +179,7 @@ CO2Simulator::CO2Simulator(float initialLevel)
       changeRate(0.5) {  // 0.5% per second
 }
 
-float CO2Simulator::read() {
+float CO2Simulator::read() const {
     return constrain(currentLevel + getNoise(), 0.0, 20.0);
 }
 
@@ -201,6 +201,6 @@ void CO2Simulator::setSetpoint(float level) {
     setpoint = constrain(level, 0.0, 20.0);
 }
 
-float CO2Simulator::getNoise() {
+float CO2Simulator::getNoise() const {
     return (random(-10, 10) / 100.0); // ±0.1%
 }

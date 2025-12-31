@@ -5,7 +5,7 @@
  */
 
 #include "IncubatorDevice.h"
-#include "../../common/utils/Logger.h"
+#include "../../../common/utils/Logger.h"
 
 IncubatorDevice::IncubatorDevice()
     : lastUpdate(0),

@@ -7,8 +7,8 @@
 #ifndef PCR_DEVICE_H
 #define PCR_DEVICE_H
 
-#include "../../common/device/DeviceBase.h"
-#include "../../common/simulator/SensorSimulator.h"
+#include "../../../common/device/DeviceBase.h"
+#include "../../../common/simulator/SensorSimulator.h"
 #include "PCRCycler.h"
 
 class PCRDevice : public DeviceBase {

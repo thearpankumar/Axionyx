@@ -8,7 +8,7 @@
 #define ENVIRONMENT_CONTROL_H
 
 #include <Arduino.h>
-#include "../../common/simulator/SensorSimulator.h"
+#include "../../../common/simulator/SensorSimulator.h"
 
 class EnvironmentControl {
 public:
