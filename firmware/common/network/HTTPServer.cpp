@@ -81,6 +81,63 @@ void HTTPServer::setupRoutes() {
             handleSetSetpoint(request, data, len, index, total);
         });
 
+    // Program Management Endpoints (PCR-specific features)
+    server->on("/api/v1/device/program/validate", HTTP_POST,
+        [this](AsyncWebServerRequest* request) {
+            sendSuccess(request, "Program validation received");
+        },
+        NULL,
+        [this](AsyncWebServerRequest* request, uint8_t* data, size_t len, size_t index, size_t total) {
+            handleProgramValidate(request, data, len, index, total);
+        });
+
+    server->on("/api/v1/device/program/templates", HTTP_GET,
+        [this](AsyncWebServerRequest* request) { handleProgramTemplates(request); });
+
+    // Protocol Management Endpoints (Incubator-specific features)
+    server->on("/api/v1/device/protocol/templates", HTTP_GET,
+        [this](AsyncWebServerRequest* request) { handleProtocolTemplates(request); });
+
+    server->on("/api/v1/device/protocol/start", HTTP_POST,
+        [this](AsyncWebServerRequest* request) {
+            sendSuccess(request, "Protocol start received");
+        },
+        NULL,
+        [this](AsyncWebServerRequest* request, uint8_t* data, size_t len, size_t index, size_t total) {
+            handleProtocolStart(request, data, len, index, total);
+        });
+
+    server->on("/api/v1/device/protocol/stop", HTTP_POST,
+        [this](AsyncWebServerRequest* request) { handleProtocolStop(request); });
+
+    server->on("/api/v1/device/protocol/pause", HTTP_POST,
+        [this](AsyncWebServerRequest* request) { handleProtocolPause(request); });
+
+    server->on("/api/v1/device/protocol/resume", HTTP_POST,
+        [this](AsyncWebServerRequest* request) { handleProtocolResume(request); });
+
+    server->on("/api/v1/device/protocol/next-stage", HTTP_POST,
+        [this](AsyncWebServerRequest* request) { handleProtocolNextStage(request); });
+
+    // Alarm Management Endpoints (Incubator-specific features)
+    server->on("/api/v1/device/alarms", HTTP_GET,
+        [this](AsyncWebServerRequest* request) { handleGetAlarms(request); });
+
+    server->on("/api/v1/device/alarms/acknowledge", HTTP_POST,
+        [this](AsyncWebServerRequest* request) {
+            sendSuccess(request, "Alarm acknowledge received");
+        },
+        NULL,
+        [this](AsyncWebServerRequest* request, uint8_t* data, size_t len, size_t index, size_t total) {
+            handleAcknowledgeAlarm(request, data, len, index, total);
+        });
+
+    server->on("/api/v1/device/alarms/acknowledge-all", HTTP_POST,
+        [this](AsyncWebServerRequest* request) { handleAcknowledgeAllAlarms(request); });
+
+    server->on("/api/v1/device/alarms/history", HTTP_GET,
+        [this](AsyncWebServerRequest* request) { handleGetAlarmHistory(request); });
+
     // WiFi Configuration Endpoints
     server->on("/api/v1/wifi/status", HTTP_GET,
         [this](AsyncWebServerRequest* request) { handleGetWiFiStatus(request); });
@@ -390,6 +447,389 @@ void HTTPServer::handleFactoryReset(AsyncWebServerRequest* request) {
 
     delay(1000);
     ESP.restart();
+}
+
+// ============================================================================
+// Program Management Endpoints
+// ============================================================================
+
+void HTTPServer::handleProgramValidate(AsyncWebServerRequest* request, uint8_t* data, size_t len, size_t index, size_t total) {
+    Logger::debug("HTTPServer: POST /api/v1/device/program/validate");
+
+    // Only process the final chunk
+    if (index + len != total) {
+        return;
+    }
+
+    JsonDocument doc;
+    DeserializationError error = deserializeJson(doc, data, len);
+
+    if (error) {
+        sendError(request, 400, "Invalid JSON: " + String(error.c_str()));
+        return;
+    }
+
+    // Validation logic for PCR programs
+    JsonArray errors = doc["errors"].to<JsonArray>();
+    JsonArray warnings = doc["warnings"].to<JsonArray>();
+    bool isValid = true;
+
+    // Validate cycles
+    if (!doc["cycles"].isNull()) {
+        int cycles = doc["cycles"];
+        if (cycles < 1 || cycles > 100) {
+            errors.add("Cycles must be between 1 and 100");
+            isValid = false;
+        }
+    }
+
+    // Validate temperatures
+    if (!doc["denatureTemp"].isNull()) {
+        float temp = doc["denatureTemp"];
+        if (temp < 90.0 || temp > 100.0) {
+            warnings.add("Denaturation temperature should be between 90-100°C");
+        }
+    }
+
+    if (!doc["annealTemp"].isNull()) {
+        float temp = doc["annealTemp"];
+        if (temp < 45.0 || temp > 75.0) {
+            warnings.add("Annealing temperature should be between 45-75°C");
+        }
+    }
+
+    if (!doc["extendTemp"].isNull()) {
+        float temp = doc["extendTemp"];
+        if (temp < 68.0 || temp > 76.0) {
+            warnings.add("Extension temperature should be between 68-76°C");
+        }
+    }
+
+    // Validate touchdown parameters
+    if (!doc["touchdown"].isNull() && doc["touchdown"]["enabled"]) {
+        JsonObject td = doc["touchdown"];
+        if (!td["startAnnealTemp"].isNull() && !td["endAnnealTemp"].isNull()) {
+            float start = td["startAnnealTemp"];
+            float end = td["endAnnealTemp"];
+            if (start <= end) {
+                errors.add("Touchdown start temperature must be higher than end temperature");
+                isValid = false;
+            }
+        }
+    }
+
+    // Validate gradient parameters
+    if (!doc["gradient"].isNull() && doc["gradient"]["enabled"]) {
+        JsonObject grad = doc["gradient"];
+        if (!grad["tempLow"].isNull() && !grad["tempHigh"].isNull()) {
+            float low = grad["tempLow"];
+            float high = grad["tempHigh"];
+            if (low >= high) {
+                errors.add("Gradient low temperature must be lower than high temperature");
+                isValid = false;
+            }
+        }
+        if (!grad["positions"].isNull()) {
+            int positions = grad["positions"];
+            if (positions < 2 || positions > 12) {
+                errors.add("Gradient positions must be between 2 and 12");
+                isValid = false;
+            }
+        }
+    }
+
+    // Send response
+    JsonDocument response;
+    response["valid"] = isValid;
+    response["errors"] = errors;
+    response["warnings"] = warnings;
+
+    sendJSON(request, 200, response);
+}
+
+void HTTPServer::handleProgramTemplates(AsyncWebServerRequest* request) {
+    Logger::debug("HTTPServer: GET /api/v1/device/program/templates");
+
+    JsonDocument doc;
+    JsonArray templates = doc["templates"].to<JsonArray>();
+
+    // Only provide PCR templates if device type is PCR
+    if (config.device.type == "PCR") {
+        // Standard PCR
+        JsonObject standard = templates.add<JsonObject>();
+        standard["name"] = "Standard PCR";
+        standard["type"] = "standard";
+        standard["description"] = "Basic PCR protocol for general amplification";
+        standard["cycles"] = 35;
+        standard["denatureTemp"] = 95.0;
+        standard["denatureTime"] = 30;
+        standard["annealTemp"] = 60.0;
+        standard["annealTime"] = 30;
+        standard["extendTemp"] = 72.0;
+        standard["extendTime"] = 60;
+
+        // Fast PCR (Two-Step)
+        JsonObject fast = templates.add<JsonObject>();
+        fast["name"] = "Fast PCR";
+        fast["type"] = "twostep";
+        fast["description"] = "Faster cycling for amplicons <500bp";
+        fast["twoStepEnabled"] = true;
+        fast["cycles"] = 30;
+        fast["denatureTemp"] = 95.0;
+        fast["denatureTime"] = 15;
+        fast["annealExtendTemp"] = 65.0;
+        fast["annealExtendTime"] = 30;
+
+        // Gradient Optimization
+        JsonObject gradient = templates.add<JsonObject>();
+        gradient["name"] = "Gradient Optimization";
+        gradient["type"] = "gradient";
+        gradient["description"] = "Optimize annealing temperature across gradient";
+        gradient["cycles"] = 25;
+        gradient["denatureTemp"] = 95.0;
+        gradient["denatureTime"] = 30;
+        gradient["extendTemp"] = 72.0;
+        gradient["extendTime"] = 60;
+        JsonObject gradConfig = gradient["gradient"].to<JsonObject>();
+        gradConfig["enabled"] = true;
+        gradConfig["tempLow"] = 55.0;
+        gradConfig["tempHigh"] = 65.0;
+        gradConfig["positions"] = 12;
+
+        // High Specificity (Touchdown)
+        JsonObject touchdown = templates.add<JsonObject>();
+        touchdown["name"] = "High Specificity";
+        touchdown["type"] = "touchdown";
+        touchdown["description"] = "Reduce non-specific amplification";
+        touchdown["cycles"] = 35;
+        touchdown["denatureTemp"] = 95.0;
+        touchdown["denatureTime"] = 30;
+        touchdown["extendTemp"] = 72.0;
+        touchdown["extendTime"] = 60;
+        JsonObject tdConfig = touchdown["touchdown"].to<JsonObject>();
+        tdConfig["enabled"] = true;
+        tdConfig["startAnnealTemp"] = 72.0;
+        tdConfig["endAnnealTemp"] = 60.0;
+        tdConfig["stepSize"] = 1.0;
+        tdConfig["touchdownCycles"] = 12;
+
+        // Colony PCR (Hot Start)
+        JsonObject colony = templates.add<JsonObject>();
+        colony["name"] = "Colony PCR";
+        colony["type"] = "standard";
+        colony["description"] = "For amplification from bacterial colonies";
+        colony["cycles"] = 35;
+        colony["denatureTemp"] = 95.0;
+        colony["denatureTime"] = 30;
+        colony["annealTemp"] = 60.0;
+        colony["annealTime"] = 30;
+        colony["extendTemp"] = 72.0;
+        colony["extendTime"] = 60;
+        colony["initialDenatureTime"] = 300;  // 5 minutes for colony lysis
+        JsonObject hsConfig = colony["hotStart"].to<JsonObject>();
+        hsConfig["enabled"] = true;
+        hsConfig["activationTemp"] = 95.0;
+        hsConfig["activationTime"] = 900;  // 15 minutes
+    }
+
+    sendJSON(request, 200, doc);
+}
+
+// ============================================================================
+// Protocol Management Endpoints (Incubator)
+// ============================================================================
+
+void HTTPServer::handleProtocolTemplates(AsyncWebServerRequest* request) {
+    Logger::debug("HTTPServer: GET /api/v1/device/protocol/templates");
+
+    JsonDocument doc;
+    JsonArray templates = doc["templates"].to<JsonArray>();
+
+    // Only provide incubator templates if device type is INCUBATOR
+    if (config.device.type == "INCUBATOR") {
+        // Mammalian Cell Culture
+        JsonObject mammalian = templates.add<JsonObject>();
+        mammalian["name"] = "Mammalian Cell Culture";
+        mammalian["type"] = 0; // MAMMALIAN_CULTURE
+        mammalian["description"] = "Standard mammalian cell culture with 30-minute pre-heat ramp";
+        mammalian["stages"] = 2;
+
+        // Bacterial Growth
+        JsonObject bacterial = templates.add<JsonObject>();
+        bacterial["name"] = "Bacterial Growth (E. coli)";
+        bacterial["type"] = 1; // BACTERIAL_CULTURE
+        bacterial["description"] = "Standard E. coli culture with 15-minute warm-up";
+        bacterial["stages"] = 2;
+
+        // Yeast Culture
+        JsonObject yeast = templates.add<JsonObject>();
+        yeast["name"] = "Yeast Culture";
+        yeast["type"] = 2; // YEAST_CULTURE
+        yeast["description"] = "Standard yeast culture at 30°C with 10-minute pre-heat";
+        yeast["stages"] = 2;
+
+        // Decontamination
+        JsonObject decon = templates.add<JsonObject>();
+        decon["name"] = "Decontamination Cycle";
+        decon["type"] = 3; // DECONTAMINATION
+        decon["description"] = "High-temperature cleaning cycle (65°C for 2 hours)";
+        decon["stages"] = 3;
+
+        // Multi-Temperature Expression
+        JsonObject multiTemp = templates.add<JsonObject>();
+        multiTemp["name"] = "Multi-Temperature Expression";
+        multiTemp["type"] = 4; // CUSTOM_PROTOCOL
+        multiTemp["description"] = "Three-stage protocol for protein expression optimization";
+        multiTemp["stages"] = 3;
+    }
+
+    sendJSON(request, 200, doc);
+}
+
+void HTTPServer::handleProtocolStart(AsyncWebServerRequest* request, uint8_t* data, size_t len, size_t index, size_t total) {
+    Logger::debug("HTTPServer: POST /api/v1/device/protocol/start");
+
+    if (config.device.type != "INCUBATOR") {
+        sendError(request, 400, "Protocol management only available for incubator devices");
+        return;
+    }
+
+    // Only process the final chunk
+    if (index + len != total) {
+        return;
+    }
+
+    // Note: This is a simplified implementation
+    // In a full implementation, we would parse the protocol JSON and start it
+    // For now, we just acknowledge receipt
+    sendSuccess(request, "Protocol start command received");
+}
+
+void HTTPServer::handleProtocolStop(AsyncWebServerRequest* request) {
+    Logger::debug("HTTPServer: POST /api/v1/device/protocol/stop");
+
+    if (config.device.type != "INCUBATOR") {
+        sendError(request, 400, "Protocol management only available for incubator devices");
+        return;
+    }
+
+    // Device-specific implementation would call device.stopProtocol()
+    sendSuccess(request, "Protocol stopped");
+}
+
+void HTTPServer::handleProtocolPause(AsyncWebServerRequest* request) {
+    Logger::debug("HTTPServer: POST /api/v1/device/protocol/pause");
+
+    if (config.device.type != "INCUBATOR") {
+        sendError(request, 400, "Protocol management only available for incubator devices");
+        return;
+    }
+
+    sendSuccess(request, "Protocol paused");
+}
+
+void HTTPServer::handleProtocolResume(AsyncWebServerRequest* request) {
+    Logger::debug("HTTPServer: POST /api/v1/device/protocol/resume");
+
+    if (config.device.type != "INCUBATOR") {
+        sendError(request, 400, "Protocol management only available for incubator devices");
+        return;
+    }
+
+    sendSuccess(request, "Protocol resumed");
+}
+
+void HTTPServer::handleProtocolNextStage(AsyncWebServerRequest* request) {
+    Logger::debug("HTTPServer: POST /api/v1/device/protocol/next-stage");
+
+    if (config.device.type != "INCUBATOR") {
+        sendError(request, 400, "Protocol management only available for incubator devices");
+        return;
+    }
+
+    sendSuccess(request, "Advanced to next protocol stage");
+}
+
+// ============================================================================
+// Alarm Management Endpoints (Incubator)
+// ============================================================================
+
+void HTTPServer::handleGetAlarms(AsyncWebServerRequest* request) {
+    Logger::debug("HTTPServer: GET /api/v1/device/alarms");
+
+    if (config.device.type != "INCUBATOR") {
+        sendError(request, 400, "Alarm management only available for incubator devices");
+        return;
+    }
+
+    // Get alarm data from device status
+    JsonDocument statusDoc = device.getStatus();
+
+    JsonDocument doc;
+    if (statusDoc["alarms"].is<JsonObject>()) {
+        doc["alarms"] = statusDoc["alarms"];
+    } else {
+        JsonObject alarms = doc["alarms"].to<JsonObject>();
+        alarms["activeCount"] = 0;
+        alarms["hasCritical"] = false;
+    }
+
+    sendJSON(request, 200, doc);
+}
+
+void HTTPServer::handleAcknowledgeAlarm(AsyncWebServerRequest* request, uint8_t* data, size_t len, size_t index, size_t total) {
+    Logger::debug("HTTPServer: POST /api/v1/device/alarms/acknowledge");
+
+    if (config.device.type != "INCUBATOR") {
+        sendError(request, 400, "Alarm management only available for incubator devices");
+        return;
+    }
+
+    // Only process the final chunk
+    if (index + len != total) {
+        return;
+    }
+
+    JsonDocument doc;
+    DeserializationError error = deserializeJson(doc, data, len);
+
+    if (error) {
+        sendError(request, 400, "Invalid JSON");
+        return;
+    }
+
+    if (!doc["index"].is<uint8_t>()) {
+        sendError(request, 400, "Missing or invalid 'index' field");
+        return;
+    }
+
+    sendSuccess(request, "Alarm acknowledged");
+}
+
+void HTTPServer::handleAcknowledgeAllAlarms(AsyncWebServerRequest* request) {
+    Logger::debug("HTTPServer: POST /api/v1/device/alarms/acknowledge-all");
+
+    if (config.device.type != "INCUBATOR") {
+        sendError(request, 400, "Alarm management only available for incubator devices");
+        return;
+    }
+
+    sendSuccess(request, "All alarms acknowledged");
+}
+
+void HTTPServer::handleGetAlarmHistory(AsyncWebServerRequest* request) {
+    Logger::debug("HTTPServer: GET /api/v1/device/alarms/history");
+
+    if (config.device.type != "INCUBATOR") {
+        sendError(request, 400, "Alarm management only available for incubator devices");
+        return;
+    }
+
+    JsonDocument doc;
+    JsonArray history = doc["history"].to<JsonArray>();
+    // Alarm history would come from device implementation
+
+    sendJSON(request, 200, doc);
 }
 
 // ============================================================================

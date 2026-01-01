@@ -46,6 +46,24 @@ private:
     void handleDeviceResume(AsyncWebServerRequest* request);
     void handleSetSetpoint(AsyncWebServerRequest* request, uint8_t* data, size_t len, size_t index, size_t total);
 
+    // Route handlers - Program Management (PCR)
+    void handleProgramValidate(AsyncWebServerRequest* request, uint8_t* data, size_t len, size_t index, size_t total);
+    void handleProgramTemplates(AsyncWebServerRequest* request);
+
+    // Route handlers - Protocol Management (Incubator)
+    void handleProtocolTemplates(AsyncWebServerRequest* request);
+    void handleProtocolStart(AsyncWebServerRequest* request, uint8_t* data, size_t len, size_t index, size_t total);
+    void handleProtocolStop(AsyncWebServerRequest* request);
+    void handleProtocolPause(AsyncWebServerRequest* request);
+    void handleProtocolResume(AsyncWebServerRequest* request);
+    void handleProtocolNextStage(AsyncWebServerRequest* request);
+
+    // Route handlers - Alarm Management (Incubator)
+    void handleGetAlarms(AsyncWebServerRequest* request);
+    void handleAcknowledgeAlarm(AsyncWebServerRequest* request, uint8_t* data, size_t len, size_t index, size_t total);
+    void handleAcknowledgeAllAlarms(AsyncWebServerRequest* request);
+    void handleGetAlarmHistory(AsyncWebServerRequest* request);
+
     // Route handlers - WiFi Configuration
     void handleGetWiFiStatus(AsyncWebServerRequest* request);
     void handleWiFiConfigure(AsyncWebServerRequest* request, uint8_t* data, size_t len, size_t index, size_t total);
