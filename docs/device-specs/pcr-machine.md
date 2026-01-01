@@ -1,17 +1,42 @@
 # PCR Machine Firmware
 
-**3-Zone Thermal Cycler for DNA Amplification**
+**Professional 3-Zone Thermal Cycler for DNA Amplification**
 
 ---
 
 ## Overview
 
-This firmware implements a complete PCR (Polymerase Chain Reaction) thermal cycler with:
+This firmware implements a professional-grade PCR (Polymerase Chain Reaction) thermal cycler with advanced features:
 - **3 Independent Temperature Zones**: Denaturation, annealing, and extension
 - **Programmable Cycling**: Customizable cycle count and temperatures
+- **Advanced PCR Modes**: Hot start, touchdown, gradient, and two-step PCR
+- **Program Validation**: Validate programs before execution
+- **Pre-defined Templates**: 5 ready-to-use PCR programs
 - **Real-Time Monitoring**: Track current phase, cycle number, and progress
 - **PID Temperature Control**: Precise temperature regulation
-- **Phase Tracking**: Automatic progression through PCR phases
+
+## Quick Start
+
+### Flashing Firmware
+
+```bash
+cd firmware/pcr/pcr_demo
+pio run --target upload
+pio device monitor
+```
+
+### Basic Usage
+
+```bash
+# Start with default PCR program
+curl -X POST http://192.168.4.1/api/v1/device/start
+
+# Check status
+curl http://192.168.4.1/api/v1/device/status
+
+# Stop PCR
+curl -X POST http://192.168.4.1/api/v1/device/stop
+```
 
 ## PCR Cycling Phases
 
@@ -26,10 +51,13 @@ This firmware implements a complete PCR (Polymerase Chain Reaction) thermal cycl
 7. COMPLETE → Program finished
 ```
 
-## Default PCR Program
+## Standard PCR Program
+
+### Default Configuration
 
 ```json
 {
+  "programType": "standard",
   "initialDenatureTemp": 95.0,
   "initialDenatureTime": 180,
   "cycles": 35,
@@ -45,41 +73,235 @@ This firmware implements a complete PCR (Polymerase Chain Reaction) thermal cycl
 }
 ```
 
-## Flashing Firmware
-
-```bash
-cd firmware/pcr/pcr_demo
-pio run --target upload
-pio device monitor
-```
-
-## API Usage
-
-### Start PCR with Default Program
-
-```bash
-curl -X POST http://192.168.4.1/api/v1/device/start \
-  -H "Content-Type: application/json" \
-  -d '{}'
-```
-
-### Start PCR with Custom Program
+### Start Standard PCR
 
 ```bash
 curl -X POST http://192.168.4.1/api/v1/device/start \
   -H "Content-Type: application/json" \
   -d '{
-    "program": {
-      "cycles": 40,
-      "denatureTemp": 94.0,
-      "denatureTime": 20,
-      "annealTemp": 55.0,
-      "annealTime": 25,
-      "extendTemp": 72.0,
-      "extendTime": 45
+    "programType": "standard",
+    "cycles": 30,
+    "denatureTemp": 95.0,
+    "denatureTime": 30,
+    "annealTemp": 60.0,
+    "annealTime": 30,
+    "extendTemp": 72.0,
+    "extendTime": 60
+  }'
+```
+
+## Advanced PCR Modes
+
+### Hot Start PCR
+
+Prevents non-specific amplification by activating polymerase at high temperature.
+
+```bash
+curl -X POST http://192.168.4.1/api/v1/device/start \
+  -H "Content-Type: application/json" \
+  -d '{
+    "programType": "standard",
+    "cycles": 30,
+    "denatureTemp": 95.0,
+    "denatureTime": 30,
+    "annealTemp": 60.0,
+    "annealTime": 30,
+    "extendTemp": 72.0,
+    "extendTime": 60,
+    "hotStart": {
+      "enabled": true,
+      "activationTemp": 95.0,
+      "activationTime": 600
     }
   }'
 ```
+
+**Parameters:**
+- `activationTemp`: Temperature for polymerase activation (typically 95°C)
+- `activationTime`: Duration in seconds (typically 10-15 minutes)
+
+**Use Cases:**
+- Colony PCR
+- GC-rich templates
+- High specificity requirements
+- Reducing primer-dimer formation
+
+### Touchdown PCR
+
+Gradually decreases annealing temperature to improve specificity.
+
+```bash
+curl -X POST http://192.168.4.1/api/v1/device/start \
+  -H "Content-Type: application/json" \
+  -d '{
+    "programType": "touchdown",
+    "cycles": 35,
+    "denatureTemp": 95.0,
+    "denatureTime": 30,
+    "extendTemp": 72.0,
+    "extendTime": 60,
+    "touchdown": {
+      "enabled": true,
+      "startAnnealTemp": 68.0,
+      "endAnnealTemp": 58.0,
+      "stepSize": 1.0,
+      "touchdownCycles": 10
+    }
+  }'
+```
+
+**Parameters:**
+- `startAnnealTemp`: Initial high annealing temperature
+- `endAnnealTemp`: Final annealing temperature
+- `stepSize`: Temperature decrease per cycle
+- `touchdownCycles`: Number of cycles for temperature reduction
+
+**Example:** Start at 68°C, decrease by 1°C per cycle for 10 cycles, then continue at 58°C.
+
+**Use Cases:**
+- Unknown optimal annealing temperature
+- Multiple primer pairs
+- Reducing non-specific amplification
+
+### Gradient PCR
+
+Runs multiple samples at different annealing temperatures simultaneously.
+
+```bash
+curl -X POST http://192.168.4.1/api/v1/device/start \
+  -H "Content-Type: application/json" \
+  -d '{
+    "programType": "gradient",
+    "cycles": 30,
+    "denatureTemp": 95.0,
+    "denatureTime": 30,
+    "extendTemp": 72.0,
+    "extendTime": 60,
+    "gradient": {
+      "enabled": true,
+      "tempLow": 55.0,
+      "tempHigh": 65.0,
+      "positions": 12
+    }
+  }'
+```
+
+**Parameters:**
+- `tempLow`: Lowest gradient temperature
+- `tempHigh`: Highest gradient temperature
+- `positions`: Number of temperature positions (typically 12)
+
+**Use Cases:**
+- Optimizing annealing temperature
+- New primer pairs
+- Multiple amplicons with different Tm values
+
+### Two-Step PCR
+
+Combines annealing and extension into a single step for faster cycling.
+
+```bash
+curl -X POST http://192.168.4.1/api/v1/device/start \
+  -H "Content-Type: application/json" \
+  -d '{
+    "programType": "twostep",
+    "twoStepEnabled": true,
+    "cycles": 30,
+    "denatureTemp": 95.0,
+    "denatureTime": 15,
+    "annealExtendTemp": 65.0,
+    "annealExtendTime": 30
+  }'
+```
+
+**Parameters:**
+- `annealExtendTemp`: Combined annealing/extension temperature
+- `annealExtendTime`: Duration of combined step
+
+**Use Cases:**
+- Short amplicons (<500 bp)
+- Fast cycling requirements
+- High-throughput applications
+
+## Program Management
+
+### Get Available Templates
+
+```bash
+curl http://192.168.4.1/api/v1/device/program/templates
+```
+
+**Response:**
+```json
+{
+  "templates": [
+    {
+      "name": "Standard PCR",
+      "type": "standard",
+      "description": "Basic PCR protocol for general amplification",
+      "cycles": 35,
+      "denatureTemp": 95.0,
+      "annealTemp": 60.0,
+      "extendTemp": 72.0
+    },
+    {
+      "name": "Fast PCR",
+      "type": "twostep",
+      "description": "Faster cycling for amplicons <500bp",
+      "cycles": 30
+    },
+    {
+      "name": "Gradient Optimization",
+      "type": "gradient",
+      "description": "Optimize annealing temperature across gradient"
+    },
+    {
+      "name": "High Specificity",
+      "type": "touchdown",
+      "description": "Reduce non-specific amplification"
+    },
+    {
+      "name": "Colony PCR",
+      "type": "standard",
+      "description": "For amplification from bacterial colonies"
+    }
+  ]
+}
+```
+
+### Validate Program
+
+Validate a program before running to check for errors:
+
+```bash
+curl -X POST http://192.168.4.1/api/v1/device/program/validate \
+  -H "Content-Type: application/json" \
+  -d '{
+    "cycles": 35,
+    "denatureTemp": 95.0,
+    "annealTemp": 60.0,
+    "extendTemp": 72.0
+  }'
+```
+
+**Response:**
+```json
+{
+  "valid": true,
+  "errors": [],
+  "warnings": [
+    "Consider using hot start for improved specificity"
+  ]
+}
+```
+
+**Validation Checks:**
+- Cycle count (1-100)
+- Temperature ranges (4-99°C)
+- Time durations (1-3600 seconds)
+- Gradient temperature order
+- Touchdown parameter consistency
+- Two-step compatibility
 
 ### Get Current Status
 
@@ -87,48 +309,62 @@ curl -X POST http://192.168.4.1/api/v1/device/start \
 curl http://192.168.4.1/api/v1/device/status
 ```
 
-**Response:**
+**Enhanced Response:**
 ```json
 {
   "state": "RUNNING",
   "uptime": 1200,
   "temperature": [94.8, 59.7, 71.9],
   "setpoint": [95.0, 60.0, 72.0],
-  "currentPhase": "DENATURE",
+  "currentPhase": "ANNEAL",
   "cycleNumber": 15,
   "totalCycles": 35,
   "phaseTimeRemaining": 12,
   "totalTimeRemaining": 2340,
   "progress": 42.8,
   "program": {
+    "programType": "touchdown",
     "cycles": 35,
     "denatureTemp": 95.0,
-    "annealTemp": 60.0,
-    "extendTemp": 72.0
+    "extendTemp": 72.0,
+    "touchdown": {
+      "enabled": true,
+      "startAnnealTemp": 68.0,
+      "endAnnealTemp": 58.0,
+      "currentAnnealTemp": 62.0,
+      "stepSize": 1.0,
+      "touchdownCycles": 10
+    }
   },
   "errors": []
 }
 ```
 
-### Pause/Resume
+## Temperature Zones
 
-```bash
-# Pause
-curl -X POST http://192.168.4.1/api/v1/device/pause
+| Zone | Purpose | Default Temp | Heating Rate | Cooling Rate |
+|------|---------|--------------|--------------|--------------|
+| 0 | Denaturation | 95°C | 5°C/s | 2°C/s |
+| 1 | Annealing | 60°C | 3°C/s | 2°C/s |
+| 2 | Extension | 72°C | 4°C/s | 1.5°C/s |
 
-# Resume
-curl -X POST http://192.168.4.1/api/v1/device/resume
-```
+## API Reference
 
-### Stop PCR
+### Device Control
+- `GET /api/v1/device/info` - Device information
+- `GET /api/v1/device/status` - Current status
+- `POST /api/v1/device/start` - Start PCR program
+- `POST /api/v1/device/stop` - Stop PCR
+- `POST /api/v1/device/pause` - Pause cycling
+- `POST /api/v1/device/resume` - Resume cycling
 
-```bash
-curl -X POST http://192.168.4.1/api/v1/device/stop
-```
+### Program Management
+- `GET /api/v1/device/program/templates` - Get program templates
+- `POST /api/v1/device/program/validate` - Validate program
 
 ## WebSocket Real-Time Monitoring
 
-Connect to `ws://192.168.4.1:81` to receive real-time updates:
+Connect to `ws://192.168.4.1:81` for real-time updates:
 
 ```javascript
 {
@@ -147,44 +383,132 @@ Connect to `ws://192.168.4.1:81` to receive real-time updates:
 }
 ```
 
-## Temperature Zones
-
-| Zone | Purpose | Default Temp | Heating Rate | Cooling Rate |
-|------|---------|--------------|--------------|--------------|
-| 0 | Denaturation | 95°C | 5°C/s | 2°C/s |
-| 1 | Annealing | 60°C | 3°C/s | 2°C/s |
-| 2 | Extension | 72°C | 4°C/s | 1.5°C/s |
-
 ## Typical PCR Programs
 
 ### Standard PCR
-- Cycles: 30-40
-- Denaturation: 94-95°C for 20-30s
-- Annealing: 50-65°C for 20-30s
-- Extension: 72°C for 30-120s
+```json
+{
+  "cycles": 30-40,
+  "denatureTemp": 94-95,
+  "denatureTime": 20-30,
+  "annealTemp": 50-65,
+  "annealTime": 20-30,
+  "extendTemp": 72,
+  "extendTime": 30-120
+}
+```
 
-### Fast PCR
-- Cycles: 30
-- Denaturation: 95°C for 10s
-- Annealing: 60°C for 10s
-- Extension: 72°C for 20s
+### Fast PCR (Two-Step)
+```json
+{
+  "programType": "twostep",
+  "cycles": 30,
+  "denatureTemp": 95,
+  "denatureTime": 10,
+  "annealExtendTemp": 65,
+  "annealExtendTime": 20
+}
+```
 
 ### Long PCR
-- Cycles: 25-30
-- Denaturation: 94°C for 30s
-- Annealing: 55-65°C for 30s
-- Extension: 68-72°C for 1-15 min (1 min per kb)
+```json
+{
+  "cycles": 25-30,
+  "denatureTemp": 94,
+  "denatureTime": 30,
+  "annealTemp": 55-65,
+  "annealTime": 30,
+  "extendTemp": 68-72,
+  "extendTime": 60-900
+}
+```
+**Extension time:** 1 minute per kb of amplicon
+
+### Colony PCR (Hot Start)
+```json
+{
+  "cycles": 35,
+  "denatureTemp": 95,
+  "annealTemp": 60,
+  "extendTemp": 72,
+  "hotStart": {
+    "enabled": true,
+    "activationTemp": 95,
+    "activationTime": 900
+  }
+}
+```
+
+### Gradient Optimization
+```json
+{
+  "programType": "gradient",
+  "cycles": 25,
+  "gradient": {
+    "enabled": true,
+    "tempLow": 55,
+    "tempHigh": 65,
+    "positions": 12
+  }
+}
+```
+
+### High Specificity (Touchdown)
+```json
+{
+  "programType": "touchdown",
+  "cycles": 35,
+  "touchdown": {
+    "enabled": true,
+    "startAnnealTemp": 72,
+    "endAnnealTemp": 60,
+    "stepSize": 1,
+    "touchdownCycles": 12
+  }
+}
+```
+
+## Testing
+
+Run the comprehensive test suite:
+
+```bash
+cd firmware/api-test/pcr
+
+# Run all tests (including advanced features)
+python test_pcr.py --ip 192.168.4.1
+
+# Run only basic PCR tests
+python test_pcr.py --ip 192.168.4.1 --basic-only
+```
+
+Test coverage:
+- ✅ Standard PCR cycling
+- ✅ Program validation (valid & invalid)
+- ✅ Program templates
+- ✅ Hot start PCR
+- ✅ Touchdown PCR
+- ✅ Gradient PCR
+- ✅ Two-step PCR
+- ✅ Pause/resume
+- ✅ Temperature monitoring
 
 ## Serial Monitor Output
 
 ```
 [INFO] PCRDevice: Starting PCR program
-[INFO] PCRDevice: Cycles=35, Denature=95.0°C, Anneal=60.0°C, Extend=72.0°C
-[INFO] PCRCycler: Total program time = 4380 seconds (73 minutes)
+[INFO] PCRDevice: Program Type: Touchdown PCR
+[INFO] PCRDevice: Cycles=35, Denature=95.0°C, Extend=72.0°C
+[INFO] PCRDevice: Touchdown: 68.0°C → 58.0°C over 10 cycles
+[INFO] PCRCycler: Total program time = 4620 seconds (77 minutes)
 [INFO] PCRCycler: Initial denaturation complete
-[DEBUG] PCRCycler: Cycle 1 - Denaturation complete
-[DEBUG] PCRCycler: Cycle 1 - Annealing complete
-[DEBUG] PCRCycler: Cycle 1 - Extension complete
+[DEBUG] PCRCycler: Cycle 1 - Denaturation complete (95.0°C)
+[DEBUG] PCRCycler: Cycle 1 - Annealing complete (68.0°C)
+[DEBUG] PCRCycler: Cycle 1 - Extension complete (72.0°C)
+[DEBUG] PCRCycler: Cycle 2 - Annealing at 67.0°C (touchdown)
+...
+[DEBUG] PCRCycler: Cycle 10 - Annealing at 58.0°C (final)
+[DEBUG] PCRCycler: Touchdown phase complete, continuing at 58.0°C
 ...
 [INFO] PCRCycler: All cycles complete, starting final extension
 [INFO] PCRCycler: Final extension complete, moving to hold
@@ -193,6 +517,7 @@ Connect to `ws://192.168.4.1:81` to receive real-time updates:
 
 ## Features
 
+### Core Features
 - ✅ Programmable PCR cycling
 - ✅ 3 independent temperature zones
 - ✅ Real-time phase tracking
@@ -200,10 +525,29 @@ Connect to `ws://192.168.4.1:81` to receive real-time updates:
 - ✅ Time remaining estimation
 - ✅ Pause/resume capability
 - ✅ PID temperature control
-- ✅ WebSocket real-time updates
+
+### Advanced PCR Modes
+- ✅ **Hot Start PCR** - Polymerase activation step
+- ✅ **Touchdown PCR** - Gradual annealing temperature reduction
+- ✅ **Gradient PCR** - Multiple annealing temperatures
+- ✅ **Two-Step PCR** - Combined annealing/extension
+
+### Program Management
+- ✅ Program validation
+- ✅ 5 pre-defined templates
+- ✅ Error detection
+- ✅ Parameter warnings
+
+### Connectivity
+- ✅ REST API (10+ endpoints)
+- ✅ WebSocket real-time updates (1 Hz)
+- ✅ WiFi provisioning with captive portal
+- ✅ mDNS device discovery
+- ✅ Configuration persistence (SPIFFS)
 
 ---
 
-**Firmware:** PCR Demo v1.0.0
-**Device Type:** 3-Zone Thermal Cycler
-**Status:** Ready for Testing
+**Firmware:** PCR Demo v2.0.0
+**Device Type:** Professional 3-Zone Thermal Cycler
+**Status:** Production Ready
+**Last Updated:** January 2026
