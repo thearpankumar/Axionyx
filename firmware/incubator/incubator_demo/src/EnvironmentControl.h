@@ -36,6 +36,14 @@ public:
         bool humidityStable;
         bool co2Stable;
         bool allStable;
+
+        // Ramping status
+        bool temperatureRamping;
+        bool humidityRamping;
+        bool co2Ramping;
+        float temperatureTarget;
+        float humidityTarget;
+        float co2Target;
     };
 
     EnvironmentControl();
@@ -52,10 +60,58 @@ public:
     void setHumidityTarget(float humidity);
     void setCO2Target(float co2);
 
+    // Parameter ramping
+    void startTemperatureRamp(float targetTemp, uint32_t durationSeconds);
+    void startHumidityRamp(float targetHumidity, uint32_t durationSeconds);
+    void startCO2Ramp(float targetCO2, uint32_t durationSeconds);
+    void stopAllRamps();
+
+    // Check if ramping
+    bool isRamping() const;
+
     // Stability configuration
     void setStabilityThreshold(float tempThreshold, float humidityThreshold, float co2Threshold);
 
 private:
+    // Parameter ramping structure
+    struct ParameterRamp {
+        bool active;
+        float startValue;
+        float targetValue;
+        uint32_t durationMs;
+        uint32_t startTime;
+
+        ParameterRamp() : active(false), startValue(0), targetValue(0),
+                         durationMs(0), startTime(0) {}
+
+        void start(float start, float target, uint32_t duration) {
+            active = true;
+            startValue = start;
+            targetValue = target;
+            durationMs = duration;
+            startTime = millis();
+        }
+
+        void stop() {
+            active = false;
+        }
+
+        bool isComplete(uint32_t now) const {
+            return active && (now - startTime >= durationMs);
+        }
+
+        float getCurrentTarget(uint32_t now) const {
+            if (!active) return targetValue;
+
+            uint32_t elapsed = now - startTime;
+            if (elapsed >= durationMs) return targetValue;
+
+            // Linear interpolation
+            float progress = (float)elapsed / (float)durationMs;
+            return startValue + (targetValue - startValue) * progress;
+        }
+    };
+
     TemperatureSimulator tempSensor;
     HumiditySimulator humiditySensor;
     CO2Simulator co2Sensor;
@@ -67,8 +123,14 @@ private:
     float humidityStabilityThreshold;
     float co2StabilityThreshold;
 
+    // Ramping state
+    ParameterRamp tempRamp;
+    ParameterRamp humidityRamp;
+    ParameterRamp co2Ramp;
+
     // Helper methods
     bool isStable(float current, float target, float threshold) const;
+    void updateRamps(uint32_t now);
 };
 
 #endif // ENVIRONMENT_CONTROL_H

@@ -50,6 +50,9 @@ void EnvironmentControl::setTargets(const EnvironmentParams& targets) {
 }
 
 void EnvironmentControl::update(float dt) {
+    // Update ramping first
+    updateRamps(millis());
+
     // Update all environmental parameters
     tempSensor.update(dt);
     humiditySensor.update(dt);
@@ -87,6 +90,14 @@ EnvironmentControl::EnvironmentStatus EnvironmentControl::getStatus() const {
                       status.humidityStable &&
                       status.co2Stable;
 
+    // Ramping status
+    status.temperatureRamping = tempRamp.active;
+    status.humidityRamping = humidityRamp.active;
+    status.co2Ramping = co2Ramp.active;
+    status.temperatureTarget = targetParams.temperature;
+    status.humidityTarget = targetParams.humidity;
+    status.co2Target = targetParams.co2Level;
+
     return status;
 }
 
@@ -123,4 +134,80 @@ void EnvironmentControl::setStabilityThreshold(float tempThreshold,
 
 bool EnvironmentControl::isStable(float current, float target, float threshold) const {
     return abs(current - target) <= threshold;
+}
+
+void EnvironmentControl::startTemperatureRamp(float targetTemp, uint32_t durationSeconds) {
+    float currentTemp = tempSensor.read();
+    tempRamp.start(currentTemp, targetTemp, durationSeconds * 1000);
+    targetParams.temperature = targetTemp;
+
+    Logger::info("EnvironmentControl: Starting temperature ramp from " +
+                String(currentTemp, 1) + "°C to " + String(targetTemp, 1) +
+                "°C over " + String(durationSeconds) + " seconds");
+}
+
+void EnvironmentControl::startHumidityRamp(float targetHumidity, uint32_t durationSeconds) {
+    float currentHumidity = humiditySensor.read();
+    humidityRamp.start(currentHumidity, targetHumidity, durationSeconds * 1000);
+    targetParams.humidity = targetHumidity;
+
+    Logger::info("EnvironmentControl: Starting humidity ramp from " +
+                String(currentHumidity, 1) + "% to " + String(targetHumidity, 1) +
+                "% over " + String(durationSeconds) + " seconds");
+}
+
+void EnvironmentControl::startCO2Ramp(float targetCO2, uint32_t durationSeconds) {
+    float currentCO2 = co2Sensor.read();
+    co2Ramp.start(currentCO2, targetCO2, durationSeconds * 1000);
+    targetParams.co2Level = targetCO2;
+
+    Logger::info("EnvironmentControl: Starting CO2 ramp from " +
+                String(currentCO2, 2) + "% to " + String(targetCO2, 2) +
+                "% over " + String(durationSeconds) + " seconds");
+}
+
+void EnvironmentControl::stopAllRamps() {
+    tempRamp.stop();
+    humidityRamp.stop();
+    co2Ramp.stop();
+    Logger::info("EnvironmentControl: All ramps stopped");
+}
+
+bool EnvironmentControl::isRamping() const {
+    return tempRamp.active || humidityRamp.active || co2Ramp.active;
+}
+
+void EnvironmentControl::updateRamps(uint32_t now) {
+    // Update temperature ramp
+    if (tempRamp.active) {
+        float currentTarget = tempRamp.getCurrentTarget(now);
+        tempSensor.setSetpoint(currentTarget);
+
+        if (tempRamp.isComplete(now)) {
+            Logger::info("EnvironmentControl: Temperature ramp complete");
+            tempRamp.stop();
+        }
+    }
+
+    // Update humidity ramp
+    if (humidityRamp.active) {
+        float currentTarget = humidityRamp.getCurrentTarget(now);
+        humiditySensor.setSetpoint(currentTarget);
+
+        if (humidityRamp.isComplete(now)) {
+            Logger::info("EnvironmentControl: Humidity ramp complete");
+            humidityRamp.stop();
+        }
+    }
+
+    // Update CO2 ramp
+    if (co2Ramp.active) {
+        float currentTarget = co2Ramp.getCurrentTarget(now);
+        co2Sensor.setSetpoint(currentTarget);
+
+        if (co2Ramp.isComplete(now)) {
+            Logger::info("EnvironmentControl: CO2 ramp complete");
+            co2Ramp.stop();
+        }
+    }
 }
