@@ -29,9 +29,15 @@ void IncubatorDevice::loop() {
     float dt = (now - lastUpdate) / 1000.0; // Convert to seconds
 
     if (dt >= (UPDATE_INTERVAL / 1000.0)) {
+        // Update protocol manager
+        updateProtocol();
+
         // Update environmental control
-        if (state == RUNNING) {
+        if (state == RUNNING || state == PAUSED) {
             envControl.update(dt);
+
+            // Check alarms
+            updateAlarms();
 
             // Check for stability transitions
             checkStabilityTransition();
@@ -79,6 +85,46 @@ JsonDocument IncubatorDevice::getStatus() {
         doc["timeStable"] = timeStable;
     } else {
         doc["timeStable"] = 0;
+    }
+
+    // Ramping status
+    JsonObject ramping = doc["ramping"].to<JsonObject>();
+    ramping["temperature"] = envStatus.temperatureRamping;
+    ramping["humidity"] = envStatus.humidityRamping;
+    ramping["co2"] = envStatus.co2Ramping;
+
+    // Protocol information
+    if (protocolManager.getState() != ProtocolManager::IDLE) {
+        JsonObject protocol = doc["protocol"].to<JsonObject>();
+        protocol["state"] = protocolManager.getStateString();
+        protocol["name"] = protocolManager.getCurrentProtocol().name;
+        protocol["type"] = static_cast<int>(protocolManager.getCurrentProtocol().type);
+        protocol["currentStage"] = protocolManager.getCurrentStageNumber() + 1;
+        protocol["totalStages"] = protocolManager.getTotalStages();
+        protocol["stageName"] = protocolManager.getCurrentStage().name;
+        protocol["stageTimeRemaining"] = protocolManager.getStageTimeRemaining();
+        protocol["progress"] = protocolManager.getProgress();
+    }
+
+    // Alarm information
+    JsonObject alarms = doc["alarms"].to<JsonObject>();
+    alarms["activeCount"] = alarmManager.getActiveAlarmCount();
+    alarms["hasCritical"] = alarmManager.hasCriticalAlarms();
+
+    if (alarmManager.hasActiveAlarms()) {
+        JsonArray activeAlarms = alarms["active"].to<JsonArray>();
+        std::vector<AlarmManager::Alarm> activeList = alarmManager.getActiveAlarms();
+
+        for (const auto& alarm : activeList) {
+            JsonObject alarmObj = activeAlarms.add<JsonObject>();
+            alarmObj["type"] = static_cast<int>(alarm.type);
+            alarmObj["severity"] = static_cast<int>(alarm.severity);
+            alarmObj["message"] = alarm.message;
+            alarmObj["timestamp"] = alarm.timestamp;
+            alarmObj["acknowledged"] = alarm.acknowledged;
+            alarmObj["currentValue"] = alarm.currentValue;
+            alarmObj["threshold"] = alarm.threshold;
+        }
     }
 
     // Additional features
@@ -243,4 +289,119 @@ void IncubatorDevice::checkStabilityTransition() {
         Logger::warning("IncubatorDevice: Environmental conditions unstable");
         wasStable = false;
     }
+}
+
+void IncubatorDevice::updateProtocol() {
+    if (protocolManager.getState() == ProtocolManager::IDLE ||
+        protocolManager.getState() == ProtocolManager::COMPLETE) {
+        return;
+    }
+
+    uint32_t now = millis();
+    protocolManager.update(now);
+
+    // Apply current stage parameters
+    if (protocolManager.getState() == ProtocolManager::PREHEATING ||
+        protocolManager.getState() == ProtocolManager::RUNNING) {
+        applyProtocolStage(protocolManager.getCurrentStage());
+    }
+}
+
+void IncubatorDevice::updateAlarms() {
+    EnvironmentControl::EnvironmentStatus envStatus = envControl.getStatus();
+    EnvironmentControl::EnvironmentParams targets = envControl.getTargets();
+
+    alarmManager.checkAlarms(envStatus, targets.temperature,
+                            targets.humidity, targets.co2Level);
+}
+
+void IncubatorDevice::applyProtocolStage(const ProtocolManager::ProtocolStage& stage) {
+    // Apply stage targets with ramping if enabled
+    if (stage.rampToTarget) {
+        // Use ramping for gradual transition
+        envControl.startTemperatureRamp(stage.temperature, stage.rampTime);
+        envControl.startHumidityRamp(stage.humidity, stage.rampTime);
+        envControl.startCO2Ramp(stage.co2Level, stage.rampTime);
+    } else {
+        // Instant setpoint change
+        EnvironmentControl::EnvironmentParams params;
+        params.temperature = stage.temperature;
+        params.humidity = stage.humidity;
+        params.co2Level = stage.co2Level;
+        envControl.setTargets(params);
+    }
+}
+
+bool IncubatorDevice::startProtocol(const ProtocolManager::Protocol& protocol) {
+    Logger::info("IncubatorDevice: Starting protocol - " + protocol.name);
+
+    // Set alarm thresholds from protocol
+    AlarmManager::AlarmThresholds thresholds;
+    thresholds.tempWarningHigh = protocol.tempAlarmHigh - 0.5;
+    thresholds.tempCriticalHigh = protocol.tempAlarmHigh;
+    thresholds.tempWarningLow = protocol.tempAlarmLow + 0.5;
+    thresholds.tempCriticalLow = protocol.tempAlarmLow;
+    thresholds.humidityWarningLow = protocol.humidityAlarmLow + 5.0;
+    thresholds.humidityCriticalLow = protocol.humidityAlarmLow;
+    thresholds.co2WarningHigh = protocol.co2AlarmHigh - 0.2;
+    thresholds.co2CriticalHigh = protocol.co2AlarmHigh;
+    thresholds.co2WarningLow = protocol.co2AlarmLow + 0.2;
+    thresholds.co2CriticalLow = protocol.co2AlarmLow;
+
+    alarmManager.setThresholds(thresholds);
+
+    // Start protocol
+    protocolManager.startProtocol(protocol);
+
+    // Start device
+    setState(RUNNING);
+    stabilityAchievedTime = 0;
+    wasStable = false;
+
+    return true;
+}
+
+bool IncubatorDevice::stopProtocol() {
+    Logger::info("IncubatorDevice: Stopping protocol");
+    protocolManager.stopProtocol();
+    return stop();
+}
+
+bool IncubatorDevice::pauseProtocol() {
+    if (protocolManager.getState() == ProtocolManager::RUNNING ||
+        protocolManager.getState() == ProtocolManager::PREHEATING) {
+        Logger::info("IncubatorDevice: Pausing protocol");
+        protocolManager.pauseProtocol();
+        setState(PAUSED);
+        return true;
+    }
+    return false;
+}
+
+bool IncubatorDevice::resumeProtocol() {
+    if (protocolManager.getState() == ProtocolManager::PAUSED) {
+        Logger::info("IncubatorDevice: Resuming protocol");
+        protocolManager.resumeProtocol();
+        setState(RUNNING);
+        return true;
+    }
+    return false;
+}
+
+bool IncubatorDevice::nextProtocolStage() {
+    if (protocolManager.getState() != ProtocolManager::IDLE &&
+        protocolManager.getState() != ProtocolManager::COMPLETE) {
+        Logger::info("IncubatorDevice: Advancing to next protocol stage");
+        protocolManager.nextStage();
+        return true;
+    }
+    return false;
+}
+
+void IncubatorDevice::acknowledgeAlarm(uint8_t index) {
+    alarmManager.acknowledgeAlarm(index);
+}
+
+void IncubatorDevice::acknowledgeAllAlarms() {
+    alarmManager.acknowledgeAll();
 }

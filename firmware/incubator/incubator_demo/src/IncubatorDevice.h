@@ -9,6 +9,8 @@
 
 #include "../../../common/device/DeviceBase.h"
 #include "EnvironmentControl.h"
+#include "ProtocolManager.h"
+#include "AlarmManager.h"
 
 class IncubatorDevice : public DeviceBase {
 public:
@@ -31,8 +33,25 @@ public:
     bool setHumidity(float humidity);
     bool setCO2(float co2);
 
+    // Protocol management
+    bool startProtocol(const ProtocolManager::Protocol& protocol);
+    bool stopProtocol();
+    bool pauseProtocol();
+    bool resumeProtocol();
+    bool nextProtocolStage();
+    ProtocolManager& getProtocolManager() { return protocolManager; }
+    const ProtocolManager& getProtocolManager() const { return protocolManager; }
+
+    // Alarm management
+    AlarmManager& getAlarmManager() { return alarmManager; }
+    const AlarmManager& getAlarmManager() const { return alarmManager; }
+    void acknowledgeAlarm(uint8_t index);
+    void acknowledgeAllAlarms();
+
 private:
     EnvironmentControl envControl;
+    ProtocolManager protocolManager;
+    AlarmManager alarmManager;
 
     // Update tracking
     unsigned long lastUpdate;
@@ -42,6 +61,9 @@ private:
 
     // Helper methods
     void checkStabilityTransition();
+    void updateProtocol();
+    void updateAlarms();
+    void applyProtocolStage(const ProtocolManager::ProtocolStage& stage);
 };
 
 #endif // INCUBATOR_DEVICE_H
