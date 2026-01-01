@@ -43,6 +43,11 @@ subprojects {
             project.tasks.withType(JavaCompile) {
                 options.compilerArgs << "-Xlint:-options"
             }
+            project.tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+                kotlinOptions {
+                    jvmTarget = "17"
+                }
+            }
         }
     }
 }
