@@ -46,7 +46,7 @@ dependencies:
   hive_flutter: ^1.1.0
 
   # Device Discovery
-  nsd: ^2.0.0
+  nsd: ^4.0.0
 
   # Code Generation
   freezed_annotation: ^2.4.1

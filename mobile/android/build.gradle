@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = '1.7.10'
+    ext.kotlin_version = '1.9.0'
     repositories {
         google()
         mavenCentral()
@@ -20,11 +20,41 @@ allprojects {
 rootProject.buildDir = '../build'
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
+
+    // Workaround for plugins expecting 'flutter' property to be present
+    if (project.name != 'app') {
+        ext.flutter = [
+            minSdkVersion: 21,
+            targetSdkVersion: 34,
+            compileSdkVersion: 34,
+            ndkVersion: "25.1.8937393"
+        ]
+    }
+
+    afterEvaluate { project ->
+        if (project.hasProperty("android")) {
+            project.android {
+                compileSdkVersion 34
+                compileOptions {
+                    sourceCompatibility JavaVersion.VERSION_1_8
+                    targetCompatibility JavaVersion.VERSION_1_8
+                }
+            }
+            project.tasks.withType(JavaCompile) {
+                options.compilerArgs << "-Xlint:-options"
+            }
+        }
+    }
 }
+
 subprojects {
     project.evaluationDependsOn(':app')
 }
 
+
+
 tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }
+
+
