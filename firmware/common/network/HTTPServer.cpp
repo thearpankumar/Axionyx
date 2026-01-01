@@ -85,8 +85,9 @@ void HTTPServer::setupRoutes() {
     server->on("/api/v1/wifi/status", HTTP_GET,
         [this](AsyncWebServerRequest* request) { handleGetWiFiStatus(request); });
 
-    server->on("/api/v1/wifi/scan", HTTP_GET,
-        [this](AsyncWebServerRequest* request) { handleWiFiScan(request); });
+    // WiFi scan disabled - mobile app/browser handles network scanning
+    // server->on("/api/v1/wifi/scan", HTTP_GET,
+    //     [this](AsyncWebServerRequest* request) { handleWiFiScan(request); });
 
     server->on("/api/v1/wifi/configure", HTTP_POST,
         [this](AsyncWebServerRequest* request) {
@@ -315,29 +316,6 @@ void HTTPServer::handleGetWiFiStatus(AsyncWebServerRequest* request) {
     sendJSON(request, 200, doc);
 }
 
-void HTTPServer::handleWiFiScan(AsyncWebServerRequest* request) {
-    Logger::info("HTTPServer: GET /api/v1/wifi/scan");
-
-    std::vector<WiFiManager::NetworkInfo> networks = wifi.scanNetworks();
-
-    JsonDocument doc;
-    JsonArray networksArray = doc["networks"].to<JsonArray>();
-
-    for (const auto& network : networks) {
-        JsonObject netObj = networksArray.add<JsonObject>();
-        netObj["ssid"] = network.ssid;
-        netObj["rssi"] = network.rssi;
-
-        // Convert encryption type to string
-        String encType = "OPEN";
-        if (network.encryption != WIFI_AUTH_OPEN) {
-            encType = "WPA2";
-        }
-        netObj["encryption"] = encType;
-    }
-
-    sendJSON(request, 200, doc);
-}
 
 void HTTPServer::handleWiFiConfigure(AsyncWebServerRequest* request, uint8_t* data, size_t len, size_t index, size_t total) {
     if (index + len != total) return;
@@ -515,10 +493,6 @@ void HTTPServer::handleProvisioningPage(AsyncWebServerRequest* request) {
         button:active {
             transform: translateY(0);
         }
-        .scan-btn {
-            background: #28a745;
-            margin-bottom: 15px;
-        }
         .message {
             padding: 12px;
             border-radius: 8px;
@@ -560,12 +534,10 @@ void HTTPServer::handleProvisioningPage(AsyncWebServerRequest* request) {
         </div>
 
         <form id="wifiForm">
-            <button type="button" class="scan-btn" onclick="scanNetworks()">Scan Networks</button>
-
             <div class="form-group">
                 <label for="ssid">WiFi Network</label>
-                <input type="text" id="ssid" name="ssid" placeholder="Enter SSID" required list="networks">
-                <datalist id="networks"></datalist>
+                <input type="text" id="ssid" name="ssid" placeholder="Enter WiFi network name" required>
+                <small style="color: #666; font-size: 12px;">Enter the exact name of your WiFi network</small>
             </div>
 
             <div class="form-group">
@@ -588,26 +560,6 @@ void HTTPServer::handleProvisioningPage(AsyncWebServerRequest* request) {
     </div>
 
     <script>
-        async function scanNetworks() {
-            try {
-                const response = await fetch('/api/v1/wifi/scan');
-                const data = await response.json();
-
-                const datalist = document.getElementById('networks');
-                datalist.innerHTML = '';
-
-                data.networks.forEach(network => {
-                    const option = document.createElement('option');
-                    option.value = network.ssid;
-                    datalist.appendChild(option);
-                });
-
-                showMessage('Found ' + data.networks.length + ' networks', 'success');
-            } catch (error) {
-                showMessage('Failed to scan networks', 'error');
-            }
-        }
-
         document.getElementById('wifiForm').addEventListener('submit', async (e) => {
             e.preventDefault();
 
@@ -645,9 +597,6 @@ void HTTPServer::handleProvisioningPage(AsyncWebServerRequest* request) {
             messageDiv.className = 'message ' + type;
             messageDiv.style.display = 'block';
         }
-
-        // Auto-scan on page load
-        scanNetworks();
     </script>
 </body>
 </html>

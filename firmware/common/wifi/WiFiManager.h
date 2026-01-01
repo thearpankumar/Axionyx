@@ -24,13 +24,6 @@ public:
         WIFI_RECONNECT = 4    // Reconnecting after connection loss
     };
 
-    // WiFi network information
-    struct NetworkInfo {
-        String ssid;
-        int32_t rssi;
-        wifi_auth_mode_t encryption;
-    };
-
     WiFiManager(DeviceConfig& config);
     ~WiFiManager();
 
@@ -51,9 +44,6 @@ public:
     void setCredentials(const String& ssid, const String& password, DeviceConfig::WiFiMode mode);
     void startProvisioning();
     void factoryReset();
-
-    // Network scanning
-    std::vector<NetworkInfo> scanNetworks();
 
 private:
     DeviceConfig& config;

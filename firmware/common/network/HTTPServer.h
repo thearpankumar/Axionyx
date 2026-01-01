@@ -48,7 +48,6 @@ private:
 
     // Route handlers - WiFi Configuration
     void handleGetWiFiStatus(AsyncWebServerRequest* request);
-    void handleWiFiScan(AsyncWebServerRequest* request);
     void handleWiFiConfigure(AsyncWebServerRequest* request, uint8_t* data, size_t len, size_t index, size_t total);
 
     // Route handlers - Configuration

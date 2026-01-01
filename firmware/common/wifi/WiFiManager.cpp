@@ -289,30 +289,6 @@ void WiFiManager::factoryReset() {
     setState(WIFI_INIT);
 }
 
-std::vector<WiFiManager::NetworkInfo> WiFiManager::scanNetworks() {
-    Logger::info("WiFiManager: Scanning for networks");
-
-    std::vector<NetworkInfo> networks;
-
-    int n = WiFi.scanNetworks();
-
-    if (n == 0) {
-        Logger::info("WiFiManager: No networks found");
-    } else {
-        Logger::info("WiFiManager: Found " + String(n) + " networks");
-
-        for (int i = 0; i < n; i++) {
-            NetworkInfo info;
-            info.ssid = WiFi.SSID(i);
-            info.rssi = WiFi.RSSI(i);
-            info.encryption = WiFi.encryptionType(i);
-
-            networks.push_back(info);
-        }
-    }
-
-    return networks;
-}
 
 String WiFiManager::getIP() const {
     if (WiFi.status() == WL_CONNECTED) {
