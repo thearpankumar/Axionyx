@@ -45,5 +45,11 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_axionyx._tcp</string>
+	</array>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Axionyx needs to discover and communicate with lab devices on your local network</string>
 </dict>
 </plist>
