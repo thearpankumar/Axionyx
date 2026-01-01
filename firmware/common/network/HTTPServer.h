@@ -26,6 +26,7 @@ private:
     DeviceBase& device;
     WiFiManager& wifi;
     AsyncWebServer* server;
+    bool serverStarted;
 
     // Setup routes
     void setupRoutes();

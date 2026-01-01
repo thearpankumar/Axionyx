@@ -10,7 +10,7 @@
 #include <ArduinoJson.h>
 
 HTTPServer::HTTPServer(DeviceConfig& cfg, DeviceBase& dev, WiFiManager& wm)
-    : config(cfg), device(dev), wifi(wm), server(nullptr) {
+    : config(cfg), device(dev), wifi(wm), server(nullptr), serverStarted(false) {
 }
 
 HTTPServer::~HTTPServer() {
@@ -20,17 +20,23 @@ HTTPServer::~HTTPServer() {
 }
 
 void HTTPServer::begin() {
-    Logger::info("HTTPServer: Starting on port " + String(config.network.httpPort));
+    Logger::info("HTTPServer: Initializing on port " + String(config.network.httpPort));
 
     server = new AsyncWebServer(config.network.httpPort);
-
     setupRoutes();
 
-    server->begin();
-    Logger::info("HTTPServer: Started successfully");
+    Logger::info("HTTPServer: Routes configured, waiting for WiFi to start server");
 }
 
 void HTTPServer::loop() {
+    // Start server once WiFi is ready (either in AP or STA mode)
+    if (!serverStarted && WiFi.getMode() != WIFI_OFF) {
+        Logger::info("HTTPServer: WiFi ready, starting server");
+        server->begin();
+        serverStarted = true;
+        Logger::info("HTTPServer: Started successfully");
+    }
+
     // AsyncWebServer handles requests asynchronously
     // No need for explicit loop processing
 }

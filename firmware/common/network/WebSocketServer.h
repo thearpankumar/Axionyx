@@ -28,6 +28,8 @@ private:
     WebSocketsServer* ws;
     unsigned long lastTelemetryBroadcast;
     uint16_t telemetryInterval;
+    uint16_t port;
+    bool serverStarted;
 
     // WebSocket event handler
     void onWebSocketEvent(uint8_t clientNum, WStype_t type, uint8_t* payload, size_t length);

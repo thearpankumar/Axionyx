@@ -15,7 +15,9 @@ WebSocketServer::WebSocketServer(DeviceBase& dev)
     : device(dev),
       ws(nullptr),
       lastTelemetryBroadcast(0),
-      telemetryInterval(1000) {  // 1 second default
+      telemetryInterval(1000),  // 1 second default
+      port(81),
+      serverStarted(false) {
 
     instance = this;
 }
@@ -27,18 +29,26 @@ WebSocketServer::~WebSocketServer() {
     instance = nullptr;
 }
 
-void WebSocketServer::begin(uint16_t port) {
-    Logger::info("WebSocketServer: Starting on port " + String(port));
+void WebSocketServer::begin(uint16_t p) {
+    port = p;
+    Logger::info("WebSocketServer: Initializing on port " + String(port));
 
     ws = new WebSocketsServer(port);
-    ws->begin();
     ws->onEvent(staticEventHandler);
 
-    Logger::info("WebSocketServer: Started successfully");
+    Logger::info("WebSocketServer: Configured, waiting for WiFi to start server");
 }
 
 void WebSocketServer::loop() {
-    if (ws) {
+    // Start server once WiFi is ready (either in AP or STA mode)
+    if (!serverStarted && WiFi.getMode() != WIFI_OFF && ws) {
+        Logger::info("WebSocketServer: WiFi ready, starting server");
+        ws->begin();
+        serverStarted = true;
+        Logger::info("WebSocketServer: Started successfully");
+    }
+
+    if (ws && serverStarted) {
         ws->loop();
     }
 }
