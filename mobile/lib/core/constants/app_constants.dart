@@ -4,10 +4,14 @@ class AppConstants {
   static const String appName = 'Axionyx Mobile';
   static const String appVersion = '1.0.0';
 
-  // mDNS Discovery
+  // Discovery (mDNS + UDP Broadcast)
   static const String mdnsServiceType = '_axionyx._tcp';
-  static const Duration mdnsScanDuration = Duration(seconds: 5);
-  static const Duration mdnsRescanInterval = Duration(seconds: 30);
+  static const int udpDiscoveryPort = 30303;
+  static const String udpDiscoveryRequest =
+      '{"cmd":"DISCOVER","app":"axionyx"}';
+  static const String udpDiscoveryReply = 'DISCOVER_REPLY';
+  static const Duration discoveryScanDuration = Duration(seconds: 10);
+  static const Duration discoveryRescanInterval = Duration(seconds: 30);
 
   // Network Timeouts
   static const Duration httpTimeout = Duration(seconds: 5);
