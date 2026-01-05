@@ -9,6 +9,7 @@
 
 #include <Arduino.h>
 #include <ESPmDNS.h>
+#include <WiFiUdp.h>
 #include "../config/Config.h"
 
 class mDNSService {
@@ -17,11 +18,11 @@ public:
 
     bool begin();
     void loop();
-    void update();  // Update TXT records if config changes
 
 private:
     DeviceConfig& config;
     bool started;
+    WiFiUDP udp;
 
     void addTXTRecords();
 };

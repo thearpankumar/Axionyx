@@ -12,6 +12,7 @@
 #include <WiFi.h>
 #include <DNSServer.h>
 #include "../config/Config.h"
+#include "../discovery/mDNSService.h"
 
 class WiFiManager {
 public:
@@ -45,10 +46,14 @@ public:
     void startProvisioning();
     void factoryReset();
 
+    // mDNS service
+    void setMDNSService(mDNSService* mdnsService);
+
 private:
     DeviceConfig& config;
     State currentState;
     DNSServer* dnsServer;
+    mDNSService* mdns;
 
     unsigned long lastReconnectAttempt;
     uint8_t reconnectAttempts;

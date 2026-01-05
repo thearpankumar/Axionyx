@@ -15,6 +15,7 @@ WiFiManager::WiFiManager(DeviceConfig& cfg)
     : config(cfg),
       currentState(WIFI_INIT),
       dnsServer(nullptr),
+      mdns(nullptr),
       lastReconnectAttempt(0),
       reconnectAttempts(0) {
 }
@@ -23,6 +24,10 @@ WiFiManager::~WiFiManager() {
     if (dnsServer) {
         delete dnsServer;
     }
+}
+
+void WiFiManager::setMDNSService(mDNSService* mdnsService) {
+    mdns = mdnsService;
 }
 
 void WiFiManager::begin() {
@@ -323,6 +328,12 @@ void WiFiManager::setState(State newState) {
         // Reset state-specific variables
         if (newState == WIFI_CONNECTING) {
             reconnectAttempts = 0;
+        }
+
+        // Start mDNS when connected
+        if (newState == WIFI_CONNECTED && mdns) {
+            Logger::info("WiFiManager: Starting discovery service");
+            mdns->begin();
         }
     }
 }

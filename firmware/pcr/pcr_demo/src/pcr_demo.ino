@@ -12,6 +12,7 @@
 #include "../../../common/wifi/WiFiManager.h"
 #include "../../../common/network/HTTPServer.h"
 #include "../../../common/network/WebSocketServer.h"
+#include "../../../common/discovery/mDNSService.h"
 #include "../../../common/device/DeviceIdentity.h"
 #include "../../../common/utils/Logger.h"
 
@@ -21,6 +22,7 @@ WiFiManager wifiManager(config);
 PCRDevice pcrDevice;
 HTTPServer httpServer(config, pcrDevice, wifiManager);
 WebSocketServer wsServer(pcrDevice);
+mDNSService mdnsService(config);
 
 void setup() {
     // Initialize serial communication
@@ -74,6 +76,7 @@ void setup() {
 
     // Initialize WiFi
     wifiManager.begin();
+    wifiManager.setMDNSService(&mdnsService);
     Logger::info("WiFi manager initialized");
 
     // Initialize HTTP server
@@ -103,6 +106,8 @@ void loop() {
     // Update WiFi manager
     wifiManager.loop();
 
+    // mDNS service is now started automatically by WiFiManager when connected.
+
     // Update PCR device
     pcrDevice.loop();
 
@@ -111,6 +116,9 @@ void loop() {
 
     // Update WebSocket server
     wsServer.loop();
+
+    // Update mDNS service
+    mdnsService.loop();
 
     // Broadcast telemetry every second
     static unsigned long lastTelemetryBroadcast = 0;

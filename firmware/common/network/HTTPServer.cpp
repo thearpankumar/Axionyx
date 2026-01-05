@@ -159,17 +159,17 @@ void HTTPServer::setupRoutes() {
     server->on("/api/v1/config", HTTP_GET,
         [this](AsyncWebServerRequest* request) { handleGetConfig(request); });
 
+    server->on("/api/v1/config/factory-reset", HTTP_POST,
+        [this](AsyncWebServerRequest* request) { handleFactoryReset(request); });
+
     server->on("/api/v1/config", HTTP_POST,
-        [this](AsyncWebServerRequest* request) {
-            sendSuccess(request, "Configuration update received");
+        [](AsyncWebServerRequest* request) {
+            // Nothing needed in header handler
         },
         NULL,
         [this](AsyncWebServerRequest* request, uint8_t* data, size_t len, size_t index, size_t total) {
             handleSetConfig(request, data, len, index, total);
         });
-
-    server->on("/api/v1/config/factory-reset", HTTP_POST,
-        [this](AsyncWebServerRequest* request) { handleFactoryReset(request); });
 
     // Provisioning page (captive portal)
     server->on("/", HTTP_GET,
@@ -236,6 +236,8 @@ void HTTPServer::handleGetDeviceInfo(AsyncWebServerRequest* request) {
     doc["freeHeap"] = DeviceIdentity::getFreeHeap();
     doc["chipId"] = DeviceIdentity::getChipID();
     doc["mac"] = DeviceIdentity::getMAC();
+    doc["httpPort"] = config.network.httpPort;
+    doc["websocketPort"] = config.network.wsPort;
 
     sendJSON(request, 200, doc);
 }
