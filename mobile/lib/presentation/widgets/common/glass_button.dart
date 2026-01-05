@@ -105,7 +105,7 @@ class _GlassButtonState extends State<GlassButton>
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(isDark ? 0.2 : 0.1),
+                color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.1),
                 blurRadius: 10,
                 offset: const Offset(0, 5),
               ),
@@ -256,7 +256,7 @@ class _GlassIconButtonState extends State<GlassIconButton>
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(isDark ? 0.2 : 0.1),
+                color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.1),
                 blurRadius: 10,
                 offset: const Offset(0, 5),
               ),

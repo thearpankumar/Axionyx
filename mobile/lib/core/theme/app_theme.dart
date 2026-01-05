@@ -18,18 +18,18 @@ class AppTheme {
           elevation: 0,
           centerTitle: false,
           backgroundColor: Colors.transparent,
-          foregroundColor: Colors.white,
+          foregroundColor: AppColorSchemes.darkColorScheme.onSurface,
           surfaceTintColor: Colors.transparent,
           systemOverlayStyle: SystemUiOverlayStyle.light,
-          titleTextStyle:
-              AppTextStyles.titleLarge.copyWith(color: Colors.white),
-          iconTheme: const IconThemeData(color: Colors.white),
+          titleTextStyle: AppTextStyles.titleLarge
+              .copyWith(color: AppColorSchemes.darkColorScheme.onSurface),
+          iconTheme:
+              IconThemeData(color: AppColorSchemes.darkColorScheme.onSurface),
         ),
 
         // Card Theme
-        cardTheme: CardTheme(
+        cardTheme: CardThemeData(
           elevation: 4,
-          color: AppColorSchemes.darkColorScheme.surface,
           surfaceTintColor: Colors.transparent,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
@@ -40,8 +40,9 @@ class AppTheme {
         // Bottom Navigation Bar Theme
         bottomNavigationBarTheme: BottomNavigationBarThemeData(
           backgroundColor: AppColorSchemes.darkColorScheme.surface,
-          selectedItemColor: AppColorSchemes.secondary,
-          unselectedItemColor: Colors.white54,
+          selectedItemColor: AppColorSchemes.primary,
+          unselectedItemColor:
+              AppColorSchemes.darkColorScheme.onSurface.withValues(alpha: 0.5),
           type: BottomNavigationBarType.fixed,
           elevation: 8,
           selectedLabelStyle: AppTextStyles.labelSmall,
@@ -52,7 +53,7 @@ class AppTheme {
         floatingActionButtonTheme: FloatingActionButtonThemeData(
           elevation: 6,
           highlightElevation: 12,
-          backgroundColor: AppColorSchemes.secondary,
+          backgroundColor: AppColorSchemes.primary,
           foregroundColor: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
@@ -97,7 +98,7 @@ class AppTheme {
         // Input Decoration Theme
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
-          fillColor: AppColorSchemes.darkColorScheme.surfaceVariant,
+          fillColor: AppColorSchemes.darkColorScheme.surfaceContainerHighest,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide.none,
@@ -132,15 +133,17 @@ class AppTheme {
             vertical: 16,
           ),
           hintStyle: AppTextStyles.bodyMedium.copyWith(
-            color: Colors.white38,
+            color: AppColorSchemes.darkColorScheme.onSurface
+                .withValues(alpha: 0.38),
           ),
           labelStyle: AppTextStyles.bodyMedium.copyWith(
-            color: Colors.white70,
+            color: AppColorSchemes.darkColorScheme.onSurface
+                .withValues(alpha: 0.7),
           ),
         ),
 
         // Dialog Theme
-        dialogTheme: DialogTheme(
+        dialogTheme: DialogThemeData(
           elevation: 8,
           backgroundColor: AppColorSchemes.darkColorScheme.surface,
           surfaceTintColor: Colors.transparent,
@@ -148,10 +151,11 @@ class AppTheme {
             borderRadius: BorderRadius.circular(20),
           ),
           titleTextStyle: AppTextStyles.titleLarge.copyWith(
-            color: Colors.white,
+            color: AppColorSchemes.darkColorScheme.onSurface,
           ),
           contentTextStyle: AppTextStyles.bodyMedium.copyWith(
-            color: Colors.white70,
+            color: AppColorSchemes.darkColorScheme.onSurface
+                .withValues(alpha: 0.7),
           ),
         ),
 
@@ -171,9 +175,10 @@ class AppTheme {
         // Snackbar Theme
         snackBarTheme: SnackBarThemeData(
           elevation: 6,
-          backgroundColor: const Color(0xFF334155),
+          backgroundColor:
+              AppColorSchemes.darkColorScheme.surfaceContainerHighest,
           contentTextStyle: AppTextStyles.bodyMedium.copyWith(
-            color: Colors.white,
+            color: AppColorSchemes.darkColorScheme.onSurface,
           ),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -190,39 +195,45 @@ class AppTheme {
 
         // Switch Theme
         switchTheme: SwitchThemeData(
-          thumbColor: MaterialStateProperty.resolveWith((states) {
-            if (states.contains(MaterialState.selected)) {
-              return AppColorSchemes.secondary;
+          thumbColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.selected)) {
+              return AppColorSchemes.primary;
             }
-            return Colors.white54;
+            return AppColorSchemes.darkColorScheme.onSurface
+                .withValues(alpha: 0.54);
           }),
-          trackColor: MaterialStateProperty.resolveWith((states) {
-            if (states.contains(MaterialState.selected)) {
-              return AppColorSchemes.secondary.withOpacity(0.5);
+          trackColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.selected)) {
+              return AppColorSchemes.primary.withValues(alpha: 0.5);
             }
-            return Colors.white24;
+            return AppColorSchemes.darkColorScheme.onSurface
+                .withValues(alpha: 0.24);
           }),
         ),
 
         // Slider Theme
         sliderTheme: SliderThemeData(
-          activeTrackColor: AppColorSchemes.secondary,
-          inactiveTrackColor: Colors.white24,
-          thumbColor: AppColorSchemes.secondary,
-          overlayColor: AppColorSchemes.secondary.withOpacity(0.2),
-          valueIndicatorColor: AppColorSchemes.secondary,
+          activeTrackColor: AppColorSchemes.primary,
+          inactiveTrackColor:
+              AppColorSchemes.darkColorScheme.onSurface.withValues(alpha: 0.24),
+          thumbColor: AppColorSchemes.primary,
+          overlayColor: AppColorSchemes.primary.withValues(alpha: 0.2),
+          valueIndicatorColor: AppColorSchemes.primary,
           valueIndicatorTextStyle: AppTextStyles.labelSmall.copyWith(
-            color: Colors.white,
+            color: AppColorSchemes.darkColorScheme.onSurface,
           ),
         ),
 
         // Chip Theme
         chipTheme: ChipThemeData(
-          backgroundColor: AppColorSchemes.darkColorScheme.surfaceVariant,
-          deleteIconColor: Colors.white70,
-          disabledColor: Colors.white12,
-          selectedColor: AppColorSchemes.secondary,
-          secondarySelectedColor: AppColorSchemes.secondary,
+          backgroundColor:
+              AppColorSchemes.darkColorScheme.surfaceContainerHighest,
+          deleteIconColor:
+              AppColorSchemes.darkColorScheme.onSurface.withValues(alpha: 0.7),
+          disabledColor:
+              AppColorSchemes.darkColorScheme.onSurface.withValues(alpha: 0.12),
+          selectedColor: AppColorSchemes.primary,
+          secondarySelectedColor: AppColorSchemes.primary,
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           labelStyle: AppTextStyles.labelMedium,
           secondaryLabelStyle: AppTextStyles.labelMedium,
@@ -239,7 +250,7 @@ class AppTheme {
         ),
 
         // Scaffold Background
-        scaffoldBackgroundColor: AppColorSchemes.darkColorScheme.background,
+        scaffoldBackgroundColor: AppColorSchemes.darkColorScheme.surface,
       );
 
   /// Light theme
@@ -255,21 +266,20 @@ class AppTheme {
           elevation: 0,
           centerTitle: false,
           backgroundColor: Colors.transparent,
-          foregroundColor: AppColorSchemes.lightColorScheme.onBackground,
+          foregroundColor: AppColorSchemes.lightColorScheme.onSurface,
           surfaceTintColor: Colors.transparent,
           systemOverlayStyle: SystemUiOverlayStyle.dark,
           titleTextStyle: AppTextStyles.titleLarge.copyWith(
-            color: AppColorSchemes.lightColorScheme.onBackground,
+            color: AppColorSchemes.lightColorScheme.onSurface,
           ),
           iconTheme: IconThemeData(
-            color: AppColorSchemes.lightColorScheme.onBackground,
+            color: AppColorSchemes.lightColorScheme.onSurface,
           ),
         ),
 
         // Card Theme
-        cardTheme: CardTheme(
+        cardTheme: CardThemeData(
           elevation: 2,
-          color: AppColorSchemes.lightColorScheme.surface,
           surfaceTintColor: Colors.transparent,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
@@ -338,7 +348,7 @@ class AppTheme {
         // Input Decoration Theme
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
-          fillColor: AppColorSchemes.lightColorScheme.surfaceVariant,
+          fillColor: AppColorSchemes.lightColorScheme.surfaceContainerHighest,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide.none,
@@ -373,16 +383,16 @@ class AppTheme {
             vertical: 16,
           ),
           hintStyle: AppTextStyles.bodyMedium.copyWith(
-            color: AppColorSchemes.lightColorScheme.onSurfaceVariant
-                .withOpacity(0.6),
+            color: AppColorSchemes.lightColorScheme.onSurface
+                .withValues(alpha: 0.6),
           ),
           labelStyle: AppTextStyles.bodyMedium.copyWith(
-            color: AppColorSchemes.lightColorScheme.onSurfaceVariant,
+            color: AppColorSchemes.lightColorScheme.onSurface,
           ),
         ),
 
         // Dialog Theme
-        dialogTheme: DialogTheme(
+        dialogTheme: DialogThemeData(
           elevation: 8,
           backgroundColor: AppColorSchemes.lightColorScheme.surface,
           surfaceTintColor: Colors.transparent,
@@ -393,7 +403,7 @@ class AppTheme {
             color: AppColorSchemes.lightColorScheme.onSurface,
           ),
           contentTextStyle: AppTextStyles.bodyMedium.copyWith(
-            color: AppColorSchemes.lightColorScheme.onSurfaceVariant,
+            color: AppColorSchemes.lightColorScheme.onSurface,
           ),
         ),
 
@@ -413,7 +423,7 @@ class AppTheme {
         // Snackbar Theme
         snackBarTheme: SnackBarThemeData(
           elevation: 6,
-          backgroundColor: const Color(0xFF334155),
+          backgroundColor: const Color(0xFF1A1A1A),
           contentTextStyle: AppTextStyles.bodyMedium.copyWith(
             color: Colors.white,
           ),
@@ -432,26 +442,27 @@ class AppTheme {
 
         // Switch Theme
         switchTheme: SwitchThemeData(
-          thumbColor: MaterialStateProperty.resolveWith((states) {
-            if (states.contains(MaterialState.selected)) {
+          thumbColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.selected)) {
               return AppColorSchemes.secondary;
             }
             return AppColorSchemes.lightColorScheme.outline;
           }),
-          trackColor: MaterialStateProperty.resolveWith((states) {
-            if (states.contains(MaterialState.selected)) {
-              return AppColorSchemes.secondary.withOpacity(0.5);
+          trackColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.selected)) {
+              return AppColorSchemes.secondary.withValues(alpha: 0.5);
             }
-            return AppColorSchemes.lightColorScheme.surfaceVariant;
+            return AppColorSchemes.lightColorScheme.surfaceContainerHighest;
           }),
         ),
 
         // Slider Theme
         sliderTheme: SliderThemeData(
           activeTrackColor: AppColorSchemes.secondary,
-          inactiveTrackColor: AppColorSchemes.lightColorScheme.surfaceVariant,
+          inactiveTrackColor:
+              AppColorSchemes.lightColorScheme.surfaceContainerHighest,
           thumbColor: AppColorSchemes.secondary,
-          overlayColor: AppColorSchemes.secondary.withOpacity(0.2),
+          overlayColor: AppColorSchemes.secondary.withValues(alpha: 0.2),
           valueIndicatorColor: AppColorSchemes.secondary,
           valueIndicatorTextStyle: AppTextStyles.labelSmall.copyWith(
             color: Colors.white,
@@ -460,10 +471,12 @@ class AppTheme {
 
         // Chip Theme
         chipTheme: ChipThemeData(
-          backgroundColor: AppColorSchemes.lightColorScheme.surfaceVariant,
-          deleteIconColor: AppColorSchemes.lightColorScheme.onSurfaceVariant,
-          disabledColor:
-              AppColorSchemes.lightColorScheme.surfaceVariant.withOpacity(0.5),
+          backgroundColor:
+              AppColorSchemes.lightColorScheme.surfaceContainerHighest,
+          deleteIconColor: AppColorSchemes.lightColorScheme.onSurface,
+          disabledColor: AppColorSchemes
+              .lightColorScheme.surfaceContainerHighest
+              .withValues(alpha: 0.5),
           selectedColor: AppColorSchemes.secondary,
           secondarySelectedColor: AppColorSchemes.secondary,
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -477,11 +490,11 @@ class AppTheme {
 
         // Icon Theme
         iconTheme: IconThemeData(
-          color: AppColorSchemes.lightColorScheme.onBackground,
+          color: AppColorSchemes.lightColorScheme.onSurface,
           size: 24,
         ),
 
         // Scaffold Background
-        scaffoldBackgroundColor: AppColorSchemes.lightColorScheme.background,
+        scaffoldBackgroundColor: AppColorSchemes.lightColorScheme.surface,
       );
 }

@@ -5,11 +5,10 @@ import 'package:flutter/material.dart';
 class AppColorSchemes {
   // Primary Colors
   static const Color primary =
-      Color(0xFF0A2463); // Deep Blue - Science, precision
-  static const Color secondary =
-      Color(0xFF00C9A7); // Cyan - Technology, innovation
-  static const Color accent =
-      Color(0xFF7B2CBF); // Electric Purple - Premium, modern
+      Color(0xFFE63946); // Red - Bio-precision, primary brand
+  static const Color secondary = Color(
+      0xFFE63946); // Matching red for now for monochromatic look or use secondary if needed
+  static const Color accent = Color(0xFF000000); // Black accent
 
   // Status Colors
   static const Color success = Color(0xFF10B981);
@@ -27,41 +26,38 @@ class AppColorSchemes {
     brightness: Brightness.dark,
     primary: primary,
     onPrimary: Colors.white,
-    primaryContainer: Color(0xFF1E3A8A),
-    onPrimaryContainer: Color(0xFFDDE8FF),
+    primaryContainer: Color(0xFFC62828),
+    onPrimaryContainer: Colors.white,
 
     secondary: secondary,
-    onSecondary: Color(0xFF003828),
-    secondaryContainer: Color(0xFF00513B),
-    onSecondaryContainer: Color(0xFFB2F1E3),
+    onSecondary: Colors.white,
+    secondaryContainer: Color(0xFF8B0000),
+    onSecondaryContainer: Colors.white,
 
     tertiary: accent,
     onTertiary: Colors.white,
-    tertiaryContainer: Color(0xFF5A1E8C),
-    onTertiaryContainer: Color(0xFFE8D5F7),
+    tertiaryContainer: Color(0xFF262626),
+    onTertiaryContainer: Colors.white,
 
     error: error,
     onError: Colors.white,
     errorContainer: Color(0xFF9B1C1C),
     onErrorContainer: Color(0xFFFFDAD6),
 
-    background: Color(0xFF0F172A), // slate-900
-    onBackground: Colors.white,
-
-    surface: Color(0xFF1E293B), // slate-800
+    surface: Color(0xFF000000), // Pure Black
     onSurface: Colors.white,
-    surfaceVariant: Color(0xFF334155), // slate-700
-    onSurfaceVariant: Color(0xFFCBD5E1),
+    surfaceContainerHighest: Color(0xFF1A1A1A), // Dark Gray
+    onSurfaceVariant: Color(0xFFE5E5E5),
 
-    outline: Color(0xFF475569), // slate-600
-    outlineVariant: Color(0xFF334155),
+    outline: Color(0xFF333333),
+    outlineVariant: Color(0xFF1A1A1A),
 
     shadow: Colors.black,
     scrim: Colors.black54,
 
-    inverseSurface: Color(0xFFF1F5F9), // slate-100
-    onInverseSurface: Color(0xFF1E293B),
-    inversePrimary: Color(0xFF3B5998),
+    inverseSurface: Color(0xFFE5E5E5),
+    onInverseSurface: Color(0xFF1A1A1A),
+    inversePrimary: Color(0xFFE63946),
   );
 
   /// Light Color Scheme
@@ -69,41 +65,38 @@ class AppColorSchemes {
     brightness: Brightness.light,
     primary: primary,
     onPrimary: Colors.white,
-    primaryContainer: Color(0xFFDDE8FF),
-    onPrimaryContainer: Color(0xFF001A41),
+    primaryContainer: Color(0xFFFFEBEE),
+    onPrimaryContainer: Color(0xFFC62828),
 
     secondary: secondary,
     onSecondary: Colors.white,
-    secondaryContainer: Color(0xFFB2F1E3),
-    onSecondaryContainer: Color(0xFF002117),
+    secondaryContainer: Color(0xFFFFCDD2),
+    onSecondaryContainer: Color(0xFFB71C1C),
 
     tertiary: accent,
     onTertiary: Colors.white,
-    tertiaryContainer: Color(0xFFE8D5F7),
-    onTertiaryContainer: Color(0xFF2E0051),
+    tertiaryContainer: Color(0xFFF5F5F5),
+    onTertiaryContainer: Color(0xFF212121),
 
     error: error,
     onError: Colors.white,
     errorContainer: Color(0xFFFFDAD6),
     onErrorContainer: Color(0xFF410002),
 
-    background: Color(0xFFF8FAFC), // slate-50
-    onBackground: Color(0xFF1E293B),
+    surface: Color(0xFFFFF9C4), // Light Yellow (Yellow 100)
+    onSurface: Color(0xFF000000), // Pure Black text on yellow
+    surfaceContainerHighest: Color(0xFFF9FBE7), // Lime 50
+    onSurfaceVariant: Color(0xFF263238),
 
-    surface: Colors.white,
-    onSurface: Color(0xFF1E293B),
-    surfaceVariant: Color(0xFFF1F5F9), // slate-100
-    onSurfaceVariant: Color(0xFF475569),
-
-    outline: Color(0xFFCBD5E1), // slate-300
-    outlineVariant: Color(0xFFE2E8F0), // slate-200
+    outline: Color(0xFFBDBDBD),
+    outlineVariant: Color(0xFFE0E0E0),
 
     shadow: Colors.black26,
     scrim: Colors.black54,
 
-    inverseSurface: Color(0xFF1E293B),
-    onInverseSurface: Color(0xFFF1F5F9),
-    inversePrimary: Color(0xFFB8C9FF),
+    inverseSurface: Color(0xFF263238),
+    onInverseSurface: Color(0xFFFFF9C4),
+    inversePrimary: Color(0xFFFF8A80),
   );
 
   /// Glassmorphism overlay colors for dark mode

@@ -137,6 +137,52 @@ enum ProtocolState {
   }
 }
 
+/// Incubator protocol stage enumeration (for multi-stage protocols)
+enum ProtocolStage {
+  idle('IDLE', 'Idle'),
+  preEquilibration('PRE_EQUILIBRATION', 'Pre-Equilibration'),
+  stage1('STAGE_1', 'Stage 1'),
+  stage2('STAGE_2', 'Stage 2'),
+  stage3('STAGE_3', 'Stage 3'),
+  stage4('STAGE_4', 'Stage 4'),
+  coolDown('COOL_DOWN', 'Cool Down'),
+  complete('COMPLETE', 'Complete');
+
+  final String id;
+  final String displayName;
+
+  const ProtocolStage(this.id, this.displayName);
+
+  static ProtocolStage fromString(String stage) {
+    switch (stage.toUpperCase()) {
+      case 'IDLE':
+        return ProtocolStage.idle;
+      case 'PRE_EQUILIBRATION':
+      case 'PREEQUILIBRATION':
+        return ProtocolStage.preEquilibration;
+      case 'STAGE_1':
+      case 'STAGE1':
+        return ProtocolStage.stage1;
+      case 'STAGE_2':
+      case 'STAGE2':
+        return ProtocolStage.stage2;
+      case 'STAGE_3':
+      case 'STAGE3':
+        return ProtocolStage.stage3;
+      case 'STAGE_4':
+      case 'STAGE4':
+        return ProtocolStage.stage4;
+      case 'COOL_DOWN':
+      case 'COOLDOWN':
+        return ProtocolStage.coolDown;
+      case 'COMPLETE':
+        return ProtocolStage.complete;
+      default:
+        return ProtocolStage.idle;
+    }
+  }
+}
+
 /// Alarm severity enumeration
 enum AlarmSeverity {
   warning(0, 'Warning'),
