@@ -32,8 +32,13 @@ class DeviceInfo with _$DeviceInfo {
     required int websocketPort,
     required Map<String, String> txtRecords,
   }) {
+    // Use MAC address as primary ID if available, fallback to device ID or host
+    final macAddress = txtRecords['mac'];
+    final deviceId = txtRecords['id'];
+    final uniqueId = macAddress ?? deviceId ?? host;
+
     return DeviceInfo(
-      id: txtRecords['id'] ?? '',
+      id: uniqueId,
       name: txtRecords['name'] ?? name,
       type: DeviceType.fromString(txtRecords['type'] ?? 'DUMMY'),
       host: host,
@@ -41,7 +46,7 @@ class DeviceInfo with _$DeviceInfo {
       websocketPort: websocketPort,
       version: txtRecords['version'],
       serial: txtRecords['serial'],
-      mac: txtRecords['mac'],
+      mac: macAddress,
       isConnected: true,
       lastSeen: DateTime.now(),
     );
