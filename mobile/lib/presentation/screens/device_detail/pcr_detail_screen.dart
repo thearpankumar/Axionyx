@@ -355,20 +355,33 @@ class _PCRDetailScreenState extends ConsumerState<PCRDetailScreen> {
 
   PCRPhase _parsePhase(dynamic phase) {
     final phaseStr = phase.toString().toUpperCase();
-    if (phaseStr.contains('HOT') && phaseStr.contains('START'))
+    if (phaseStr.contains('HOT') && phaseStr.contains('START')) {
       return PCRPhase.hotStart;
-    if (phaseStr.contains('INIT')) return PCRPhase.initialDenature;
-    if (phaseStr.contains('DENATURE')) return PCRPhase.denature;
+    }
+    if (phaseStr.contains('INIT')) {
+      return PCRPhase.initialDenature;
+    }
+    if (phaseStr.contains('DENATURE')) {
+      return PCRPhase.denature;
+    }
     if (phaseStr.contains('ANNEAL') && phaseStr.contains('EXTEND')) {
       return PCRPhase.annealExtend;
     }
-    if (phaseStr.contains('ANNEAL')) return PCRPhase.anneal;
+    if (phaseStr.contains('ANNEAL')) {
+      return PCRPhase.anneal;
+    }
     if (phaseStr.contains('EXTEND') && phaseStr.contains('FINAL')) {
       return PCRPhase.finalExtend;
     }
-    if (phaseStr.contains('EXTEND')) return PCRPhase.extend;
-    if (phaseStr.contains('HOLD')) return PCRPhase.hold;
-    if (phaseStr.contains('COMPLETE')) return PCRPhase.complete;
+    if (phaseStr.contains('EXTEND')) {
+      return PCRPhase.extend;
+    }
+    if (phaseStr.contains('HOLD')) {
+      return PCRPhase.hold;
+    }
+    if (phaseStr.contains('COMPLETE')) {
+      return PCRPhase.complete;
+    }
     return PCRPhase.idle;
   }
 

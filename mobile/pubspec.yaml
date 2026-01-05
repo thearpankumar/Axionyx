@@ -108,7 +108,6 @@ flutter:
 
   # Assets
   assets:
-    - .env
     - assets/images/
     - assets/images/device_icons/
 
