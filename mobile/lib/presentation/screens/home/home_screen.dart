@@ -75,14 +75,13 @@ class HomeScreen extends ConsumerWidget {
                               onPressed: () {
                                 ref
                                     .read(deviceSearchQueryProvider.notifier)
-                                    .state = '';
+                                    .set('');
                               },
                             )
                           : null,
                     ),
                     onChanged: (value) {
-                      ref.read(deviceSearchQueryProvider.notifier).state =
-                          value;
+                      ref.read(deviceSearchQueryProvider.notifier).set(value);
                     },
                   ),
                 ),

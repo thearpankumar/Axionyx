@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_riverpod/legacy.dart';
 import '../../data/models/device_info.dart';
 import '../../data/repositories/device_repository.dart';
 import '../../services/websocket/websocket_client.dart';
@@ -36,8 +35,8 @@ final telemetryStreamProvider =
   return wsClient.stream;
 });
 
-/// Provider for current device telemetry
+/// Provider for current device telemetry (latest value from the WebSocket stream)
 final currentTelemetryProvider =
-    StateProvider.family<Map<String, dynamic>?, DeviceInfo>((ref, deviceInfo) {
-  return null;
+    Provider.family<Map<String, dynamic>?, DeviceInfo>((ref, deviceInfo) {
+  return ref.watch(telemetryStreamProvider(deviceInfo)).asData?.value;
 });

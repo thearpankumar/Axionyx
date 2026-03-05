@@ -19,7 +19,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0
 
 environment:
-  sdk: '>=3.2.6 <4.0.0'
+  sdk: '>=3.6.0 <4.0.0'
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -35,22 +35,18 @@ dependencies:
   cupertino_icons: ^1.0.2
 
   # State Management
-  flutter_riverpod: ^3.1.0
+  flutter_riverpod: ^3.2.1
 
   # Networking
-  dio: ^5.4.0
+  dio: ^5.9.2
   web_socket_channel: ^3.0.3
-
-  # Local Storage
-  hive: ^2.2.3
-  hive_flutter: ^1.1.0
 
   # Device Discovery
   nsd: ^4.0.0
 
   # Code Generation
   freezed_annotation: ^3.1.0
-  json_annotation: ^4.8.1
+  json_annotation: ^4.11.0
 
   # UI & Charts
   fl_chart: ^1.1.1
@@ -67,13 +63,13 @@ dependencies:
 
   # QR Code
   qr_flutter: ^4.1.0
-  mobile_scanner: ^7.1.4
+  mobile_scanner: ^7.2.0
 
   # Notifications
-  flutter_local_notifications: ^19.5.0
+  flutter_local_notifications: ^21.0.0
   wifi_scan: ^0.4.1+2
   groq: ^1.1.1
-  flutter_multicast_lock: ^1.1.1
+  flutter_multicast_lock: ^1.2.0
 
 dev_dependencies:
   flutter_test:
@@ -83,13 +79,12 @@ dev_dependencies:
   flutter_lints: ^6.0.0
 
   # Code Generation
-  build_runner: ^2.4.7
-  freezed: ^3.2.3
-  json_serializable: ^6.7.1
-  riverpod_generator: ^4.0.0+1
+  build_runner: ^2.12.2
+  freezed: ^3.2.5
+  json_serializable: ^6.13.0
 
   # Testing
-  mockito: ^5.4.4
+  mockito: ^5.6.3
 
   # App Icon & Splash Screen
   flutter_launcher_icons: ^0.14.4

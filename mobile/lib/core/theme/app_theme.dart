@@ -37,16 +37,30 @@ class AppTheme {
           clipBehavior: Clip.antiAlias,
         ),
 
-        // Bottom Navigation Bar Theme
-        bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        // Navigation Bar Theme (Material 3)
+        navigationBarTheme: NavigationBarThemeData(
           backgroundColor: AppColorSchemes.darkColorScheme.surface,
-          selectedItemColor: AppColorSchemes.primary,
-          unselectedItemColor:
-              AppColorSchemes.darkColorScheme.onSurface.withValues(alpha: 0.5),
-          type: BottomNavigationBarType.fixed,
+          indicatorColor: AppColorSchemes.primary.withValues(alpha: 0.2),
+          iconTheme: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.selected)) {
+              return IconThemeData(color: AppColorSchemes.primary);
+            }
+            return IconThemeData(
+              color: AppColorSchemes.darkColorScheme.onSurface
+                  .withValues(alpha: 0.5),
+            );
+          }),
+          labelTextStyle: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.selected)) {
+              return AppTextStyles.labelSmall
+                  .copyWith(color: AppColorSchemes.primary);
+            }
+            return AppTextStyles.labelSmall.copyWith(
+              color: AppColorSchemes.darkColorScheme.onSurface
+                  .withValues(alpha: 0.5),
+            );
+          }),
           elevation: 8,
-          selectedLabelStyle: AppTextStyles.labelSmall,
-          unselectedLabelStyle: AppTextStyles.labelSmall,
         ),
 
         // FloatingActionButton Theme
@@ -287,16 +301,28 @@ class AppTheme {
           clipBehavior: Clip.antiAlias,
         ),
 
-        // Bottom Navigation Bar Theme
-        bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        // Navigation Bar Theme (Material 3)
+        navigationBarTheme: NavigationBarThemeData(
           backgroundColor: AppColorSchemes.lightColorScheme.surface,
-          selectedItemColor: AppColorSchemes.primary,
-          unselectedItemColor:
-              AppColorSchemes.lightColorScheme.onSurfaceVariant,
-          type: BottomNavigationBarType.fixed,
+          indicatorColor: AppColorSchemes.secondary.withValues(alpha: 0.2),
+          iconTheme: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.selected)) {
+              return IconThemeData(color: AppColorSchemes.secondary);
+            }
+            return IconThemeData(
+              color: AppColorSchemes.lightColorScheme.onSurfaceVariant,
+            );
+          }),
+          labelTextStyle: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.selected)) {
+              return AppTextStyles.labelSmall
+                  .copyWith(color: AppColorSchemes.secondary);
+            }
+            return AppTextStyles.labelSmall.copyWith(
+              color: AppColorSchemes.lightColorScheme.onSurfaceVariant,
+            );
+          }),
           elevation: 8,
-          selectedLabelStyle: AppTextStyles.labelSmall,
-          unselectedLabelStyle: AppTextStyles.labelSmall,
         ),
 
         // FloatingActionButton Theme

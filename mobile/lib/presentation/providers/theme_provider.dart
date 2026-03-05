@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/legacy.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Theme mode notifier with SharedPreferences persistence
-class ThemeModeNotifier extends StateNotifier<ThemeMode> {
+class ThemeModeNotifier extends Notifier<ThemeMode> {
   static const String _keyThemeMode = 'theme_mode';
 
-  ThemeModeNotifier() : super(ThemeMode.dark) {
+  @override
+  ThemeMode build() {
     _loadThemeMode();
+    return ThemeMode.dark;
   }
 
   /// Load theme mode from SharedPreferences
@@ -58,6 +60,4 @@ class ThemeModeNotifier extends StateNotifier<ThemeMode> {
 
 /// Provider for theme mode
 final themeModeProvider =
-    StateNotifierProvider<ThemeModeNotifier, ThemeMode>((ref) {
-  return ThemeModeNotifier();
-});
+    NotifierProvider<ThemeModeNotifier, ThemeMode>(ThemeModeNotifier.new);

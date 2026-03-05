@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_riverpod/legacy.dart';
 import '../../services/discovery/mdns_scanner.dart';
 import '../../data/models/device_info.dart';
 
@@ -28,7 +27,15 @@ final availableDevicesProvider = StreamProvider<List<DeviceInfo>>((ref) {
 });
 
 /// Provider for search query
-final deviceSearchQueryProvider = StateProvider<String>((ref) => '');
+final deviceSearchQueryProvider =
+    NotifierProvider<_SearchQueryNotifier, String>(_SearchQueryNotifier.new);
+
+class _SearchQueryNotifier extends Notifier<String> {
+  @override
+  String build() => '';
+
+  void set(String query) => state = query;
+}
 
 /// Provider for filtered devices based on search query (for Home Screen)
 final filteredDevicesProvider = Provider<AsyncValue<List<DeviceInfo>>>((ref) {
