@@ -37,9 +37,10 @@ class _ProgressRingState extends State<ProgressRing>
       vsync: this,
     );
     final progress = widget.total > 0 ? widget.current / widget.total : 0.0;
-    _animation = Tween<double>(begin: 0, end: progress).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _animation = Tween<double>(
+      begin: 0,
+      end: progress,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
     _controller.forward();
     _previousProgress = progress;
   }
@@ -50,10 +51,10 @@ class _ProgressRingState extends State<ProgressRing>
     final newProgress = widget.total > 0 ? widget.current / widget.total : 0.0;
     if (oldWidget.current != widget.current ||
         oldWidget.total != widget.total) {
-      _animation =
-          Tween<double>(begin: _previousProgress, end: newProgress).animate(
-        CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-      );
+      _animation = Tween<double>(
+        begin: _previousProgress,
+        end: newProgress,
+      ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
       _controller.forward(from: 0);
       _previousProgress = newProgress;
     }
@@ -77,8 +78,9 @@ class _ProgressRingState extends State<ProgressRing>
             painter: _ProgressRingPainter(
               progress: _animation.value,
               color: widget.color,
-              backgroundColor:
-                  Theme.of(context).colorScheme.surface.withValues(alpha: 0.1),
+              backgroundColor: Theme.of(
+                context,
+              ).colorScheme.surface.withValues(alpha: 0.1),
             ),
             child: Center(
               child: Column(
@@ -91,18 +93,15 @@ class _ProgressRingState extends State<ProgressRing>
                           text: '${widget.current}',
                           style: AppTextStyles.getTemperatureStyle(
                             fontSize: widget.size * 0.2,
-                          ).copyWith(
-                            color: widget.color,
-                          ),
+                          ).copyWith(color: widget.color),
                         ),
                         TextSpan(
                           text: ' / ${widget.total}',
                           style: AppTextStyles.bodyMedium.copyWith(
                             fontSize: widget.size * 0.1,
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onSurface
-                                .withValues(alpha: 0.5),
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withValues(alpha: 0.5),
                           ),
                         ),
                       ],
@@ -112,10 +111,9 @@ class _ProgressRingState extends State<ProgressRing>
                   Text(
                     'Cycles',
                     style: AppTextStyles.bodySmall.copyWith(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .onSurface
-                          .withValues(alpha: 0.6),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.6),
                     ),
                   ),
                   if (widget.phase != null) ...[
@@ -191,11 +189,7 @@ class _ProgressRingPainter extends CustomPainter {
       final gradient = SweepGradient(
         startAngle: startAngle,
         endAngle: startAngle + progressAngle,
-        colors: [
-          color,
-          color.withValues(alpha: 0.6),
-          color,
-        ],
+        colors: [color, color.withValues(alpha: 0.6), color],
         stops: const [0.0, 0.5, 1.0],
       );
 
@@ -224,11 +218,7 @@ class _ProgressRingPainter extends CustomPainter {
         ..color = color
         ..style = PaintingStyle.fill;
 
-      canvas.drawCircle(
-        Offset(capX, capY),
-        10,
-        capPaint,
-      );
+      canvas.drawCircle(Offset(capX, capY), 10, capPaint);
     }
   }
 

@@ -35,9 +35,5 @@ void main() async {
     DeviceOrientation.landscapeRight,
   ]);
 
-  runApp(
-    const ProviderScope(
-      child: AxionyxApp(),
-    ),
-  );
+  runApp(const ProviderScope(child: AxionyxApp()));
 }

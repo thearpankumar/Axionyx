@@ -7,8 +7,7 @@
 #ifndef PCR_DEVICE_H
 #define PCR_DEVICE_H
 
-#include "../../../common/device/DeviceBase.h"
-#include "../../../common/simulator/SensorSimulator.h"
+#include "../../common/device/DeviceBase.h"
 #include "PCRCycler.h"
 
 class PCRDevice : public DeviceBase {
@@ -32,9 +31,6 @@ public:
     PCRCycler::Program getCurrentProgram() const { return currentProgram; }
 
 private:
-    // Temperature zones
-    TemperatureSimulator tempZones[NUM_ZONES];
-
     // PCR cycling control
     PCRCycler cycler;
     PCRCycler::Program currentProgram;
@@ -42,11 +38,6 @@ private:
     // Update tracking
     unsigned long lastUpdate;
     static const unsigned long UPDATE_INTERVAL = 100; // 100ms = 10 Hz
-
-    // Helper methods
-    void updateTemperatures(float dt);
-    void syncTemperaturesToCycler();
-    String getZoneName(uint8_t zone) const;
 };
 
 #endif // PCR_DEVICE_H

@@ -36,10 +36,7 @@ class ProgramApi {
 
   /// Start incubator protocol
   Future<void> startProtocol(Map<String, dynamic> protocol) async {
-    await _client.post(
-      ApiEndpoints.protocolStart,
-      data: protocol,
-    );
+    await _client.post(ApiEndpoints.protocolStart, data: protocol);
   }
 
   /// Stop incubator protocol
@@ -72,10 +69,7 @@ class ProgramApi {
 
   /// Acknowledge specific alarm
   Future<void> acknowledgeAlarm(int index) async {
-    await _client.post(
-      ApiEndpoints.alarmsAcknowledge,
-      data: {'index': index},
-    );
+    await _client.post(ApiEndpoints.alarmsAcknowledge, data: {'index': index});
   }
 
   /// Acknowledge all alarms
@@ -106,7 +100,7 @@ class ProgramApi {
         'history',
         'data',
         'items',
-        'list'
+        'list',
       ];
 
       for (final key in commonKeys) {

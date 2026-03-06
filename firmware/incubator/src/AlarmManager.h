@@ -9,7 +9,6 @@
 
 #include <Arduino.h>
 #include <vector>
-#include "../../../common/simulator/SensorSimulator.h"
 #include "EnvironmentControl.h"
 
 class AlarmManager {

@@ -6,8 +6,10 @@ import '../../core/constants/api_endpoints.dart';
 import 'device_discovery_provider.dart';
 
 /// Provider for device repository
-final deviceRepositoryProvider =
-    Provider.family<DeviceRepository, DeviceInfo>((ref, deviceInfo) {
+final deviceRepositoryProvider = Provider.family<DeviceRepository, DeviceInfo>((
+  ref,
+  deviceInfo,
+) {
   final scanner = ref.read(mdnsScannerProvider);
   return DeviceRepository(
     deviceInfo,
@@ -16,8 +18,10 @@ final deviceRepositoryProvider =
 });
 
 /// Provider for WebSocket client
-final websocketClientProvider =
-    Provider.family<WebSocketClient, DeviceInfo>((ref, deviceInfo) {
+final websocketClientProvider = Provider.family<WebSocketClient, DeviceInfo>((
+  ref,
+  deviceInfo,
+) {
   final wsUrl = ApiEndpoints.buildWebSocketUrl(
     deviceInfo.host,
     port: deviceInfo.websocketPort,
@@ -31,12 +35,12 @@ final websocketClientProvider =
 /// Provider for WebSocket telemetry stream
 final telemetryStreamProvider =
     StreamProvider.family<Map<String, dynamic>, DeviceInfo>((ref, deviceInfo) {
-  final wsClient = ref.watch(websocketClientProvider(deviceInfo));
-  return wsClient.stream;
-});
+      final wsClient = ref.watch(websocketClientProvider(deviceInfo));
+      return wsClient.stream;
+    });
 
 /// Provider for current device telemetry (latest value from the WebSocket stream)
 final currentTelemetryProvider =
     Provider.family<Map<String, dynamic>?, DeviceInfo>((ref, deviceInfo) {
-  return ref.watch(telemetryStreamProvider(deviceInfo)).asData?.value;
-});
+      return ref.watch(telemetryStreamProvider(deviceInfo)).asData?.value;
+    });

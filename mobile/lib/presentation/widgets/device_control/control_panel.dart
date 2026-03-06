@@ -35,10 +35,7 @@ class ControlPanel extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Controls',
-            style: AppTextStyles.titleMedium,
-          ),
+          const Text('Controls', style: AppTextStyles.titleMedium),
           const SizedBox(height: 16),
           _buildControlButtons(context),
         ],
@@ -140,9 +137,7 @@ class ControlPanel extends StatelessWidget {
           ),
           FilledButton(
             onPressed: () => Navigator.of(context).pop(true),
-            style: FilledButton.styleFrom(
-              backgroundColor: Colors.red,
-            ),
+            style: FilledButton.styleFrom(backgroundColor: Colors.red),
             child: const Text('Stop'),
           ),
         ],

@@ -16,13 +16,15 @@ class GroqService {
 
     debugPrint('GroqService: Initializing...');
     debugPrint(
-        'GroqService: API key from prefs: ${apiKey?.isNotEmpty == true ? "FOUND" : "NOT FOUND"}');
+      'GroqService: API key from prefs: ${apiKey?.isNotEmpty == true ? "FOUND" : "NOT FOUND"}',
+    );
 
     // If not found in shared preferences, try to get from .env file
     if (apiKey == null || apiKey.isEmpty) {
       apiKey = dotenv.env['GROQ_API_KEY'];
       debugPrint(
-          'GroqService: API key from .env: ${apiKey?.isNotEmpty == true ? "FOUND" : "NOT FOUND"}');
+        'GroqService: API key from .env: ${apiKey?.isNotEmpty == true ? "FOUND" : "NOT FOUND"}',
+      );
 
       if (apiKey != null && apiKey.isNotEmpty) {
         // Save the API key from .env to shared preferences for future use
@@ -36,10 +38,7 @@ class GroqService {
         temperature: 0.7,
         seed: 10,
       );
-      final newGroq = Groq(
-        apiKey: apiKey,
-        configuration: groqConfiguration,
-      );
+      final newGroq = Groq(apiKey: apiKey, configuration: groqConfiguration);
 
       // IMPORTANT: startChat() must be called BEFORE setCustomInstructionsWith()
       newGroq.startChat();
@@ -65,10 +64,7 @@ class GroqService {
       temperature: 0.7,
       seed: 10,
     );
-    final newGroq = Groq(
-      apiKey: apiKey,
-      configuration: groqConfiguration,
-    );
+    final newGroq = Groq(apiKey: apiKey, configuration: groqConfiguration);
 
     // IMPORTANT: startChat() must be called BEFORE setCustomInstructionsWith()
     newGroq.startChat();

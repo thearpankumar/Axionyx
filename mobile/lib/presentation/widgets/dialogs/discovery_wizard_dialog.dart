@@ -26,7 +26,7 @@ class _DiscoveryWizardDialogState extends ConsumerState<DiscoveryWizardDialog> {
   // Controllers for configuration step
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
-  DeviceType _selectedType = DeviceType.dummy;
+  DeviceType _selectedType = DeviceType.pcr;
 
   @override
   void initState() {
@@ -83,14 +83,14 @@ class _DiscoveryWizardDialogState extends ConsumerState<DiscoveryWizardDialog> {
           child: Container(
             constraints: const BoxConstraints(maxWidth: 450, maxHeight: 600),
             decoration: BoxDecoration(
-              color:
-                  Theme.of(context).colorScheme.surface.withValues(alpha: 0.9),
+              color: Theme.of(
+                context,
+              ).colorScheme.surface.withValues(alpha: 0.9),
               borderRadius: BorderRadius.circular(24),
               border: Border.all(
-                color: Theme.of(context)
-                    .colorScheme
-                    .outline
-                    .withValues(alpha: 0.2),
+                color: Theme.of(
+                  context,
+                ).colorScheme.outline.withValues(alpha: 0.2),
               ),
             ),
             padding: const EdgeInsets.all(24),
@@ -122,8 +122,9 @@ class _DiscoveryWizardDialogState extends ConsumerState<DiscoveryWizardDialog> {
           'Axionyx is shouting on the network to find your devices...',
           textAlign: TextAlign.center,
           style: AppTextStyles.bodyMedium.copyWith(
-            color:
-                Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: 0.6),
           ),
         ),
         const SizedBox(height: 40),
@@ -166,23 +167,23 @@ class _DiscoveryWizardDialogState extends ConsumerState<DiscoveryWizardDialog> {
                   Icon(
                     Icons.sensors_off_outlined,
                     size: 48,
-                    color: Theme.of(context)
-                        .colorScheme
-                        .onSurface
-                        .withValues(alpha: 0.2),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.2),
                   ),
                   const SizedBox(height: 16),
-                  const Text('No new devices found yet',
-                      style: AppTextStyles.bodyMedium),
+                  const Text(
+                    'No new devices found yet',
+                    style: AppTextStyles.bodyMedium,
+                  ),
                   const SizedBox(height: 8),
                   Text(
                     'Ensure your device is powered on and connected to the same WiFi.',
                     textAlign: TextAlign.center,
                     style: AppTextStyles.bodySmall.copyWith(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .onSurface
-                          .withValues(alpha: 0.4),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.4),
                     ),
                   ),
                 ],
@@ -193,7 +194,7 @@ class _DiscoveryWizardDialogState extends ConsumerState<DiscoveryWizardDialog> {
           Expanded(
             child: ListView.separated(
               itemCount: availableDevices.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 12),
+              separatorBuilder: (_, index) => const SizedBox(height: 12),
               itemBuilder: (context, index) {
                 final device = availableDevices[index];
                 return _buildDeviceTile(device);
@@ -235,10 +236,9 @@ class _DiscoveryWizardDialogState extends ConsumerState<DiscoveryWizardDialog> {
       borderRadius: BorderRadius.circular(16),
       child: GlassCard(
         padding: const EdgeInsets.all(16),
-        color: Theme.of(context)
-            .colorScheme
-            .surfaceContainerHighest
-            .withValues(alpha: 0.3),
+        color: Theme.of(
+          context,
+        ).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
         child: Row(
           children: [
             Container(
@@ -261,10 +261,9 @@ class _DiscoveryWizardDialogState extends ConsumerState<DiscoveryWizardDialog> {
                   Text(
                     '${device.type.toString().split('.').last.toUpperCase()} • ${device.host}',
                     style: AppTextStyles.bodySmall.copyWith(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .onSurface
-                          .withValues(alpha: 0.5),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.5),
                     ),
                   ),
                 ],
@@ -291,48 +290,61 @@ class _DiscoveryWizardDialogState extends ConsumerState<DiscoveryWizardDialog> {
             ),
             const Text('Configure Device', style: AppTextStyles.titleLarge),
             const SizedBox(height: 24),
-            Text('Device Name',
-                style: AppTextStyles.labelMedium
-                    .copyWith(color: AppColorSchemes.primary)),
+            Text(
+              'Device Name',
+              style: AppTextStyles.labelMedium.copyWith(
+                color: AppColorSchemes.primary,
+              ),
+            ),
             const SizedBox(height: 8),
             TextFormField(
               controller: _nameController,
-              decoration:
-                  const InputDecoration(hintText: 'e.g., Lab Incubator #1'),
+              decoration: const InputDecoration(
+                hintText: 'e.g., Lab Incubator #1',
+              ),
               validator: (v) => v == null || v.isEmpty ? 'Name required' : null,
             ),
             const SizedBox(height: 24),
-            Text('Confirm Type',
-                style: AppTextStyles.labelMedium
-                    .copyWith(color: AppColorSchemes.primary)),
+            Text(
+              'Confirm Type',
+              style: AppTextStyles.labelMedium.copyWith(
+                color: AppColorSchemes.primary,
+              ),
+            ),
             const SizedBox(height: 12),
-            LayoutBuilder(builder: (context, constraints) {
-              return SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(minWidth: constraints.maxWidth),
-                  child: SegmentedButton<DeviceType>(
-                    segments: const [
-                      ButtonSegment(
+            LayoutBuilder(
+              builder: (context, constraints) {
+                return SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(minWidth: constraints.maxWidth),
+                    child: SegmentedButton<DeviceType>(
+                      segments: const [
+                        ButtonSegment(
                           value: DeviceType.pcr,
-                          label: Text('PCR'),
-                          icon: Icon(Icons.science)),
-                      ButtonSegment(
+                          label: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text('PCR', softWrap: false),
+                          ),
+                          icon: Icon(Icons.science),
+                        ),
+                        ButtonSegment(
                           value: DeviceType.incubator,
-                          label: Text('Incubator'),
-                          icon: Icon(Icons.thermostat)),
-                      ButtonSegment(
-                          value: DeviceType.dummy,
-                          label: Text('Dummy'),
-                          icon: Icon(Icons.device_unknown)),
-                    ],
-                    selected: {_selectedType},
-                    onSelectionChanged: (set) =>
-                        setState(() => _selectedType = set.first),
+                          label: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text('Incubator', softWrap: false),
+                          ),
+                          icon: Icon(Icons.thermostat),
+                        ),
+                      ],
+                      selected: {_selectedType},
+                      onSelectionChanged: (set) =>
+                          setState(() => _selectedType = set.first),
+                    ),
                   ),
-                ),
-              );
-            }),
+                );
+              },
+            ),
             const SizedBox(height: 32),
             SizedBox(
               width: double.infinity,
@@ -356,7 +368,6 @@ class _DiscoveryWizardDialogState extends ConsumerState<DiscoveryWizardDialog> {
     return switch (type) {
       DeviceType.pcr => Icons.science,
       DeviceType.incubator => Icons.thermostat,
-      DeviceType.dummy => Icons.device_unknown,
     };
   }
 }

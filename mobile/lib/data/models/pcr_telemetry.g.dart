@@ -6,8 +6,8 @@ part of 'pcr_telemetry.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$PCRTelemetryImpl _$$PCRTelemetryImplFromJson(Map<String, dynamic> json) =>
-    _$PCRTelemetryImpl(
+_PCRTelemetry _$PCRTelemetryFromJson(Map<String, dynamic> json) =>
+    _PCRTelemetry(
       state: $enumDecode(_$DeviceStateEnumMap, json['state']),
       uptime: (json['uptime'] as num).toInt(),
       temperature: (json['temperature'] as List<dynamic>)
@@ -28,13 +28,14 @@ _$PCRTelemetryImpl _$$PCRTelemetryImplFromJson(Map<String, dynamic> json) =>
       metrics: json['metrics'] == null
           ? null
           : PCRMetrics.fromJson(json['metrics'] as Map<String, dynamic>),
-      errors: (json['errors'] as List<dynamic>?)
+      errors:
+          (json['errors'] as List<dynamic>?)
               ?.map((e) => e as String)
               .toList() ??
           const [],
     );
 
-Map<String, dynamic> _$$PCRTelemetryImplToJson(_$PCRTelemetryImpl instance) =>
+Map<String, dynamic> _$PCRTelemetryToJson(_PCRTelemetry instance) =>
     <String, dynamic>{
       'state': _$DeviceStateEnumMap[instance.state]!,
       'uptime': instance.uptime,
@@ -74,31 +75,30 @@ const _$PCRPhaseEnumMap = {
   PCRPhase.complete: 'complete',
 };
 
-_$PCRProgramImpl _$$PCRProgramImplFromJson(Map<String, dynamic> json) =>
-    _$PCRProgramImpl(
-      type: json['type'] as String,
-      cycles: (json['cycles'] as num).toInt(),
-      denatureTemp: (json['denatureTemp'] as num).toDouble(),
-      denatureTime: (json['denatureTime'] as num).toInt(),
-      annealTemp: (json['annealTemp'] as num).toDouble(),
-      annealTime: (json['annealTime'] as num).toInt(),
-      extendTemp: (json['extendTemp'] as num).toDouble(),
-      extendTime: (json['extendTime'] as num).toInt(),
-      twoStepEnabled: json['twoStepEnabled'] as bool? ?? false,
-      annealExtendTemp: (json['annealExtendTemp'] as num?)?.toDouble(),
-      annealExtendTime: (json['annealExtendTime'] as num?)?.toInt(),
-      hotStart: json['hotStart'] == null
-          ? null
-          : HotStartConfig.fromJson(json['hotStart'] as Map<String, dynamic>),
-      touchdown: json['touchdown'] == null
-          ? null
-          : TouchdownConfig.fromJson(json['touchdown'] as Map<String, dynamic>),
-      gradient: json['gradient'] == null
-          ? null
-          : GradientConfig.fromJson(json['gradient'] as Map<String, dynamic>),
-    );
+_PCRProgram _$PCRProgramFromJson(Map<String, dynamic> json) => _PCRProgram(
+  type: json['type'] as String,
+  cycles: (json['cycles'] as num).toInt(),
+  denatureTemp: (json['denatureTemp'] as num).toDouble(),
+  denatureTime: (json['denatureTime'] as num).toInt(),
+  annealTemp: (json['annealTemp'] as num).toDouble(),
+  annealTime: (json['annealTime'] as num).toInt(),
+  extendTemp: (json['extendTemp'] as num).toDouble(),
+  extendTime: (json['extendTime'] as num).toInt(),
+  twoStepEnabled: json['twoStepEnabled'] as bool? ?? false,
+  annealExtendTemp: (json['annealExtendTemp'] as num?)?.toDouble(),
+  annealExtendTime: (json['annealExtendTime'] as num?)?.toInt(),
+  hotStart: json['hotStart'] == null
+      ? null
+      : HotStartConfig.fromJson(json['hotStart'] as Map<String, dynamic>),
+  touchdown: json['touchdown'] == null
+      ? null
+      : TouchdownConfig.fromJson(json['touchdown'] as Map<String, dynamic>),
+  gradient: json['gradient'] == null
+      ? null
+      : GradientConfig.fromJson(json['gradient'] as Map<String, dynamic>),
+);
 
-Map<String, dynamic> _$$PCRProgramImplToJson(_$PCRProgramImpl instance) =>
+Map<String, dynamic> _$PCRProgramToJson(_PCRProgram instance) =>
     <String, dynamic>{
       'type': instance.type,
       'cycles': instance.cycles,
@@ -116,24 +116,22 @@ Map<String, dynamic> _$$PCRProgramImplToJson(_$PCRProgramImpl instance) =>
       'gradient': instance.gradient,
     };
 
-_$HotStartConfigImpl _$$HotStartConfigImplFromJson(Map<String, dynamic> json) =>
-    _$HotStartConfigImpl(
+_HotStartConfig _$HotStartConfigFromJson(Map<String, dynamic> json) =>
+    _HotStartConfig(
       enabled: json['enabled'] as bool,
       activationTemp: (json['activationTemp'] as num).toDouble(),
       activationTime: (json['activationTime'] as num).toInt(),
     );
 
-Map<String, dynamic> _$$HotStartConfigImplToJson(
-        _$HotStartConfigImpl instance) =>
+Map<String, dynamic> _$HotStartConfigToJson(_HotStartConfig instance) =>
     <String, dynamic>{
       'enabled': instance.enabled,
       'activationTemp': instance.activationTemp,
       'activationTime': instance.activationTime,
     };
 
-_$TouchdownConfigImpl _$$TouchdownConfigImplFromJson(
-        Map<String, dynamic> json) =>
-    _$TouchdownConfigImpl(
+_TouchdownConfig _$TouchdownConfigFromJson(Map<String, dynamic> json) =>
+    _TouchdownConfig(
       enabled: json['enabled'] as bool,
       startAnnealTemp: (json['startAnnealTemp'] as num).toDouble(),
       endAnnealTemp: (json['endAnnealTemp'] as num).toDouble(),
@@ -142,8 +140,7 @@ _$TouchdownConfigImpl _$$TouchdownConfigImplFromJson(
       currentAnnealTemp: (json['currentAnnealTemp'] as num).toDouble(),
     );
 
-Map<String, dynamic> _$$TouchdownConfigImplToJson(
-        _$TouchdownConfigImpl instance) =>
+Map<String, dynamic> _$TouchdownConfigToJson(_TouchdownConfig instance) =>
     <String, dynamic>{
       'enabled': instance.enabled,
       'startAnnealTemp': instance.startAnnealTemp,
@@ -153,16 +150,15 @@ Map<String, dynamic> _$$TouchdownConfigImplToJson(
       'currentAnnealTemp': instance.currentAnnealTemp,
     };
 
-_$GradientConfigImpl _$$GradientConfigImplFromJson(Map<String, dynamic> json) =>
-    _$GradientConfigImpl(
+_GradientConfig _$GradientConfigFromJson(Map<String, dynamic> json) =>
+    _GradientConfig(
       enabled: json['enabled'] as bool,
       tempLow: (json['tempLow'] as num).toDouble(),
       tempHigh: (json['tempHigh'] as num).toDouble(),
       positions: (json['positions'] as num).toInt(),
     );
 
-Map<String, dynamic> _$$GradientConfigImplToJson(
-        _$GradientConfigImpl instance) =>
+Map<String, dynamic> _$GradientConfigToJson(_GradientConfig instance) =>
     <String, dynamic>{
       'enabled': instance.enabled,
       'tempLow': instance.tempLow,
@@ -170,13 +166,12 @@ Map<String, dynamic> _$$GradientConfigImplToJson(
       'positions': instance.positions,
     };
 
-_$PCRMetricsImpl _$$PCRMetricsImplFromJson(Map<String, dynamic> json) =>
-    _$PCRMetricsImpl(
-      currentAnnealTemp: (json['currentAnnealTemp'] as num).toDouble(),
-      temperatureStability: (json['temperatureStability'] as num).toDouble(),
-    );
+_PCRMetrics _$PCRMetricsFromJson(Map<String, dynamic> json) => _PCRMetrics(
+  currentAnnealTemp: (json['currentAnnealTemp'] as num).toDouble(),
+  temperatureStability: (json['temperatureStability'] as num).toDouble(),
+);
 
-Map<String, dynamic> _$$PCRMetricsImplToJson(_$PCRMetricsImpl instance) =>
+Map<String, dynamic> _$PCRMetricsToJson(_PCRMetrics instance) =>
     <String, dynamic>{
       'currentAnnealTemp': instance.currentAnnealTemp,
       'temperatureStability': instance.temperatureStability,

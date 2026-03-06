@@ -73,11 +73,7 @@ class _SparklinePainter extends CustomPainter {
         ..strokeWidth = strokeWidth
         ..style = PaintingStyle.stroke;
 
-      canvas.drawLine(
-        Offset(0, y),
-        Offset(size.width, y),
-        linePaint,
-      );
+      canvas.drawLine(Offset(0, y), Offset(size.width, y), linePaint);
       return;
     }
 
@@ -116,10 +112,7 @@ class _SparklinePainter extends CustomPainter {
       final gradient = LinearGradient(
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
-        colors: [
-          color.withValues(alpha: 0.3),
-          color.withValues(alpha: 0.05),
-        ],
+        colors: [color.withValues(alpha: 0.3), color.withValues(alpha: 0.05)],
       );
 
       final fillPaint = Paint()

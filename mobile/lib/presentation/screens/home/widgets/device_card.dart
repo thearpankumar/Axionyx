@@ -60,10 +60,9 @@ class DeviceCard extends StatelessWidget {
                 Text(
                   device.type.displayName,
                   style: AppTextStyles.bodySmall.copyWith(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .onSurface
-                        .withValues(alpha: 0.6),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.6),
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -78,10 +77,9 @@ class DeviceCard extends StatelessWidget {
                     Text(
                       device.host,
                       style: AppTextStyles.bodySmall.copyWith(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .onSurface
-                            .withValues(alpha: 0.5),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.5),
                       ),
                     ),
                   ],
@@ -112,8 +110,6 @@ class DeviceCard extends StatelessWidget {
         return Icons.science_outlined;
       case DeviceType.incubator:
         return Icons.thermostat_outlined;
-      case DeviceType.dummy:
-        return Icons.device_unknown_outlined;
     }
   }
 }

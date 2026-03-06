@@ -11,10 +11,7 @@ import '../common/glass_button.dart';
 class ProgramSelectorDialog extends ConsumerStatefulWidget {
   final DeviceInfo device;
 
-  const ProgramSelectorDialog({
-    super.key,
-    required this.device,
-  });
+  const ProgramSelectorDialog({super.key, required this.device});
 
   @override
   ConsumerState<ProgramSelectorDialog> createState() =>
@@ -91,9 +88,7 @@ class _ProgramSelectorDialogState extends ConsumerState<ProgramSelectorDialog> {
             ),
 
             // Content
-            Flexible(
-              child: _buildContent(),
-            ),
+            Flexible(child: _buildContent()),
 
             // Action buttons
             if (!_isLoading && _error == null && _selectedIndex != null)
@@ -159,10 +154,9 @@ class _ProgramSelectorDialogState extends ConsumerState<ProgramSelectorDialog> {
               Text(
                 _error!,
                 style: AppTextStyles.bodySmall.copyWith(
-                  color: Theme.of(context)
-                      .colorScheme
-                      .onSurface
-                      .withValues(alpha: 0.6),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.6),
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -188,10 +182,9 @@ class _ProgramSelectorDialogState extends ConsumerState<ProgramSelectorDialog> {
               Icon(
                 Icons.science_outlined,
                 size: 64,
-                color: Theme.of(context)
-                    .colorScheme
-                    .onSurface
-                    .withValues(alpha: 0.3),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.3),
               ),
               const SizedBox(height: 16),
               const Text(
@@ -202,10 +195,9 @@ class _ProgramSelectorDialogState extends ConsumerState<ProgramSelectorDialog> {
               Text(
                 'No PCR programs found on this device',
                 style: AppTextStyles.bodySmall.copyWith(
-                  color: Theme.of(context)
-                      .colorScheme
-                      .onSurface
-                      .withValues(alpha: 0.6),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.6),
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -244,10 +236,9 @@ class _ProgramSelectorDialogState extends ConsumerState<ProgramSelectorDialog> {
                     border: Border.all(
                       color: isSelected
                           ? AppColorSchemes.pcrAccent
-                          : Theme.of(context)
-                              .colorScheme
-                              .onSurface
-                              .withValues(alpha: 0.3),
+                          : Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withValues(alpha: 0.3),
                       width: 2,
                     ),
                     color: isSelected
@@ -255,11 +246,7 @@ class _ProgramSelectorDialogState extends ConsumerState<ProgramSelectorDialog> {
                         : Colors.transparent,
                   ),
                   child: isSelected
-                      ? const Icon(
-                          Icons.check,
-                          size: 16,
-                          color: Colors.white,
-                        )
+                      ? const Icon(Icons.check, size: 16, color: Colors.white)
                       : null,
                 ),
                 const SizedBox(width: 16),
@@ -280,10 +267,9 @@ class _ProgramSelectorDialogState extends ConsumerState<ProgramSelectorDialog> {
                         Text(
                           template['description'],
                           style: AppTextStyles.bodySmall.copyWith(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onSurface
-                                .withValues(alpha: 0.6),
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withValues(alpha: 0.6),
                           ),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
@@ -296,19 +282,17 @@ class _ProgramSelectorDialogState extends ConsumerState<ProgramSelectorDialog> {
                             Icon(
                               Icons.repeat,
                               size: 16,
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onSurface
-                                  .withValues(alpha: 0.5),
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurface.withValues(alpha: 0.5),
                             ),
                             const SizedBox(width: 4),
                             Text(
                               '${template['cycles']} cycles',
                               style: AppTextStyles.bodySmall.copyWith(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .onSurface
-                                    .withValues(alpha: 0.5),
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurface.withValues(alpha: 0.5),
                               ),
                             ),
                           ],

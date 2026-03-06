@@ -46,9 +46,10 @@ class _GlassButtonState extends State<GlassButton>
       vsync: this,
       duration: AppConstants.shortAnimationDuration,
     );
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.95).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _scaleAnimation = Tween<double>(
+      begin: 1.0,
+      end: 0.95,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -75,14 +76,16 @@ class _GlassButtonState extends State<GlassButton>
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final isEnabled = widget.onPressed != null && !widget.isLoading;
 
-    final effectiveColor = widget.color ??
+    final effectiveColor =
+        widget.color ??
         (widget.isPrimary
             ? AppColorSchemes.secondary
             : (isDark
-                ? AppColorSchemes.glassDarkStrong
-                : AppColorSchemes.glassLightStrong));
+                  ? AppColorSchemes.glassDarkStrong
+                  : AppColorSchemes.glassLightStrong));
 
-    final effectiveTextColor = widget.textColor ??
+    final effectiveTextColor =
+        widget.textColor ??
         (widget.isPrimary
             ? Colors.white
             : Theme.of(context).colorScheme.onSurface);
@@ -122,7 +125,8 @@ class _GlassButtonState extends State<GlassButton>
                       : (isDark ? Colors.white12 : Colors.black12),
                   borderRadius: BorderRadius.circular(widget.borderRadius),
                 ),
-                padding: widget.padding ??
+                padding:
+                    widget.padding ??
                     const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                 child: widget.isLoading
                     ? SizedBox(
@@ -199,9 +203,10 @@ class _GlassIconButtonState extends State<GlassIconButton>
       vsync: this,
       duration: AppConstants.shortAnimationDuration,
     );
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.95).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _scaleAnimation = Tween<double>(
+      begin: 1.0,
+      end: 0.95,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -228,7 +233,8 @@ class _GlassIconButtonState extends State<GlassIconButton>
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final isEnabled = widget.onPressed != null;
 
-    final effectiveColor = widget.color ??
+    final effectiveColor =
+        widget.color ??
         (isDark
             ? AppColorSchemes.glassDarkStrong
             : AppColorSchemes.glassLightStrong);

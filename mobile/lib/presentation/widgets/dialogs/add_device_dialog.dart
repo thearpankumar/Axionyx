@@ -25,7 +25,7 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
   final _httpPortController = TextEditingController(text: '80');
   final _wsPortController = TextEditingController(text: '81');
 
-  DeviceType _selectedType = DeviceType.dummy;
+  DeviceType _selectedType = DeviceType.pcr;
   bool _isProbing = false;
   String? _probeError;
 
@@ -48,14 +48,14 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
           filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
           child: Container(
             decoration: BoxDecoration(
-              color:
-                  Theme.of(context).colorScheme.surface.withValues(alpha: 0.95),
+              color: Theme.of(
+                context,
+              ).colorScheme.surface.withValues(alpha: 0.95),
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: Theme.of(context)
-                    .colorScheme
-                    .outline
-                    .withValues(alpha: 0.2),
+                color: Theme.of(
+                  context,
+                ).colorScheme.outline.withValues(alpha: 0.2),
                 width: 1,
               ),
             ),
@@ -99,9 +99,9 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
                         hintText: 'e.g., Lab PCR-1',
                         prefixIcon: const Icon(Icons.devices),
                         filled: true,
-                        fillColor: Theme.of(context)
-                            .colorScheme
-                            .surfaceContainerHighest,
+                        fillColor: Theme.of(
+                          context,
+                        ).colorScheme.surfaceContainerHighest,
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -124,18 +124,19 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
                       segments: const [
                         ButtonSegment<DeviceType>(
                           value: DeviceType.pcr,
-                          label: Text('PCR'),
+                          label: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text('PCR', softWrap: false),
+                          ),
                           icon: Icon(Icons.science),
                         ),
                         ButtonSegment<DeviceType>(
                           value: DeviceType.incubator,
-                          label: Text('Incubator'),
+                          label: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text('Incubator', softWrap: false),
+                          ),
                           icon: Icon(Icons.thermostat),
-                        ),
-                        ButtonSegment<DeviceType>(
-                          value: DeviceType.dummy,
-                          label: Text('Dummy'),
-                          icon: Icon(Icons.device_unknown),
                         ),
                       ],
                       selected: {_selectedType},
@@ -161,9 +162,9 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
                         hintText: 'e.g., 192.168.1.100',
                         prefixIcon: const Icon(Icons.dns),
                         filled: true,
-                        fillColor: Theme.of(context)
-                            .colorScheme
-                            .surfaceContainerHighest,
+                        fillColor: Theme.of(
+                          context,
+                        ).colorScheme.surfaceContainerHighest,
                       ),
                       keyboardType: TextInputType.number,
                       validator: (value) {
@@ -171,9 +172,7 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
                           return 'Please enter an IP address';
                         }
                         // Basic IP validation
-                        final ipRegex = RegExp(
-                          r'^(\d{1,3}\.){3}\d{1,3}$',
-                        );
+                        final ipRegex = RegExp(r'^(\d{1,3}\.){3}\d{1,3}$');
                         if (!ipRegex.hasMatch(value)) {
                           return 'Please enter a valid IP address';
                         }
@@ -202,9 +201,9 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
                                   hintText: '80',
                                   prefixIcon: const Icon(Icons.http),
                                   filled: true,
-                                  fillColor: Theme.of(context)
-                                      .colorScheme
-                                      .surfaceContainerHighest,
+                                  fillColor: Theme.of(
+                                    context,
+                                  ).colorScheme.surfaceContainerHighest,
                                 ),
                                 keyboardType: TextInputType.number,
                                 inputFormatters: [
@@ -244,9 +243,9 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
                                   hintText: '81',
                                   prefixIcon: const Icon(Icons.link),
                                   filled: true,
-                                  fillColor: Theme.of(context)
-                                      .colorScheme
-                                      .surfaceContainerHighest,
+                                  fillColor: Theme.of(
+                                    context,
+                                  ).colorScheme.surfaceContainerHighest,
                                 ),
                                 keyboardType: TextInputType.number,
                                 inputFormatters: [
@@ -368,10 +367,9 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
                             child: Text(
                               'Discovery might fail if your phone is on 5GHz while the device is on 2.4GHz. Try connecting your phone to the 2.4GHz band if "Scan" finds nothing.',
                               style: AppTextStyles.bodySmall.copyWith(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .onSurface
-                                    .withValues(alpha: 0.8),
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurface.withValues(alpha: 0.8),
                               ),
                             ),
                           ),
@@ -419,8 +417,9 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
                       const SizedBox(height: 16),
                       Text(
                         _probeError!,
-                        style: AppTextStyles.bodySmall
-                            .copyWith(color: AppColorSchemes.error),
+                        style: AppTextStyles.bodySmall.copyWith(
+                          color: AppColorSchemes.error,
+                        ),
                         textAlign: TextAlign.center,
                       ),
                     ],
@@ -457,8 +456,9 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
         String? serial;
 
         try {
-          final info =
-              await api.getDeviceInfo().timeout(const Duration(seconds: 5));
+          final info = await api.getDeviceInfo().timeout(
+            const Duration(seconds: 5),
+          );
           mac = info['mac']?.toString();
           deviceId = mac ?? info['id']?.toString() ?? deviceId;
           version = info['version']?.toString();
@@ -519,8 +519,9 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
     if (result == true && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content:
-              Text('WiFi configured! Reconnect to WiFi and use "Scan Devices"'),
+          content: Text(
+            'WiFi configured! Reconnect to WiFi and use "Scan Devices"',
+          ),
           backgroundColor: Color(0xFF10B981),
           duration: Duration(seconds: 5),
         ),

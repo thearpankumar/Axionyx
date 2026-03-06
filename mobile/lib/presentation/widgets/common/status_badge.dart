@@ -9,11 +9,7 @@ class StatusBadge extends StatelessWidget {
   final String status;
   final DeviceState? deviceState;
 
-  const StatusBadge({
-    super.key,
-    required this.status,
-    this.deviceState,
-  });
+  const StatusBadge({super.key, required this.status, this.deviceState});
 
   @override
   Widget build(BuildContext context) {
@@ -24,10 +20,7 @@ class StatusBadge extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(6),
-        border: Border.all(
-          color: color.withValues(alpha: 0.5),
-          width: 1,
-        ),
+        border: Border.all(color: color.withValues(alpha: 0.5), width: 1),
         boxShadow: [
           BoxShadow(
             color: color.withValues(alpha: 0.2),

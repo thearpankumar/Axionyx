@@ -31,9 +31,7 @@ class _SetpointDialogState extends State<SetpointDialog> {
   void initState() {
     super.initState();
     _value = widget.currentValue;
-    _controller = TextEditingController(
-      text: _value.toStringAsFixed(1),
-    );
+    _controller = TextEditingController(text: _value.toStringAsFixed(1));
   }
 
   @override
@@ -52,9 +50,9 @@ class _SetpointDialogState extends State<SetpointDialog> {
           // Large temperature display
           Text(
             '${_value.toStringAsFixed(1)}°C',
-            style: AppTextStyles.getTemperatureStyle(fontSize: 48).copyWith(
-              color: widget.color,
-            ),
+            style: AppTextStyles.getTemperatureStyle(
+              fontSize: 48,
+            ).copyWith(color: widget.color),
           ),
           const SizedBox(height: 24),
 
@@ -113,10 +111,9 @@ class _SetpointDialogState extends State<SetpointDialog> {
           Text(
             'Range: ${widget.minValue.toStringAsFixed(0)}°C - ${widget.maxValue.toStringAsFixed(0)}°C',
             style: AppTextStyles.bodySmall.copyWith(
-              color: Theme.of(context)
-                  .colorScheme
-                  .onSurface
-                  .withValues(alpha: 0.6),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.6),
             ),
           ),
         ],
@@ -128,9 +125,7 @@ class _SetpointDialogState extends State<SetpointDialog> {
         ),
         FilledButton(
           onPressed: () => Navigator.of(context).pop(_value),
-          style: FilledButton.styleFrom(
-            backgroundColor: widget.color,
-          ),
+          style: FilledButton.styleFrom(backgroundColor: widget.color),
           child: const Text('Set'),
         ),
       ],

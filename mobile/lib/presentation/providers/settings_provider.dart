@@ -11,10 +11,7 @@ class SettingsState {
     required this.notificationsEnabled,
   });
 
-  SettingsState copyWith({
-    bool? autoReconnect,
-    bool? notificationsEnabled,
-  }) {
+  SettingsState copyWith({bool? autoReconnect, bool? notificationsEnabled}) {
     return SettingsState(
       autoReconnect: autoReconnect ?? this.autoReconnect,
       notificationsEnabled: notificationsEnabled ?? this.notificationsEnabled,
@@ -30,10 +27,7 @@ class SettingsNotifier extends Notifier<SettingsState> {
   @override
   SettingsState build() {
     _loadSettings();
-    return const SettingsState(
-      autoReconnect: true,
-      notificationsEnabled: true,
-    );
+    return const SettingsState(autoReconnect: true, notificationsEnabled: true);
   }
 
   /// Load settings from SharedPreferences
@@ -78,5 +72,6 @@ class SettingsNotifier extends Notifier<SettingsState> {
 }
 
 /// Provider for settings
-final settingsProvider =
-    NotifierProvider<SettingsNotifier, SettingsState>(SettingsNotifier.new);
+final settingsProvider = NotifierProvider<SettingsNotifier, SettingsState>(
+  SettingsNotifier.new,
+);

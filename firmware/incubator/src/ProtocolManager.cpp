@@ -5,7 +5,7 @@
  */
 
 #include "ProtocolManager.h"
-#include "../../../common/utils/Logger.h"
+#include "../../common/utils/Logger.h"
 
 ProtocolManager::ProtocolManager()
     : currentState(IDLE),

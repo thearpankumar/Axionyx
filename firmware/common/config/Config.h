@@ -23,7 +23,7 @@ public:
     // Device information structure
     struct Device {
         String id;              // Unique device ID (e.g., "PCR-A1B2C3D4")
-        String type;            // Device type ("PCR", "INCUBATOR", "DUMMY")
+        String type;            // Device type ("PCR", "INCUBATOR")
         String name;            // User-friendly name
         String serialNumber;    // Serial number
         String firmwareVersion; // Firmware version

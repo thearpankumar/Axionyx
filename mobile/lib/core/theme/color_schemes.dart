@@ -4,10 +4,12 @@ import 'package:flutter/material.dart';
 /// Implements glassmorphism-friendly color palette with biotech professional theme
 class AppColorSchemes {
   // Primary Colors
-  static const Color primary =
-      Color(0xFFE63946); // Red - Bio-precision, primary brand
+  static const Color primary = Color(
+    0xFFE63946,
+  ); // Red - Bio-precision, primary brand
   static const Color secondary = Color(
-      0xFFE63946); // Matching red for now for monochromatic look or use secondary if needed
+    0xFFE63946,
+  ); // Matching red for now for monochromatic look or use secondary if needed
   static const Color accent = Color(0xFF000000); // Black accent
 
   // Status Colors
@@ -16,10 +18,8 @@ class AppColorSchemes {
   static const Color error = Color(0xFFEF4444);
   static const Color info = Color(0xFF3B82F6);
 
-  // Device-Specific Accent Colors
   static const Color pcrAccent = Color(0xFFE63946); // Red - heat
   static const Color incubatorAccent = Color(0xFF06D6A0); // Green - life
-  static const Color dummyAccent = Color(0xFF457B9D); // Blue - test
 
   /// Dark Color Scheme (Primary)
   static const ColorScheme darkColorScheme = ColorScheme.dark(
@@ -116,8 +116,6 @@ class AppColorSchemes {
         return pcrAccent;
       case 'INCUBATOR':
         return incubatorAccent;
-      case 'DUMMY':
-        return dummyAccent;
       default:
         return primary;
     }

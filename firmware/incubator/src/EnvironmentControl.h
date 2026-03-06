@@ -8,7 +8,6 @@
 #define ENVIRONMENT_CONTROL_H
 
 #include <Arduino.h>
-#include "../../../common/simulator/SensorSimulator.h"
 
 class EnvironmentControl {
 public:
@@ -112,10 +111,6 @@ private:
         }
     };
 
-    TemperatureSimulator tempSensor;
-    HumiditySimulator humiditySensor;
-    CO2Simulator co2Sensor;
-
     EnvironmentParams targetParams;
 
     // Stability thresholds
@@ -127,6 +122,11 @@ private:
     ParameterRamp tempRamp;
     ParameterRamp humidityRamp;
     ParameterRamp co2Ramp;
+
+    // TODO: Add real sensor read methods when hardware is defined
+    float readTemperature() const;
+    float readHumidity() const;
+    float readCO2() const;
 
     // Helper methods
     bool isStable(float current, float target, float threshold) const;

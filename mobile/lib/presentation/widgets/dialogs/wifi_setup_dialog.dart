@@ -113,14 +113,14 @@ class _WiFiSetupDialogState extends ConsumerState<WiFiSetupDialog> {
           filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
           child: Container(
             decoration: BoxDecoration(
-              color:
-                  Theme.of(context).colorScheme.surface.withValues(alpha: 0.95),
+              color: Theme.of(
+                context,
+              ).colorScheme.surface.withValues(alpha: 0.95),
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: Theme.of(context)
-                    .colorScheme
-                    .outline
-                    .withValues(alpha: 0.2),
+                color: Theme.of(
+                  context,
+                ).colorScheme.outline.withValues(alpha: 0.2),
                 width: 1,
               ),
             ),
@@ -168,8 +168,9 @@ class _WiFiSetupDialogState extends ConsumerState<WiFiSetupDialog> {
                               ? const SizedBox(
                                   width: 16,
                                   height: 16,
-                                  child:
-                                      CircularProgressIndicator(strokeWidth: 2),
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
                                 )
                               : const Icon(Icons.refresh, size: 18),
                           label: Text(_isScanning ? 'Scanning...' : 'Rescan'),
@@ -186,9 +187,9 @@ class _WiFiSetupDialogState extends ConsumerState<WiFiSetupDialog> {
                       Container(
                         constraints: const BoxConstraints(maxHeight: 200),
                         decoration: BoxDecoration(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .surfaceContainerHighest,
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.surfaceContainerHighest,
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: ListView.builder(
@@ -202,10 +203,8 @@ class _WiFiSetupDialogState extends ConsumerState<WiFiSetupDialog> {
                                 _getWiFiIcon(network.level),
                                 color: isSelected
                                     ? AppColorSchemes.primary
-                                    : Theme.of(context)
-                                        .colorScheme
-                                        .onSurface
-                                        .withValues(alpha: 0.7),
+                                    : Theme.of(context).colorScheme.onSurface
+                                          .withValues(alpha: 0.7),
                               ),
                               title: Text(
                                 network.ssid,
@@ -226,8 +225,10 @@ class _WiFiSetupDialogState extends ConsumerState<WiFiSetupDialog> {
                                 ),
                               ),
                               trailing: isSelected
-                                  ? const Icon(Icons.check_circle,
-                                      color: AppColorSchemes.primary)
+                                  ? const Icon(
+                                      Icons.check_circle,
+                                      color: AppColorSchemes.primary,
+                                    )
                                   : null,
                               selected: isSelected,
                               onTap: () {
@@ -251,19 +252,19 @@ class _WiFiSetupDialogState extends ConsumerState<WiFiSetupDialog> {
                       Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .surfaceContainerHighest,
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.surfaceContainerHighest,
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Center(
                           child: Text(
                             'No WiFi networks found',
                             style: TextStyle(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .onSurface
-                                    .withValues(alpha: 0.6)),
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurface.withValues(alpha: 0.6),
+                            ),
                           ),
                         ),
                       ),
@@ -285,9 +286,9 @@ class _WiFiSetupDialogState extends ConsumerState<WiFiSetupDialog> {
                         hintText: 'Enter WiFi network name',
                         prefixIcon: const Icon(Icons.wifi),
                         filled: true,
-                        fillColor: Theme.of(context)
-                            .colorScheme
-                            .surfaceContainerHighest,
+                        fillColor: Theme.of(
+                          context,
+                        ).colorScheme.surfaceContainerHighest,
                       ),
                       onChanged: (value) {
                         setState(() {
@@ -319,9 +320,9 @@ class _WiFiSetupDialogState extends ConsumerState<WiFiSetupDialog> {
                         hintText: 'Enter WiFi password',
                         prefixIcon: const Icon(Icons.lock),
                         filled: true,
-                        fillColor: Theme.of(context)
-                            .colorScheme
-                            .surfaceContainerHighest,
+                        fillColor: Theme.of(
+                          context,
+                        ).colorScheme.surfaceContainerHighest,
                         suffixIcon: IconButton(
                           icon: Icon(
                             _obscurePassword
@@ -510,8 +511,10 @@ class _WiFiSetupDialogState extends ConsumerState<WiFiSetupDialog> {
             children: [
               Text('Device is connecting to WiFi network.'),
               SizedBox(height: 16),
-              Text('Next steps:',
-                  style: TextStyle(fontWeight: FontWeight.bold)),
+              Text(
+                'Next steps:',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
               SizedBox(height: 8),
               Text('1. Reconnect your phone to the same WiFi network'),
               SizedBox(height: 4),
@@ -524,8 +527,9 @@ class _WiFiSetupDialogState extends ConsumerState<WiFiSetupDialog> {
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(); // Close success dialog
-                Navigator.of(context)
-                    .pop(true); // Close WiFi setup dialog with success
+                Navigator.of(
+                  context,
+                ).pop(true); // Close WiFi setup dialog with success
               },
               child: const Text('OK'),
             ),

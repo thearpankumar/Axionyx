@@ -84,12 +84,9 @@ class WebSocketClient {
   /// Send ping to keep connection alive
   void _startPing() {
     _pingTimer?.cancel();
-    _pingTimer = Timer.periodic(
-      AppConstants.websocketPingInterval,
-      (_) {
-        send({'type': 'ping'});
-      },
-    );
+    _pingTimer = Timer.periodic(AppConstants.websocketPingInterval, (_) {
+      send({'type': 'ping'});
+    });
   }
 
   /// Schedule reconnection with exponential backoff
@@ -100,8 +97,9 @@ class WebSocketClient {
     _reconnectTimer?.cancel();
 
     final delay = _calculateReconnectDelay();
-    _logger
-        .i('Reconnecting in ${delay.inSeconds}s (attempt $_reconnectAttempts)');
+    _logger.i(
+      'Reconnecting in ${delay.inSeconds}s (attempt $_reconnectAttempts)',
+    );
 
     _reconnectTimer = Timer(delay, () {
       _reconnectAttempts++;

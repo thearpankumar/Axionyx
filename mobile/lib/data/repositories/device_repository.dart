@@ -17,8 +17,10 @@ class DeviceRepository {
       '',
       port: deviceInfo.httpPort,
     );
-    _apiClient =
-        ApiClient(baseUrl: baseUrl, onConnectionError: onConnectionError);
+    _apiClient = ApiClient(
+      baseUrl: baseUrl,
+      onConnectionError: onConnectionError,
+    );
     deviceApi = DeviceApi(_apiClient);
     programApi = ProgramApi(_apiClient);
   }

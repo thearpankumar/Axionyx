@@ -7,7 +7,6 @@ import '../../providers/device_discovery_provider.dart';
 import 'widgets/device_card.dart';
 import '../device_detail/pcr_detail_screen.dart';
 import '../device_detail/incubator_detail_screen.dart';
-import '../device_detail/dummy_detail_screen.dart';
 import '../settings/settings_screen.dart';
 import '../../../core/constants/device_types.dart';
 import '../../../data/models/device_info.dart';
@@ -26,27 +25,20 @@ class HomeScreen extends ConsumerWidget {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: const Text(
-          'My Devices',
-          style: AppTextStyles.headlineSmall,
-        ),
+        title: const Text('My Devices', style: AppTextStyles.headlineSmall),
         actions: [
           IconButton(
             icon: const Icon(Icons.settings_outlined),
             onPressed: () {
               Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => const SettingsScreen(),
-                ),
+                MaterialPageRoute(builder: (context) => const SettingsScreen()),
               );
             },
           ),
         ],
       ),
       body: Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
-        ),
+        decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface),
         child: SafeArea(
           child: Column(
             children: [
@@ -62,14 +54,12 @@ class HomeScreen extends ConsumerWidget {
                       border: InputBorder.none,
                       icon: Icon(
                         Icons.search,
-                        color: Theme.of(context)
-                            .colorScheme
-                            .onSurface
-                            .withValues(alpha: 0.5),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.5),
                       ),
-                      suffixIcon: ref
-                              .watch(deviceSearchQueryProvider)
-                              .isNotEmpty
+                      suffixIcon:
+                          ref.watch(deviceSearchQueryProvider).isNotEmpty
                           ? IconButton(
                               icon: const Icon(Icons.clear),
                               onPressed: () {
@@ -93,8 +83,11 @@ class HomeScreen extends ConsumerWidget {
                   data: (devices) {
                     if (devices.isEmpty) {
                       final searchQuery = ref.watch(deviceSearchQueryProvider);
-                      return _buildEmptyState(context, ref,
-                          isSearching: searchQuery.isNotEmpty);
+                      return _buildEmptyState(
+                        context,
+                        ref,
+                        isSearching: searchQuery.isNotEmpty,
+                      );
                     }
                     return RefreshIndicator(
                       onRefresh: () async {
@@ -182,16 +175,16 @@ class HomeScreen extends ConsumerWidget {
     final Widget screen = switch (device.type) {
       DeviceType.pcr => PCRDetailScreen(device: device),
       DeviceType.incubator => IncubatorDetailScreen(device: device),
-      DeviceType.dummy => DummyDetailScreen(device: device),
     };
 
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (context) => screen),
-    );
+    Navigator.of(context).push(MaterialPageRoute(builder: (context) => screen));
   }
 
   Future<void> _deleteDevice(
-      BuildContext context, WidgetRef ref, DeviceInfo device) async {
+    BuildContext context,
+    WidgetRef ref,
+    DeviceInfo device,
+  ) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -216,8 +209,11 @@ class HomeScreen extends ConsumerWidget {
     }
   }
 
-  Widget _buildEmptyState(BuildContext context, WidgetRef ref,
-      {required bool isSearching}) {
+  Widget _buildEmptyState(
+    BuildContext context,
+    WidgetRef ref, {
+    required bool isSearching,
+  }) {
     return SingleChildScrollView(
       child: Center(
         child: Column(
@@ -226,19 +222,17 @@ class HomeScreen extends ConsumerWidget {
             Icon(
               isSearching ? Icons.search_off : Icons.devices_outlined,
               size: 80,
-              color: Theme.of(context)
-                  .colorScheme
-                  .onSurface
-                  .withValues(alpha: 0.3),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.3),
             ),
             const SizedBox(height: 16),
             Text(
               isSearching ? 'No matching devices' : 'No devices found',
               style: AppTextStyles.titleMedium.copyWith(
-                color: Theme.of(context)
-                    .colorScheme
-                    .onSurface
-                    .withValues(alpha: 0.6),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.6),
               ),
             ),
             const SizedBox(height: 8),
@@ -247,10 +241,9 @@ class HomeScreen extends ConsumerWidget {
                   ? 'Try adjusting your search terms'
                   : 'Tap "Scan Devices" to find devices on your WiFi',
               style: AppTextStyles.bodyMedium.copyWith(
-                color: Theme.of(context)
-                    .colorScheme
-                    .onSurface
-                    .withValues(alpha: 0.4),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.4),
               ),
             ),
             if (!isSearching) ...[
@@ -258,10 +251,9 @@ class HomeScreen extends ConsumerWidget {
               Text(
                 'Connected to device AP? Use "Add Device Manually"',
                 style: AppTextStyles.bodySmall.copyWith(
-                  color: Theme.of(context)
-                      .colorScheme
-                      .onSurface
-                      .withValues(alpha: 0.3),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.3),
                 ),
                 textAlign: TextAlign.center,
               ),

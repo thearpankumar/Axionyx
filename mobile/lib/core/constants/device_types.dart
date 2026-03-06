@@ -1,8 +1,7 @@
 /// Device type enumeration for Axionyx devices
 enum DeviceType {
   pcr('PCR', 'PCR Machine'),
-  incubator('INCUBATOR', 'Incubator'),
-  dummy('DUMMY', 'Dummy Device');
+  incubator('INCUBATOR', 'Incubator');
 
   final String id;
   final String displayName;
@@ -15,10 +14,9 @@ enum DeviceType {
         return DeviceType.pcr;
       case 'INCUBATOR':
         return DeviceType.incubator;
-      case 'DUMMY':
-        return DeviceType.dummy;
       default:
-        return DeviceType.dummy;
+        return DeviceType
+            .pcr; // Fallback to PCR or throw error, PCR is safer than removing default
     }
   }
 }

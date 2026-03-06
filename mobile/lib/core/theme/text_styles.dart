@@ -178,22 +178,22 @@ class AppTextStyles {
 
   /// Create TextTheme for Material Design
   static TextTheme get textTheme => const TextTheme(
-        displayLarge: displayLarge,
-        displayMedium: displayMedium,
-        displaySmall: displaySmall,
-        headlineLarge: headlineLarge,
-        headlineMedium: headlineMedium,
-        headlineSmall: headlineSmall,
-        titleLarge: titleLarge,
-        titleMedium: titleMedium,
-        titleSmall: titleSmall,
-        bodyLarge: bodyLarge,
-        bodyMedium: bodyMedium,
-        bodySmall: bodySmall,
-        labelLarge: labelLarge,
-        labelMedium: labelMedium,
-        labelSmall: labelSmall,
-      );
+    displayLarge: displayLarge,
+    displayMedium: displayMedium,
+    displaySmall: displaySmall,
+    headlineLarge: headlineLarge,
+    headlineMedium: headlineMedium,
+    headlineSmall: headlineSmall,
+    titleLarge: titleLarge,
+    titleMedium: titleMedium,
+    titleSmall: titleSmall,
+    bodyLarge: bodyLarge,
+    bodyMedium: bodyMedium,
+    bodySmall: bodySmall,
+    labelLarge: labelLarge,
+    labelMedium: labelMedium,
+    labelSmall: labelSmall,
+  );
 
   /// Get temperature reading style (monospace, large)
   static TextStyle getTemperatureStyle({
@@ -212,10 +212,7 @@ class AppTextStyles {
   }
 
   /// Get cycle count style (monospace, medium)
-  static TextStyle getCycleCountStyle({
-    double? fontSize,
-    Color? color,
-  }) {
+  static TextStyle getCycleCountStyle({double? fontSize, Color? color}) {
     return TextStyle(
       fontFamily: jetBrainsMonoFont,
       fontSize: fontSize ?? 20,

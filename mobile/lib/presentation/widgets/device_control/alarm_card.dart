@@ -50,11 +50,7 @@ class AlarmCard extends StatelessWidget {
               color: color.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Icon(
-              _getAlarmIcon(type),
-              color: color,
-              size: 24,
-            ),
+            child: Icon(_getAlarmIcon(type), color: color, size: 24),
           ),
           const SizedBox(width: 12),
 
@@ -102,20 +98,18 @@ class AlarmCard extends StatelessWidget {
                 Text(
                   message,
                   style: AppTextStyles.bodyMedium.copyWith(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .onSurface
-                        .withValues(alpha: 0.8),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.8),
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   _formatTimestamp(timestamp),
                   style: AppTextStyles.bodySmall.copyWith(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .onSurface
-                        .withValues(alpha: 0.5),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.5),
                   ),
                 ),
               ],

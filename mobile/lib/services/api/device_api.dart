@@ -21,10 +21,7 @@ class DeviceApi {
 
   /// Start device with parameters
   Future<void> startDevice(Map<String, dynamic> params) async {
-    await _client.post(
-      ApiEndpoints.deviceStart,
-      data: params,
-    );
+    await _client.post(ApiEndpoints.deviceStart, data: params);
   }
 
   /// Stop device
@@ -49,10 +46,7 @@ class DeviceApi {
   }) async {
     await _client.put(
       ApiEndpoints.deviceSetpoint,
-      data: {
-        'zone': zone,
-        'temperature': temperature,
-      },
+      data: {'zone': zone, 'temperature': temperature},
     );
   }
 
@@ -70,11 +64,7 @@ class DeviceApi {
   }) async {
     await _client.post(
       ApiEndpoints.wifiConfigure,
-      data: {
-        'ssid': ssid,
-        'password': password,
-        'mode': mode,
-      },
+      data: {'ssid': ssid, 'password': password, 'mode': mode},
     );
   }
 
@@ -86,10 +76,7 @@ class DeviceApi {
 
   /// Update device configuration
   Future<void> updateConfig(Map<String, dynamic> config) async {
-    await _client.post(
-      ApiEndpoints.config,
-      data: config,
-    );
+    await _client.post(ApiEndpoints.config, data: config);
   }
 
   /// Factory reset device

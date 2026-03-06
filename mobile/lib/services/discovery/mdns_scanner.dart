@@ -68,17 +68,15 @@ class MdnsScanner {
       _logger.i('Starting mDNS scanning for ${AppConstants.mdnsServiceType}');
 
       // Start discovery paths (mDNS + UDP Broadcast)
-      await Future.wait([
-        _startDiscovery(),
-        _startUdpDiscovery(),
-      ]);
+      await Future.wait([_startDiscovery(), _startUdpDiscovery()]);
 
       // Periodic check to confirm scanner is alive
       _aliveLogger?.cancel();
       _aliveLogger = Timer.periodic(const Duration(seconds: 15), (timer) {
         if (_activeDiscoveries.isNotEmpty) {
           _logger.d(
-              'NSD Scanner alive. Currently searching. Saved: ${_savedDevices.length}, Found: ${_foundDevices.length}');
+            'NSD Scanner alive. Currently searching. Saved: ${_savedDevices.length}, Found: ${_foundDevices.length}',
+          );
         }
       });
 
@@ -119,8 +117,10 @@ class MdnsScanner {
   Future<void> refreshSavedDevices() async {
     _logger.i('Silently refreshing saved devices...');
     if (_activeOperation != null) await _activeOperation;
-    _activeOperation =
-        _scanInternal(duration: const Duration(seconds: 5), silent: true);
+    _activeOperation = _scanInternal(
+      duration: const Duration(seconds: 5),
+      silent: true,
+    );
     return _activeOperation;
   }
 
@@ -136,8 +136,10 @@ class MdnsScanner {
     }
   }
 
-  Future<void> _scanInternal(
-      {required Duration duration, bool silent = false}) async {
+  Future<void> _scanInternal({
+    required Duration duration,
+    bool silent = false,
+  }) async {
     if (!silent) _logger.i('Starting discovery scan...');
 
     try {
@@ -150,10 +152,7 @@ class MdnsScanner {
       await Future.delayed(const Duration(milliseconds: 1000)); // Reset period
 
       // Start new discovery
-      await Future.wait([
-        _startDiscovery(),
-        _startUdpDiscovery(),
-      ]);
+      await Future.wait([_startDiscovery(), _startUdpDiscovery()]);
 
       // Wait for the specified duration
       await Future.delayed(duration);
@@ -207,7 +206,8 @@ class MdnsScanner {
       }
 
       _logger.i(
-          'NSD discovery cycle established for ${serviceTypes.length} types');
+        'NSD discovery cycle established for ${serviceTypes.length} types',
+      );
     } catch (e) {
       _logger.e('Failed to establish NSD discovery: $e');
       rethrow;
@@ -239,7 +239,8 @@ class MdnsScanner {
         } catch (e) {
           if (e.toString().contains('under-locked')) {
             _logger.w(
-                'NSD discovery already stopped or under-locked (system handled): ${discovery.id}');
+              'NSD discovery already stopped or under-locked (system handled): ${discovery.id}',
+            );
           } else {
             _logger.e('Error stopping NSD discovery ${discovery.id}: $e');
           }
@@ -254,7 +255,8 @@ class MdnsScanner {
   /// Start UDP broadcast discovery as fallback
   Future<void> _startUdpDiscovery() async {
     _logger.i(
-        'Starting UDP Broadcast discovery on port ${AppConstants.udpDiscoveryPort}');
+      'Starting UDP Broadcast discovery on port ${AppConstants.udpDiscoveryPort}',
+    );
 
     RawDatagramSocket? socket;
     try {
@@ -267,7 +269,8 @@ class MdnsScanner {
 
       socket.send(data, destination, AppConstants.udpDiscoveryPort);
       _logger.d(
-          '🔍 UDP SHOUT: ${AppConstants.udpDiscoveryRequest} sent to $destination');
+        '🔍 UDP SHOUT: ${AppConstants.udpDiscoveryRequest} sent to $destination',
+      );
 
       // Listen and shout periodically
       final timeout = DateTime.now().add(const Duration(seconds: 5));
@@ -336,7 +339,8 @@ class MdnsScanner {
         final existing = _savedDevices[device.id]!;
         if (existing.host != device.host) {
           _logger.i(
-              'IP HEAL (UDP): Saved device ${device.name} IP changed ${existing.host} -> ${device.host}');
+            'IP HEAL (UDP): Saved device ${device.name} IP changed ${existing.host} -> ${device.host}',
+          );
           _savedDevices[device.id] = device;
           _saveSavedDevices();
         } else {
@@ -356,7 +360,8 @@ class MdnsScanner {
   /// Handle service found
   void _onServiceFound(Service service) {
     _logger.i(
-        '🔍 RAW Service Found: name=${service.name}, type=${service.type}, host=${service.host}:${service.port}');
+      '🔍 RAW Service Found: name=${service.name}, type=${service.type}, host=${service.host}:${service.port}',
+    );
     _logger.d('   🔬 FULL DATA: $service');
 
     try {
@@ -396,7 +401,8 @@ class MdnsScanner {
       // We look for our specific TXT records like 'id' and 'type'
       if (!txtRecords.containsKey('id') || !txtRecords.containsKey('type')) {
         _logger.w(
-            '   ⚠️ Skipping non-Axionyx service: ${service.name} (Missing id or type in TXT)');
+          '   ⚠️ Skipping non-Axionyx service: ${service.name} (Missing id or type in TXT)',
+        );
         return;
       }
 
@@ -417,7 +423,8 @@ class MdnsScanner {
         final existing = _savedDevices[device.id]!;
         if (existing.host != device.host) {
           _logger.i(
-              'IP HEAL (mDNS): Saved device ${device.name} IP changed ${existing.host} -> ${device.host}');
+            'IP HEAL (mDNS): Saved device ${device.name} IP changed ${existing.host} -> ${device.host}',
+          );
           _savedDevices[device.id] = device;
           _saveSavedDevices();
         } else {
@@ -441,8 +448,9 @@ class MdnsScanner {
     try {
       // Look for the device in both maps
       final foundId = _foundDevices.entries
-          .where((e) =>
-              e.value.name == service.name || e.value.host == service.host)
+          .where(
+            (e) => e.value.name == service.name || e.value.host == service.host,
+          )
           .map((e) => e.key)
           .firstOrNull;
 
@@ -471,8 +479,9 @@ class MdnsScanner {
           final device = DeviceInfo.fromJson(item as Map<String, dynamic>);
           _savedDevices[device.id] = device;
         }
-        _logger
-            .i('Loaded ${_savedDevices.length} saved devices from persistence');
+        _logger.i(
+          'Loaded ${_savedDevices.length} saved devices from persistence',
+        );
         _emitDevices();
       }
     } catch (e) {
@@ -484,8 +493,9 @@ class MdnsScanner {
   Future<void> _saveSavedDevices() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final savedList =
-          _savedDevices.values.map((device) => device.toJson()).toList();
+      final savedList = _savedDevices.values
+          .map((device) => device.toJson())
+          .toList();
 
       await prefs.setString(_savedDevicesKey, jsonEncode(savedList));
       _logger.d('Saved ${_savedDevices.length} devices to persistence');

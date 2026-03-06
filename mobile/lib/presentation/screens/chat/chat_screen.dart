@@ -78,10 +78,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                     ? const Center(
                         child: Text(
                           'Start a conversation with the AI assistant',
-                          style: TextStyle(
-                            color: Colors.white70,
-                            fontSize: 16,
-                          ),
+                          style: TextStyle(color: Colors.white70, fontSize: 16),
                           textAlign: TextAlign.center,
                         ),
                       )
@@ -107,15 +104,13 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
       child: Row(
-        mainAxisAlignment:
-            message.isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment: message.isMe
+            ? MainAxisAlignment.end
+            : MainAxisAlignment.start,
         children: [
           Flexible(
             child: Container(
-              margin: const EdgeInsets.only(
-                left: 8.0,
-                right: 8.0,
-              ),
+              margin: const EdgeInsets.only(left: 8.0, right: 8.0),
               padding: const EdgeInsets.all(12.0),
               decoration: BoxDecoration(
                 color: message.isMe
@@ -161,7 +156,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                       ? 'Type your message...'
                       : 'Configure API key to send messages',
                   hintStyle: TextStyle(
-                      color: _isConfigured ? Colors.white54 : Colors.white38),
+                    color: _isConfigured ? Colors.white54 : Colors.white38,
+                  ),
                   border: InputBorder.none,
                 ),
                 onSubmitted: _isConfigured && !_isLoading ? _sendMessage : null,
@@ -223,10 +219,13 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       // Remove the "thinking" message and add an error message
       setState(() {
         _messages.removeLast();
-        _messages.add(ChatMessage(
+        _messages.add(
+          ChatMessage(
             text:
                 "Sorry, I couldn't process your request. Please check your API key and try again.",
-            isMe: false));
+            isMe: false,
+          ),
+        );
       });
       _scrollToBottom();
     } finally {

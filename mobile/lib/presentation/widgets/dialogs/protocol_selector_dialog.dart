@@ -11,10 +11,7 @@ import '../common/glass_button.dart';
 class ProtocolSelectorDialog extends ConsumerStatefulWidget {
   final DeviceInfo device;
 
-  const ProtocolSelectorDialog({
-    super.key,
-    required this.device,
-  });
+  const ProtocolSelectorDialog({super.key, required this.device});
 
   @override
   ConsumerState<ProtocolSelectorDialog> createState() =>
@@ -92,9 +89,7 @@ class _ProtocolSelectorDialogState
             ),
 
             // Content
-            Flexible(
-              child: _buildContent(),
-            ),
+            Flexible(child: _buildContent()),
 
             // Action buttons
             if (!_isLoading && _error == null && _selectedIndex != null)
@@ -160,10 +155,9 @@ class _ProtocolSelectorDialogState
               Text(
                 _error!,
                 style: AppTextStyles.bodySmall.copyWith(
-                  color: Theme.of(context)
-                      .colorScheme
-                      .onSurface
-                      .withValues(alpha: 0.6),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.6),
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -189,10 +183,9 @@ class _ProtocolSelectorDialogState
               Icon(
                 Icons.thermostat_outlined,
                 size: 64,
-                color: Theme.of(context)
-                    .colorScheme
-                    .onSurface
-                    .withValues(alpha: 0.3),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.3),
               ),
               const SizedBox(height: 16),
               const Text(
@@ -203,10 +196,9 @@ class _ProtocolSelectorDialogState
               Text(
                 'No incubator protocols found on this device',
                 style: AppTextStyles.bodySmall.copyWith(
-                  color: Theme.of(context)
-                      .colorScheme
-                      .onSurface
-                      .withValues(alpha: 0.6),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.6),
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -245,10 +237,9 @@ class _ProtocolSelectorDialogState
                     border: Border.all(
                       color: isSelected
                           ? AppColorSchemes.incubatorAccent
-                          : Theme.of(context)
-                              .colorScheme
-                              .onSurface
-                              .withValues(alpha: 0.3),
+                          : Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withValues(alpha: 0.3),
                       width: 2,
                     ),
                     color: isSelected
@@ -256,11 +247,7 @@ class _ProtocolSelectorDialogState
                         : Colors.transparent,
                   ),
                   child: isSelected
-                      ? const Icon(
-                          Icons.check,
-                          size: 16,
-                          color: Colors.white,
-                        )
+                      ? const Icon(Icons.check, size: 16, color: Colors.white)
                       : null,
                 ),
                 const SizedBox(width: 16),
@@ -283,10 +270,9 @@ class _ProtocolSelectorDialogState
                         Text(
                           template['description'],
                           style: AppTextStyles.bodySmall.copyWith(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onSurface
-                                .withValues(alpha: 0.6),
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withValues(alpha: 0.6),
                           ),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
@@ -340,8 +326,9 @@ class _ProtocolSelectorDialogState
         Text(
           label,
           style: AppTextStyles.bodySmall.copyWith(
-            color:
-                Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: 0.5),
           ),
         ),
       ],

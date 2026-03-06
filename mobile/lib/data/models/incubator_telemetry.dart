@@ -6,7 +6,7 @@ part 'incubator_telemetry.g.dart';
 
 /// Incubator device telemetry data
 @freezed
-class IncubatorTelemetry with _$IncubatorTelemetry {
+abstract class IncubatorTelemetry with _$IncubatorTelemetry {
   const factory IncubatorTelemetry({
     required DeviceState state,
     required int uptime,
@@ -37,7 +37,7 @@ class IncubatorTelemetry with _$IncubatorTelemetry {
 
 /// Ramping status
 @freezed
-class RampingStatus with _$RampingStatus {
+abstract class RampingStatus with _$RampingStatus {
   const factory RampingStatus({
     required bool temperature,
     required bool humidity,
@@ -50,7 +50,7 @@ class RampingStatus with _$RampingStatus {
 
 /// Incubator protocol
 @freezed
-class IncubatorProtocol with _$IncubatorProtocol {
+abstract class IncubatorProtocol with _$IncubatorProtocol {
   const factory IncubatorProtocol({
     required ProtocolState state,
     required String name,
@@ -68,7 +68,7 @@ class IncubatorProtocol with _$IncubatorProtocol {
 
 /// Alarm status
 @freezed
-class AlarmStatus with _$AlarmStatus {
+abstract class AlarmStatus with _$AlarmStatus {
   const factory AlarmStatus({
     required int activeCount,
     required bool hasCritical,
@@ -81,7 +81,7 @@ class AlarmStatus with _$AlarmStatus {
 
 /// Individual alarm data
 @freezed
-class AlarmData with _$AlarmData {
+abstract class AlarmData with _$AlarmData {
   const factory AlarmData({
     required AlarmType type,
     required AlarmSeverity severity,

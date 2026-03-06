@@ -88,10 +88,7 @@ class _PCRDetailScreenState extends ConsumerState<PCRDetailScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Status',
-                  style: AppTextStyles.titleMedium,
-                ),
+                const Text('Status', style: AppTextStyles.titleMedium),
                 StatusBadge(status: state),
               ],
             ),
@@ -128,10 +125,9 @@ class _PCRDetailScreenState extends ConsumerState<PCRDetailScreen> {
                       Text(
                         'Time Remaining',
                         style: AppTextStyles.bodySmall.copyWith(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .onSurface
-                              .withValues(alpha: 0.6),
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withValues(alpha: 0.6),
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -139,9 +135,7 @@ class _PCRDetailScreenState extends ConsumerState<PCRDetailScreen> {
                         _formatTime(timeRemaining),
                         style: AppTextStyles.titleLarge.copyWith(
                           color: AppColorSchemes.pcrAccent,
-                          fontFeatures: [
-                            const FontFeature.tabularFigures(),
-                          ],
+                          fontFeatures: [const FontFeature.tabularFigures()],
                         ),
                       ),
                     ],
@@ -165,10 +159,9 @@ class _PCRDetailScreenState extends ConsumerState<PCRDetailScreen> {
             Text(
               'Temperature Zones',
               style: AppTextStyles.titleMedium.copyWith(
-                color: Theme.of(context)
-                    .colorScheme
-                    .onSurface
-                    .withValues(alpha: 0.8),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.8),
               ),
             ),
             const SizedBox(height: 16),
@@ -212,7 +205,8 @@ class _PCRDetailScreenState extends ConsumerState<PCRDetailScreen> {
 
                             try {
                               final repository = ref.read(
-                                  deviceRepositoryProvider(widget.device));
+                                deviceRepositoryProvider(widget.device),
+                              );
                               await repository.setSetpoint(index, newSetpoint);
                               if (context.mounted) {
                                 ScaffoldMessenger.of(context).showSnackBar(
@@ -291,9 +285,9 @@ class _PCRDetailScreenState extends ConsumerState<PCRDetailScreen> {
                 }
               } catch (e) {
                 if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Error: $e')),
-                  );
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text('Error: $e')));
                 }
               }
             } finally {
@@ -304,15 +298,15 @@ class _PCRDetailScreenState extends ConsumerState<PCRDetailScreen> {
             try {
               await repository.stopDevice();
               if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('PCR stopped')),
-                );
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(const SnackBar(content: Text('PCR stopped')));
               }
             } catch (e) {
               if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Error: $e')),
-                );
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text('Error: $e')));
               }
             }
           },
@@ -320,15 +314,15 @@ class _PCRDetailScreenState extends ConsumerState<PCRDetailScreen> {
             try {
               await repository.pauseDevice();
               if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('PCR paused')),
-                );
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(const SnackBar(content: Text('PCR paused')));
               }
             } catch (e) {
               if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Error: $e')),
-                );
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text('Error: $e')));
               }
             }
           },
@@ -336,15 +330,15 @@ class _PCRDetailScreenState extends ConsumerState<PCRDetailScreen> {
             try {
               await repository.resumeDevice();
               if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('PCR resumed')),
-                );
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(const SnackBar(content: Text('PCR resumed')));
               }
             } catch (e) {
               if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Error: $e')),
-                );
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text('Error: $e')));
               }
             }
           },
@@ -405,22 +399,19 @@ class _PCRDetailScreenState extends ConsumerState<PCRDetailScreen> {
           Icon(
             Icons.cloud_off,
             size: 80,
-            color:
-                Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3),
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: 0.3),
           ),
           const SizedBox(height: 16),
-          const Text(
-            'Device Offline',
-            style: AppTextStyles.titleMedium,
-          ),
+          const Text('Device Offline', style: AppTextStyles.titleMedium),
           const SizedBox(height: 8),
           Text(
             'Cannot connect to ${widget.device.name}',
             style: AppTextStyles.bodyMedium.copyWith(
-              color: Theme.of(context)
-                  .colorScheme
-                  .onSurface
-                  .withValues(alpha: 0.6),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.6),
             ),
           ),
           const SizedBox(height: 24),
@@ -464,15 +455,20 @@ class _PCRDetailScreenState extends ConsumerState<PCRDetailScreen> {
             ListTile(
               leading: const Icon(Icons.info_outline),
               title: const Text('Device Information'),
-              subtitle:
-                  Text('ID: ${widget.device.id}\nHost: ${widget.device.host}'),
+              subtitle: Text(
+                'ID: ${widget.device.id}\nHost: ${widget.device.host}',
+              ),
             ),
             const Divider(),
             ListTile(
-              leading: const Icon(Icons.factory_outlined,
-                  color: AppColorSchemes.error),
-              title: const Text('Factory Reset',
-                  style: TextStyle(color: AppColorSchemes.error)),
+              leading: const Icon(
+                Icons.factory_outlined,
+                color: AppColorSchemes.error,
+              ),
+              title: const Text(
+                'Factory Reset',
+                style: TextStyle(color: AppColorSchemes.error),
+              ),
               subtitle: const Text('Wipe all settings and reset device'),
               onTap: () {
                 Navigator.pop(context);
@@ -519,9 +515,9 @@ class _PCRDetailScreenState extends ConsumerState<PCRDetailScreen> {
         );
       } catch (e) {
         if (!context.mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     }
   }

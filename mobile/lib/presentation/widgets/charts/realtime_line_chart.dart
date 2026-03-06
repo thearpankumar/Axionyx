@@ -33,10 +33,9 @@ class RealtimeLineChart extends StatelessWidget {
           child: Text(
             label,
             style: AppTextStyles.titleSmall.copyWith(
-              color: Theme.of(context)
-                  .colorScheme
-                  .onSurface
-                  .withValues(alpha: 0.8),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.8),
             ),
           ),
         ),
@@ -47,10 +46,9 @@ class RealtimeLineChart extends StatelessWidget {
                   child: Text(
                     'No data available',
                     style: AppTextStyles.bodySmall.copyWith(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .onSurface
-                          .withValues(alpha: 0.5),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.5),
                     ),
                   ),
                 )
@@ -98,9 +96,7 @@ class RealtimeLineChart extends StatelessWidget {
         rightTitles: const AxisTitles(
           sideTitles: SideTitles(showTitles: false),
         ),
-        topTitles: const AxisTitles(
-          sideTitles: SideTitles(showTitles: false),
-        ),
+        topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
         bottomTitles: const AxisTitles(
           sideTitles: SideTitles(showTitles: false),
         ),
@@ -113,10 +109,9 @@ class RealtimeLineChart extends StatelessWidget {
               return Text(
                 value.toStringAsFixed(0),
                 style: AppTextStyles.bodySmall.copyWith(
-                  color: Theme.of(context)
-                      .colorScheme
-                      .onSurface
-                      .withValues(alpha: 0.5),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.5),
                   fontSize: 10,
                 ),
               );

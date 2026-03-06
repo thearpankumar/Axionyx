@@ -14,16 +14,16 @@ class PhaseTimeline extends StatelessWidget {
   });
 
   List<PCRPhase> get _allPhases => [
-        PCRPhase.idle,
-        PCRPhase.hotStart,
-        PCRPhase.initialDenature,
-        PCRPhase.denature,
-        PCRPhase.anneal,
-        PCRPhase.extend,
-        PCRPhase.finalExtend,
-        PCRPhase.hold,
-        PCRPhase.complete,
-      ];
+    PCRPhase.idle,
+    PCRPhase.hotStart,
+    PCRPhase.initialDenature,
+    PCRPhase.denature,
+    PCRPhase.anneal,
+    PCRPhase.extend,
+    PCRPhase.finalExtend,
+    PCRPhase.hold,
+    PCRPhase.complete,
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -37,10 +37,9 @@ class PhaseTimeline extends StatelessWidget {
           child: Text(
             'Phase Progress',
             style: AppTextStyles.titleSmall.copyWith(
-              color: Theme.of(context)
-                  .colorScheme
-                  .onSurface
-                  .withValues(alpha: 0.8),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.8),
             ),
           ),
         ),
@@ -85,19 +84,23 @@ class PhaseTimeline extends StatelessWidget {
     if (isPast) {
       dotColor = color;
       lineColor = color.withValues(alpha: 0.5);
-      textColor =
-          Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6);
+      textColor = Theme.of(
+        context,
+      ).colorScheme.onSurface.withValues(alpha: 0.6);
     } else if (isCurrent) {
       dotColor = color;
-      lineColor =
-          Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.2);
+      lineColor = Theme.of(
+        context,
+      ).colorScheme.onSurface.withValues(alpha: 0.2);
       textColor = color;
     } else {
       dotColor = Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.2);
-      lineColor =
-          Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.2);
-      textColor =
-          Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4);
+      lineColor = Theme.of(
+        context,
+      ).colorScheme.onSurface.withValues(alpha: 0.2);
+      textColor = Theme.of(
+        context,
+      ).colorScheme.onSurface.withValues(alpha: 0.4);
     }
 
     return Row(
@@ -114,19 +117,10 @@ class PhaseTimeline extends StatelessWidget {
                 color: isCurrent
                     ? dotColor.withValues(alpha: 0.2)
                     : Colors.transparent,
-                border: Border.all(
-                  color: dotColor,
-                  width: isCurrent ? 3 : 2,
-                ),
+                border: Border.all(color: dotColor, width: isCurrent ? 3 : 2),
               ),
               child: isPast
-                  ? Center(
-                      child: Icon(
-                        Icons.check,
-                        size: 8,
-                        color: color,
-                      ),
-                    )
+                  ? Center(child: Icon(Icons.check, size: 8, color: color))
                   : null,
             ),
             const SizedBox(height: 8),

@@ -6,7 +6,7 @@ part 'device_info.g.dart';
 
 /// Device information model from mDNS discovery and /api/v1/device/info
 @freezed
-class DeviceInfo with _$DeviceInfo {
+abstract class DeviceInfo with _$DeviceInfo {
   const factory DeviceInfo({
     required String id,
     required String name,
@@ -40,7 +40,7 @@ class DeviceInfo with _$DeviceInfo {
     return DeviceInfo(
       id: uniqueId,
       name: txtRecords['name'] ?? name,
-      type: DeviceType.fromString(txtRecords['type'] ?? 'DUMMY'),
+      type: DeviceType.fromString(txtRecords['type'] ?? 'PCR'),
       host: host,
       httpPort: httpPort,
       websocketPort: websocketPort,

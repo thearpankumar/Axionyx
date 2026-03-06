@@ -92,10 +92,7 @@ class _IncubatorDetailScreenState extends ConsumerState<IncubatorDetailScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Status',
-                  style: AppTextStyles.titleMedium,
-                ),
+                const Text('Status', style: AppTextStyles.titleMedium),
                 StatusBadge(status: state),
               ],
             ),
@@ -125,10 +122,9 @@ class _IncubatorDetailScreenState extends ConsumerState<IncubatorDetailScreen> {
                       Text(
                         'Conditions within acceptable range',
                         style: AppTextStyles.bodySmall.copyWith(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .onSurface
-                              .withValues(alpha: 0.6),
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withValues(alpha: 0.6),
                         ),
                       ),
                     ],
@@ -153,10 +149,9 @@ class _IncubatorDetailScreenState extends ConsumerState<IncubatorDetailScreen> {
           Text(
             'Environmental Parameters',
             style: AppTextStyles.titleMedium.copyWith(
-              color: Theme.of(context)
-                  .colorScheme
-                  .onSurface
-                  .withValues(alpha: 0.8),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.8),
             ),
           ),
           const SizedBox(height: 16),
@@ -193,8 +188,9 @@ class _IncubatorDetailScreenState extends ConsumerState<IncubatorDetailScreen> {
                       if (newSetpoint == null) return;
 
                       try {
-                        final repository =
-                            ref.read(deviceRepositoryProvider(widget.device));
+                        final repository = ref.read(
+                          deviceRepositoryProvider(widget.device),
+                        );
                         await repository.setSetpoint(0, newSetpoint);
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -207,9 +203,9 @@ class _IncubatorDetailScreenState extends ConsumerState<IncubatorDetailScreen> {
                         }
                       } catch (e) {
                         if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Error: $e')),
-                          );
+                          ScaffoldMessenger.of(
+                            context,
+                          ).showSnackBar(SnackBar(content: Text('Error: $e')));
                         }
                       }
                     },
@@ -252,8 +248,9 @@ class _IncubatorDetailScreenState extends ConsumerState<IncubatorDetailScreen> {
                       if (newSetpoint == null) return;
 
                       try {
-                        final repository =
-                            ref.read(deviceRepositoryProvider(widget.device));
+                        final repository = ref.read(
+                          deviceRepositoryProvider(widget.device),
+                        );
                         await repository.setSetpoint(1, newSetpoint);
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -266,9 +263,9 @@ class _IncubatorDetailScreenState extends ConsumerState<IncubatorDetailScreen> {
                         }
                       } catch (e) {
                         if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Error: $e')),
-                          );
+                          ScaffoldMessenger.of(
+                            context,
+                          ).showSnackBar(SnackBar(content: Text('Error: $e')));
                         }
                       }
                     },
@@ -311,8 +308,9 @@ class _IncubatorDetailScreenState extends ConsumerState<IncubatorDetailScreen> {
                       if (newSetpoint == null) return;
 
                       try {
-                        final repository =
-                            ref.read(deviceRepositoryProvider(widget.device));
+                        final repository = ref.read(
+                          deviceRepositoryProvider(widget.device),
+                        );
                         await repository.setSetpoint(2, newSetpoint);
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -325,9 +323,9 @@ class _IncubatorDetailScreenState extends ConsumerState<IncubatorDetailScreen> {
                         }
                       } catch (e) {
                         if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Error: $e')),
-                          );
+                          ScaffoldMessenger.of(
+                            context,
+                          ).showSnackBar(SnackBar(content: Text('Error: $e')));
                         }
                       }
                     },
@@ -343,10 +341,9 @@ class _IncubatorDetailScreenState extends ConsumerState<IncubatorDetailScreen> {
             Text(
               'Active Alarms',
               style: AppTextStyles.titleMedium.copyWith(
-                color: Theme.of(context)
-                    .colorScheme
-                    .onSurface
-                    .withValues(alpha: 0.8),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.8),
               ),
             ),
             const SizedBox(height: 12),
@@ -357,7 +354,8 @@ class _IncubatorDetailScreenState extends ConsumerState<IncubatorDetailScreen> {
                 severity: _parseSeverity(alarm['severity']),
                 type: _parseAlarmType(alarm['type']),
                 message: alarm['message'] ?? 'Unknown alarm',
-                timestamp: DateTime.tryParse(alarm['timestamp'] ?? '') ??
+                timestamp:
+                    DateTime.tryParse(alarm['timestamp'] ?? '') ??
                     DateTime.now(),
                 acknowledged: alarm['acknowledged'] ?? false,
                 onAcknowledge: () async {
@@ -418,9 +416,9 @@ class _IncubatorDetailScreenState extends ConsumerState<IncubatorDetailScreen> {
                 }
               } catch (e) {
                 if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Error: $e')),
-                  );
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text('Error: $e')));
                 }
               }
             } finally {
@@ -437,9 +435,9 @@ class _IncubatorDetailScreenState extends ConsumerState<IncubatorDetailScreen> {
               }
             } catch (e) {
               if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Error: $e')),
-                );
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text('Error: $e')));
               }
             }
           },
@@ -453,9 +451,9 @@ class _IncubatorDetailScreenState extends ConsumerState<IncubatorDetailScreen> {
               }
             } catch (e) {
               if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Error: $e')),
-                );
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text('Error: $e')));
               }
             }
           },
@@ -469,9 +467,9 @@ class _IncubatorDetailScreenState extends ConsumerState<IncubatorDetailScreen> {
               }
             } catch (e) {
               if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Error: $e')),
-                );
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text('Error: $e')));
               }
             }
           },
@@ -538,22 +536,19 @@ class _IncubatorDetailScreenState extends ConsumerState<IncubatorDetailScreen> {
           Icon(
             Icons.cloud_off,
             size: 80,
-            color:
-                Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3),
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: 0.3),
           ),
           const SizedBox(height: 16),
-          const Text(
-            'Device Offline',
-            style: AppTextStyles.titleMedium,
-          ),
+          const Text('Device Offline', style: AppTextStyles.titleMedium),
           const SizedBox(height: 8),
           Text(
             'Cannot connect to ${widget.device.name}',
             style: AppTextStyles.bodyMedium.copyWith(
-              color: Theme.of(context)
-                  .colorScheme
-                  .onSurface
-                  .withValues(alpha: 0.6),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.6),
             ),
           ),
           const SizedBox(height: 24),
@@ -596,15 +591,20 @@ class _IncubatorDetailScreenState extends ConsumerState<IncubatorDetailScreen> {
             ListTile(
               leading: const Icon(Icons.info_outline),
               title: const Text('Device Information'),
-              subtitle:
-                  Text('ID: ${widget.device.id}\nHost: ${widget.device.host}'),
+              subtitle: Text(
+                'ID: ${widget.device.id}\nHost: ${widget.device.host}',
+              ),
             ),
             const Divider(),
             ListTile(
-              leading: const Icon(Icons.factory_outlined,
-                  color: AppColorSchemes.error),
-              title: const Text('Factory Reset',
-                  style: TextStyle(color: AppColorSchemes.error)),
+              leading: const Icon(
+                Icons.factory_outlined,
+                color: AppColorSchemes.error,
+              ),
+              title: const Text(
+                'Factory Reset',
+                style: TextStyle(color: AppColorSchemes.error),
+              ),
               subtitle: const Text('Wipe all settings and reset device'),
               onTap: () {
                 Navigator.pop(context);
@@ -651,9 +651,9 @@ class _IncubatorDetailScreenState extends ConsumerState<IncubatorDetailScreen> {
         );
       } catch (e) {
         if (!context.mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     }
   }

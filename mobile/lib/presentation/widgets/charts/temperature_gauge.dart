@@ -38,9 +38,10 @@ class _TemperatureGaugeState extends State<TemperatureGauge>
       duration: const Duration(milliseconds: 800),
       vsync: this,
     );
-    _animation = Tween<double>(begin: 0, end: widget.value).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOut),
-    );
+    _animation = Tween<double>(
+      begin: 0,
+      end: widget.value,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
     _controller.forward();
     _previousValue = widget.value;
   }
@@ -49,10 +50,10 @@ class _TemperatureGaugeState extends State<TemperatureGauge>
   void didUpdateWidget(TemperatureGauge oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.value != widget.value) {
-      _animation =
-          Tween<double>(begin: _previousValue, end: widget.value).animate(
-        CurvedAnimation(parent: _controller, curve: Curves.easeOut),
-      );
+      _animation = Tween<double>(
+        begin: _previousValue,
+        end: widget.value,
+      ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
       _controller.forward(from: 0);
       _previousValue = widget.value;
     }
@@ -82,10 +83,9 @@ class _TemperatureGaugeState extends State<TemperatureGauge>
                   maxValue: widget.maxValue,
                   color: widget.color,
                   setpoint: widget.setpoint,
-                  backgroundColor: Theme.of(context)
-                      .colorScheme
-                      .surface
-                      .withValues(alpha: 0.1),
+                  backgroundColor: Theme.of(
+                    context,
+                  ).colorScheme.surface.withValues(alpha: 0.1),
                 ),
                 child: Center(
                   child: Column(
@@ -98,10 +98,9 @@ class _TemperatureGaugeState extends State<TemperatureGauge>
                       Text(
                         '°C',
                         style: AppTextStyles.bodySmall.copyWith(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .onSurface
-                              .withValues(alpha: 0.6),
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withValues(alpha: 0.6),
                         ),
                       ),
                     ],
@@ -115,8 +114,9 @@ class _TemperatureGaugeState extends State<TemperatureGauge>
         Text(
           widget.label,
           style: AppTextStyles.bodyMedium.copyWith(
-            color:
-                Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.8),
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: 0.8),
           ),
         ),
         if (widget.setpoint != null) ...[
@@ -124,10 +124,9 @@ class _TemperatureGaugeState extends State<TemperatureGauge>
           Text(
             'Setpoint: ${widget.setpoint!.toStringAsFixed(1)}°C',
             style: AppTextStyles.bodySmall.copyWith(
-              color: Theme.of(context)
-                  .colorScheme
-                  .onSurface
-                  .withValues(alpha: 0.5),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.5),
             ),
           ),
         ],
@@ -176,8 +175,10 @@ class _GaugePainter extends CustomPainter {
     );
 
     // Draw value arc with gradient
-    final normalizedValue =
-        ((value - minValue) / (maxValue - minValue)).clamp(0.0, 1.0);
+    final normalizedValue = ((value - minValue) / (maxValue - minValue)).clamp(
+      0.0,
+      1.0,
+    );
     final valueAngle = sweepAngle * normalizedValue;
 
     // Only draw gradient if there's a value to show
@@ -189,10 +190,7 @@ class _GaugePainter extends CustomPainter {
       final gradient = SweepGradient(
         startAngle: startAngle,
         endAngle: endAngle,
-        colors: [
-          color.withValues(alpha: 0.5),
-          color,
-        ],
+        colors: [color.withValues(alpha: 0.5), color],
       );
 
       final valuePaint = Paint()
@@ -240,22 +238,14 @@ class _GaugePainter extends CustomPainter {
       final setpointX = center.dx + radius * math.cos(setpointAngle);
       final setpointY = center.dy + radius * math.sin(setpointAngle);
 
-      canvas.drawCircle(
-        Offset(setpointX, setpointY),
-        6,
-        setpointPaint,
-      );
+      canvas.drawCircle(Offset(setpointX, setpointY), 6, setpointPaint);
 
       // Draw inner circle
       final innerPaint = Paint()
         ..color = color
         ..style = PaintingStyle.fill;
 
-      canvas.drawCircle(
-        Offset(setpointX, setpointY),
-        3,
-        innerPaint,
-      );
+      canvas.drawCircle(Offset(setpointX, setpointY), 3, innerPaint);
     }
 
     // Draw tick marks

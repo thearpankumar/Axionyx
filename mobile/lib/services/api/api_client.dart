@@ -154,15 +154,13 @@ class ApiClient {
         );
       case DioExceptionType.badResponse:
         return ApiException(
-          message: error.response?.data?['message'] ??
+          message:
+              error.response?.data?['message'] ??
               AppConstants.errorInvalidResponse,
           statusCode: error.response?.statusCode,
         );
       case DioExceptionType.cancel:
-        return ApiException(
-          message: 'Request cancelled',
-          statusCode: null,
-        );
+        return ApiException(message: 'Request cancelled', statusCode: null);
       case DioExceptionType.connectionError:
       case DioExceptionType.unknown:
         onConnectionError?.call();
@@ -184,10 +182,7 @@ class ApiException implements Exception {
   final String message;
   final int? statusCode;
 
-  ApiException({
-    required this.message,
-    this.statusCode,
-  });
+  ApiException({required this.message, this.statusCode});
 
   @override
   String toString() => message;

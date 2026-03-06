@@ -14,15 +14,15 @@ class ProtocolTimeline extends StatelessWidget {
   });
 
   List<ProtocolStage> get _allStages => [
-        ProtocolStage.idle,
-        ProtocolStage.preEquilibration,
-        ProtocolStage.stage1,
-        ProtocolStage.stage2,
-        ProtocolStage.stage3,
-        ProtocolStage.stage4,
-        ProtocolStage.coolDown,
-        ProtocolStage.complete,
-      ];
+    ProtocolStage.idle,
+    ProtocolStage.preEquilibration,
+    ProtocolStage.stage1,
+    ProtocolStage.stage2,
+    ProtocolStage.stage3,
+    ProtocolStage.stage4,
+    ProtocolStage.coolDown,
+    ProtocolStage.complete,
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -36,10 +36,9 @@ class ProtocolTimeline extends StatelessWidget {
           child: Text(
             'Protocol Progress',
             style: AppTextStyles.titleSmall.copyWith(
-              color: Theme.of(context)
-                  .colorScheme
-                  .onSurface
-                  .withValues(alpha: 0.8),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.8),
             ),
           ),
         ),
@@ -84,19 +83,23 @@ class ProtocolTimeline extends StatelessWidget {
     if (isPast) {
       dotColor = color;
       lineColor = color.withValues(alpha: 0.5);
-      textColor =
-          Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6);
+      textColor = Theme.of(
+        context,
+      ).colorScheme.onSurface.withValues(alpha: 0.6);
     } else if (isCurrent) {
       dotColor = color;
-      lineColor =
-          Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.2);
+      lineColor = Theme.of(
+        context,
+      ).colorScheme.onSurface.withValues(alpha: 0.2);
       textColor = color;
     } else {
       dotColor = Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.2);
-      lineColor =
-          Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.2);
-      textColor =
-          Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4);
+      lineColor = Theme.of(
+        context,
+      ).colorScheme.onSurface.withValues(alpha: 0.2);
+      textColor = Theme.of(
+        context,
+      ).colorScheme.onSurface.withValues(alpha: 0.4);
     }
 
     return Row(
@@ -113,19 +116,10 @@ class ProtocolTimeline extends StatelessWidget {
                 color: isCurrent
                     ? dotColor.withValues(alpha: 0.2)
                     : Colors.transparent,
-                border: Border.all(
-                  color: dotColor,
-                  width: isCurrent ? 3 : 2,
-                ),
+                border: Border.all(color: dotColor, width: isCurrent ? 3 : 2),
               ),
               child: isPast
-                  ? Center(
-                      child: Icon(
-                        Icons.check,
-                        size: 8,
-                        color: color,
-                      ),
-                    )
+                  ? Center(child: Icon(Icons.check, size: 8, color: color))
                   : null,
             ),
             const SizedBox(height: 8),

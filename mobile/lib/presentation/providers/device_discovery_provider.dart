@@ -50,8 +50,9 @@ final filteredDevicesProvider = Provider<AsyncValue<List<DeviceInfo>>>((ref) {
     return devices.where((device) {
       final matchesName = device.name.toLowerCase().contains(searchQuery);
       final matchesHost = device.host.toLowerCase().contains(searchQuery);
-      final matchesType =
-          device.type.toString().toLowerCase().contains(searchQuery);
+      final matchesType = device.type.toString().toLowerCase().contains(
+        searchQuery,
+      );
       final matchesSerial =
           device.serial?.toLowerCase().contains(searchQuery) ?? false;
 

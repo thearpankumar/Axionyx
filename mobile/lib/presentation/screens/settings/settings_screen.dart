@@ -17,10 +17,7 @@ class SettingsScreen extends ConsumerWidget {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: const Text(
-          'Settings',
-          style: AppTextStyles.headlineSmall,
-        ),
+        title: const Text('Settings', style: AppTextStyles.headlineSmall),
       ),
       body: Container(
         decoration: BoxDecoration(
@@ -51,26 +48,32 @@ class SettingsScreen extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Theme',
-                      style: AppTextStyles.titleSmall,
-                    ),
+                    const Text('Theme', style: AppTextStyles.titleSmall),
                     const SizedBox(height: 16),
                     SegmentedButton<ThemeMode>(
                       segments: const [
                         ButtonSegment<ThemeMode>(
                           value: ThemeMode.system,
-                          label: Text('System'),
+                          label: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text('System', softWrap: false),
+                          ),
                           icon: Icon(Icons.brightness_auto),
                         ),
                         ButtonSegment<ThemeMode>(
                           value: ThemeMode.light,
-                          label: Text('Light'),
+                          label: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text('Light', softWrap: false),
+                          ),
                           icon: Icon(Icons.light_mode),
                         ),
                         ButtonSegment<ThemeMode>(
                           value: ThemeMode.dark,
-                          label: Text('Dark'),
+                          label: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text('Dark', softWrap: false),
+                          ),
                           icon: Icon(Icons.dark_mode),
                         ),
                       ],
@@ -99,23 +102,11 @@ class SettingsScreen extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildInfoRow(
-                      context,
-                      'App Name',
-                      'Axionyx Mobile',
-                    ),
+                    _buildInfoRow(context, 'App Name', 'Axionyx Mobile'),
                     const SizedBox(height: 12),
-                    _buildInfoRow(
-                      context,
-                      'Version',
-                      '1.0.0',
-                    ),
+                    _buildInfoRow(context, 'Version', '1.0.0'),
                     const SizedBox(height: 12),
-                    _buildInfoRow(
-                      context,
-                      'Build',
-                      '1',
-                    ),
+                    _buildInfoRow(context, 'Build', '1'),
                   ],
                 ),
               ),
@@ -178,15 +169,14 @@ class SettingsScreen extends ConsumerWidget {
         Text(
           label,
           style: AppTextStyles.bodyMedium.copyWith(
-            color:
-                Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: 0.6),
           ),
         ),
         Text(
           value,
-          style: AppTextStyles.bodyMedium.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+          style: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.bold),
         ),
       ],
     );

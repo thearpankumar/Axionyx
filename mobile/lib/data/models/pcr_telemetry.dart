@@ -6,7 +6,7 @@ part 'pcr_telemetry.g.dart';
 
 /// PCR device telemetry data
 @freezed
-class PCRTelemetry with _$PCRTelemetry {
+abstract class PCRTelemetry with _$PCRTelemetry {
   const factory PCRTelemetry({
     required DeviceState state,
     required int uptime,
@@ -29,7 +29,7 @@ class PCRTelemetry with _$PCRTelemetry {
 
 /// PCR program configuration
 @freezed
-class PCRProgram with _$PCRProgram {
+abstract class PCRProgram with _$PCRProgram {
   const factory PCRProgram({
     required String type,
     required int cycles,
@@ -53,7 +53,7 @@ class PCRProgram with _$PCRProgram {
 
 /// Hot start configuration
 @freezed
-class HotStartConfig with _$HotStartConfig {
+abstract class HotStartConfig with _$HotStartConfig {
   const factory HotStartConfig({
     required bool enabled,
     required double activationTemp,
@@ -66,7 +66,7 @@ class HotStartConfig with _$HotStartConfig {
 
 /// Touchdown PCR configuration
 @freezed
-class TouchdownConfig with _$TouchdownConfig {
+abstract class TouchdownConfig with _$TouchdownConfig {
   const factory TouchdownConfig({
     required bool enabled,
     required double startAnnealTemp,
@@ -82,7 +82,7 @@ class TouchdownConfig with _$TouchdownConfig {
 
 /// Gradient PCR configuration
 @freezed
-class GradientConfig with _$GradientConfig {
+abstract class GradientConfig with _$GradientConfig {
   const factory GradientConfig({
     required bool enabled,
     required double tempLow,
@@ -96,7 +96,7 @@ class GradientConfig with _$GradientConfig {
 
 /// PCR metrics
 @freezed
-class PCRMetrics with _$PCRMetrics {
+abstract class PCRMetrics with _$PCRMetrics {
   const factory PCRMetrics({
     required double currentAnnealTemp,
     required double temperatureStability,
