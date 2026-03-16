@@ -34,7 +34,7 @@ class GroqService {
 
     if (apiKey != null && apiKey.isNotEmpty) {
       final groqConfiguration = Configuration(
-        model: "openai/gpt-oss-120b", // Using the requested model
+        model: "openai/gpt-oss-120b",
         temperature: 0.7,
         seed: 10,
       );
@@ -44,7 +44,9 @@ class GroqService {
       newGroq.startChat();
 
       newGroq.setCustomInstructionsWith(
-        "Just answer in plain text. Do not use any markdown formatting or output.",
+        "You are a knowledgeable lab assistant. Help with laboratory procedures, biology, chemistry, and scientific concepts. "
+        "Give clear, accurate, practical answers. Format responses with Markdown where helpful. "
+        "Do not use emojis. Keep responses professional and modern.",
       );
 
       _groq = newGroq;
@@ -60,7 +62,7 @@ class GroqService {
     await prefs.setString(_apiKeyKey, apiKey);
 
     final groqConfiguration = Configuration(
-      model: "openai/gpt-oss-120b", // Using the requested model
+      model: "openai/gpt-oss-120b",
       temperature: 0.7,
       seed: 10,
     );

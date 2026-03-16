@@ -83,4 +83,10 @@ class DeviceApi {
   Future<void> factoryReset() async {
     await _client.post(ApiEndpoints.configFactoryReset);
   }
+
+  /// Run a diagnostic test on a hardware component.
+  /// [component] — e.g. "fan"
+  Future<void> runTest(String component) async {
+    await _client.post(ApiEndpoints.deviceTest, data: {'component': component});
+  }
 }

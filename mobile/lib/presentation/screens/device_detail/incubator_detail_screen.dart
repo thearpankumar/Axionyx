@@ -69,13 +69,14 @@ class _IncubatorDetailScreenState extends ConsumerState<IncubatorDetailScreen> {
 
   Widget _buildContent(BuildContext context, Map<String, dynamic> telemetry) {
     final state = telemetry['state'] ?? 'IDLE';
-    final temperature = telemetry['temperature'] ?? 0.0;
-    final humidity = telemetry['humidity'] ?? 0.0;
-    final co2 = telemetry['co2Level'] ?? 0.0;
+    final temperature = (telemetry['temperature'] as num?)?.toDouble() ?? 0.0;
+    final humidity = (telemetry['humidity'] as num?)?.toDouble() ?? 0.0;
+    final co2 = (telemetry['co2Level'] as num?)?.toDouble() ?? 0.0;
     final environmentStable = telemetry['environmentStable'] ?? false;
-    final tempSetpoint = telemetry['temperatureSetpoint'] as double?;
-    final humiditySetpoint = telemetry['humiditySetpoint'] as double?;
-    final co2Setpoint = telemetry['co2Setpoint'] as double?;
+    final tempSetpoint = (telemetry['temperatureSetpoint'] as num?)?.toDouble();
+    final humiditySetpoint = (telemetry['humiditySetpoint'] as num?)
+        ?.toDouble();
+    final co2Setpoint = (telemetry['co2Setpoint'] as num?)?.toDouble();
     final alarms = telemetry['alarms'] as List?;
     final stage = telemetry['currentStage'] ?? 'IDLE';
 
@@ -157,182 +158,194 @@ class _IncubatorDetailScreenState extends ConsumerState<IncubatorDetailScreen> {
           const SizedBox(height: 16),
 
           // Temperature
-          Column(
-            children: [
-              TemperatureGauge(
-                value: temperature,
-                minValue: 0,
-                maxValue: 50,
-                label: 'Temperature',
-                color: Colors.red,
-                setpoint: tempSetpoint,
-              ),
-              const SizedBox(height: 12),
-              Consumer(
-                builder: (context, ref, child) {
-                  return GlassButton(
-                    label: 'Adjust Temperature',
-                    icon: Icons.tune,
-                    onPressed: () async {
-                      final newSetpoint = await showDialog<double>(
-                        context: context,
-                        builder: (context) => SetpointDialog(
-                          label: 'Temperature Setpoint',
-                          currentValue: tempSetpoint ?? 37.0,
-                          minValue: 0,
-                          maxValue: 50,
-                          color: Colors.red,
-                        ),
-                      );
-
-                      if (newSetpoint == null) return;
-
-                      try {
-                        final repository = ref.read(
-                          deviceRepositoryProvider(widget.device),
+          SizedBox(
+            width: double.infinity,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                TemperatureGauge(
+                  value: temperature,
+                  minValue: 0,
+                  maxValue: 50,
+                  label: 'Temperature',
+                  color: Colors.red,
+                  setpoint: tempSetpoint,
+                ),
+                const SizedBox(height: 12),
+                Consumer(
+                  builder: (context, ref, child) {
+                    return GlassButton(
+                      label: 'Adjust Temperature',
+                      icon: Icons.tune,
+                      onPressed: () async {
+                        final newSetpoint = await showDialog<double>(
+                          context: context,
+                          builder: (context) => SetpointDialog(
+                            label: 'Temperature Setpoint',
+                            currentValue: tempSetpoint ?? 37.0,
+                            minValue: 0,
+                            maxValue: 50,
+                            color: Colors.red,
+                          ),
                         );
-                        await repository.setSetpoint(0, newSetpoint);
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                'Temperature setpoint: ${newSetpoint.toStringAsFixed(1)}°C',
-                              ),
-                            ),
+
+                        if (newSetpoint == null) return;
+
+                        try {
+                          final repository = ref.read(
+                            deviceRepositoryProvider(widget.device),
                           );
+                          await repository.setSetpoint(0, newSetpoint);
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  'Temperature setpoint: ${newSetpoint.toStringAsFixed(1)}°C',
+                                ),
+                              ),
+                            );
+                          }
+                        } catch (e) {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Error: $e')),
+                            );
+                          }
                         }
-                      } catch (e) {
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(
-                            context,
-                          ).showSnackBar(SnackBar(content: Text('Error: $e')));
-                        }
-                      }
-                    },
-                  );
-                },
-              ),
-            ],
+                      },
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
           const SizedBox(height: 24),
 
           // Humidity
-          Column(
-            children: [
-              TemperatureGauge(
-                value: humidity,
-                minValue: 0,
-                maxValue: 100,
-                label: 'Humidity',
-                color: Colors.blue,
-                setpoint: humiditySetpoint,
-              ),
-              const SizedBox(height: 12),
-              Consumer(
-                builder: (context, ref, child) {
-                  return GlassButton(
-                    label: 'Adjust Humidity',
-                    icon: Icons.tune,
-                    onPressed: () async {
-                      final newSetpoint = await showDialog<double>(
-                        context: context,
-                        builder: (context) => SetpointDialog(
-                          label: 'Humidity Setpoint',
-                          currentValue: humiditySetpoint ?? 70.0,
-                          minValue: 0,
-                          maxValue: 100,
-                          color: Colors.blue,
-                        ),
-                      );
-
-                      if (newSetpoint == null) return;
-
-                      try {
-                        final repository = ref.read(
-                          deviceRepositoryProvider(widget.device),
+          SizedBox(
+            width: double.infinity,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                TemperatureGauge(
+                  value: humidity,
+                  minValue: 0,
+                  maxValue: 100,
+                  label: 'Humidity',
+                  color: Colors.blue,
+                  setpoint: humiditySetpoint,
+                ),
+                const SizedBox(height: 12),
+                Consumer(
+                  builder: (context, ref, child) {
+                    return GlassButton(
+                      label: 'Adjust Humidity',
+                      icon: Icons.tune,
+                      onPressed: () async {
+                        final newSetpoint = await showDialog<double>(
+                          context: context,
+                          builder: (context) => SetpointDialog(
+                            label: 'Humidity Setpoint',
+                            currentValue: humiditySetpoint ?? 70.0,
+                            minValue: 0,
+                            maxValue: 100,
+                            color: Colors.blue,
+                          ),
                         );
-                        await repository.setSetpoint(1, newSetpoint);
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                'Humidity setpoint: ${newSetpoint.toStringAsFixed(1)}%',
-                              ),
-                            ),
+
+                        if (newSetpoint == null) return;
+
+                        try {
+                          final repository = ref.read(
+                            deviceRepositoryProvider(widget.device),
                           );
+                          await repository.setSetpoint(1, newSetpoint);
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  'Humidity setpoint: ${newSetpoint.toStringAsFixed(1)}%',
+                                ),
+                              ),
+                            );
+                          }
+                        } catch (e) {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Error: $e')),
+                            );
+                          }
                         }
-                      } catch (e) {
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(
-                            context,
-                          ).showSnackBar(SnackBar(content: Text('Error: $e')));
-                        }
-                      }
-                    },
-                  );
-                },
-              ),
-            ],
+                      },
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
           const SizedBox(height: 24),
 
           // CO2
-          Column(
-            children: [
-              TemperatureGauge(
-                value: co2,
-                minValue: 0,
-                maxValue: 10,
-                label: 'CO₂',
-                color: Colors.green,
-                setpoint: co2Setpoint,
-              ),
-              const SizedBox(height: 12),
-              Consumer(
-                builder: (context, ref, child) {
-                  return GlassButton(
-                    label: 'Adjust CO₂',
-                    icon: Icons.tune,
-                    onPressed: () async {
-                      final newSetpoint = await showDialog<double>(
-                        context: context,
-                        builder: (context) => SetpointDialog(
-                          label: 'CO₂ Setpoint',
-                          currentValue: co2Setpoint ?? 5.0,
-                          minValue: 0,
-                          maxValue: 10,
-                          color: Colors.green,
-                        ),
-                      );
-
-                      if (newSetpoint == null) return;
-
-                      try {
-                        final repository = ref.read(
-                          deviceRepositoryProvider(widget.device),
+          SizedBox(
+            width: double.infinity,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                TemperatureGauge(
+                  value: co2,
+                  minValue: 0,
+                  maxValue: 10,
+                  label: 'CO₂',
+                  color: Colors.green,
+                  setpoint: co2Setpoint,
+                ),
+                const SizedBox(height: 12),
+                Consumer(
+                  builder: (context, ref, child) {
+                    return GlassButton(
+                      label: 'Adjust CO₂',
+                      icon: Icons.tune,
+                      onPressed: () async {
+                        final newSetpoint = await showDialog<double>(
+                          context: context,
+                          builder: (context) => SetpointDialog(
+                            label: 'CO₂ Setpoint',
+                            currentValue: co2Setpoint ?? 5.0,
+                            minValue: 0,
+                            maxValue: 10,
+                            color: Colors.green,
+                          ),
                         );
-                        await repository.setSetpoint(2, newSetpoint);
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                'CO₂ setpoint: ${newSetpoint.toStringAsFixed(1)}%',
-                              ),
-                            ),
+
+                        if (newSetpoint == null) return;
+
+                        try {
+                          final repository = ref.read(
+                            deviceRepositoryProvider(widget.device),
                           );
+                          await repository.setSetpoint(2, newSetpoint);
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  'CO₂ setpoint: ${newSetpoint.toStringAsFixed(1)}%',
+                                ),
+                              ),
+                            );
+                          }
+                        } catch (e) {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Error: $e')),
+                            );
+                          }
                         }
-                      } catch (e) {
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(
-                            context,
-                          ).showSnackBar(SnackBar(content: Text('Error: $e')));
-                        }
-                      }
-                    },
-                  );
-                },
-              ),
-            ],
+                      },
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
           const SizedBox(height: 24),
 

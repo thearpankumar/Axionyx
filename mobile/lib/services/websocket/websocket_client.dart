@@ -33,6 +33,9 @@ class WebSocketClient {
 
       _channel = WebSocketChannel.connect(Uri.parse(url));
 
+      // Silence unhandled connection errors — stream's onError handles them
+      _channel!.ready.catchError((_) {});
+
       // Listen to messages
       _channel!.stream.listen(
         _onMessage,

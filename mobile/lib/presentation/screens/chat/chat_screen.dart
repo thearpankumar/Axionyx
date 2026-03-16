@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../widgets/common/glass_card.dart';
 import '../../../services/ai/groq_service.dart';
@@ -37,11 +38,37 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         title: const Text('AI Assistant'),
         centerTitle: true,
         actions: [
-          IconButton(
+          PopupMenuButton<String>(
             icon: const Icon(Icons.settings),
-            onPressed: () {
-              _showApiKeyDialog(context);
+            onSelected: (value) {
+              if (value == 'api_key') {
+                _showApiKeyDialog(context);
+              } else if (value == 'clear_chat') {
+                setState(() => _messages.clear());
+              }
             },
+            itemBuilder: (_) => const [
+              PopupMenuItem(
+                value: 'api_key',
+                child: Row(
+                  children: [
+                    Icon(Icons.key_outlined),
+                    SizedBox(width: 12),
+                    Text('API Key'),
+                  ],
+                ),
+              ),
+              PopupMenuItem(
+                value: 'clear_chat',
+                child: Row(
+                  children: [
+                    Icon(Icons.delete_sweep_outlined),
+                    SizedBox(width: 12),
+                    Text('Clear Chat'),
+                  ],
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -123,14 +150,73 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                   bottomRight: Radius.circular(message.isMe ? 4.0 : 16.0),
                 ),
               ),
-              child: Text(
-                message.text,
-                style: TextStyle(
-                  color: message.isMe
-                      ? Colors.white
-                      : Theme.of(context).colorScheme.onSurface,
-                ),
-              ),
+              child: message.isMe
+                  ? Text(
+                      message.text,
+                      style: const TextStyle(color: Colors.white),
+                    )
+                  : MarkdownBody(
+                      data: message.text,
+                      styleSheet: MarkdownStyleSheet(
+                        p: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurface,
+                          fontSize: 14,
+                        ),
+                        h1: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        h2: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        h3: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        strong: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        em: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurface,
+                          fontStyle: FontStyle.italic,
+                        ),
+                        code: const TextStyle(
+                          color: Color(0xFF4EC9B0),
+                          backgroundColor: Color(0xFF0D0D0D),
+                          fontFamily: 'JetBrainsMono',
+                          fontSize: 13,
+                        ),
+                        codeblockDecoration: BoxDecoration(
+                          color: const Color(0xFF0D0D0D),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.white12),
+                        ),
+                        blockquoteDecoration: const BoxDecoration(
+                          border: Border(
+                            left: BorderSide(color: Colors.white38, width: 3),
+                          ),
+                        ),
+                        blockquote: TextStyle(
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withValues(alpha: 0.7),
+                          fontStyle: FontStyle.italic,
+                        ),
+                        listBullet: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                        horizontalRuleDecoration: const BoxDecoration(
+                          border: Border(
+                            top: BorderSide(color: Colors.white24),
+                          ),
+                        ),
+                      ),
+                    ),
             ),
           ),
         ],

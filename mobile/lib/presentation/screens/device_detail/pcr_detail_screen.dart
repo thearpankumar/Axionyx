@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/text_styles.dart';
@@ -28,6 +29,40 @@ class PCRDetailScreen extends ConsumerStatefulWidget {
 
 class _PCRDetailScreenState extends ConsumerState<PCRDetailScreen> {
   bool _isDialogShowing = false;
+
+  // Fan test state
+  bool _fanTestRunning = false;
+  double _fanTestProgress = 0.0;
+  Timer? _fanTestTimer;
+
+  void _startFanTestTimer() {
+    _fanTestTimer?.cancel();
+    setState(() {
+      _fanTestRunning = true;
+      _fanTestProgress = 0.0;
+    });
+
+    const totalTicks = 100; // 100 × 100 ms = 10 s
+    int ticks = 0;
+
+    _fanTestTimer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
+      ticks++;
+      setState(() => _fanTestProgress = ticks / totalTicks);
+      if (ticks >= totalTicks) {
+        timer.cancel();
+        setState(() {
+          _fanTestRunning = false;
+          _fanTestProgress = 0.0;
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _fanTestTimer?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +108,11 @@ class _PCRDetailScreenState extends ConsumerState<PCRDetailScreen> {
     final temperature = telemetry['temperature'] as List?;
     final phase = telemetry['currentPhase'] ?? 'IDLE';
     final setpoints = telemetry['setpoint'] as List?;
-    final timeRemaining = telemetry['timeRemaining'] as int? ?? 0;
+    final timeRemaining = telemetry['totalTimeRemaining'] as int? ?? 0;
+    final phaseTimeRemaining = telemetry['phaseTimeRemaining'] as int? ?? 0;
+    final progress = (telemetry['progress'] as num?)?.toDouble() ?? 0.0;
+    final programName =
+        (telemetry['program'] as Map?)?['name'] as String? ?? '';
 
     // Parse phase
     final currentPhase = _parsePhase(phase);
@@ -81,7 +120,7 @@ class _PCRDetailScreenState extends ConsumerState<PCRDetailScreen> {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           // Status card
           GlassCard(
@@ -93,7 +132,20 @@ class _PCRDetailScreenState extends ConsumerState<PCRDetailScreen> {
               ],
             ),
           ),
-          const SizedBox(height: 24),
+          // Active phase card — shown when running or paused
+          if (state == 'RUNNING' || state == 'PAUSED') ...[
+            const SizedBox(height: 8),
+            _buildActivePhaseCard(
+              context,
+              state: state,
+              phase: phase,
+              cycleNumber: cycleNumber,
+              totalCycles: totalCycles,
+              phaseTimeRemaining: phaseTimeRemaining,
+              progress: progress,
+              programName: programName,
+            ),
+          ],
 
           // Progress Ring
           Center(
@@ -102,13 +154,13 @@ class _PCRDetailScreenState extends ConsumerState<PCRDetailScreen> {
               total: totalCycles,
               phase: phase.toString().toUpperCase(),
               color: AppColorSchemes.pcrAccent,
-              size: 220,
+              size: 170,
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
 
           // Time Remaining
-          if (timeRemaining > 0 && state == 'RUNNING')
+          if (timeRemaining > 0 && state == 'RUNNING') ...[
             GlassCard(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -116,34 +168,29 @@ class _PCRDetailScreenState extends ConsumerState<PCRDetailScreen> {
                   const Icon(
                     Icons.timer_outlined,
                     color: AppColorSchemes.pcrAccent,
-                    size: 24,
+                    size: 20,
                   ),
-                  const SizedBox(width: 12),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Time Remaining',
-                        style: AppTextStyles.bodySmall.copyWith(
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.onSurface.withValues(alpha: 0.6),
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        _formatTime(timeRemaining),
-                        style: AppTextStyles.titleLarge.copyWith(
-                          color: AppColorSchemes.pcrAccent,
-                          fontFeatures: [const FontFeature.tabularFigures()],
-                        ),
-                      ),
-                    ],
+                  const SizedBox(width: 10),
+                  Text(
+                    'Time remaining: ',
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.6),
+                    ),
+                  ),
+                  Text(
+                    _formatTime(timeRemaining),
+                    style: AppTextStyles.titleMedium.copyWith(
+                      color: AppColorSchemes.pcrAccent,
+                      fontFeatures: [const FontFeature.tabularFigures()],
+                    ),
                   ),
                 ],
               ),
             ),
-          const SizedBox(height: 24),
+            const SizedBox(height: 12),
+          ],
 
           // Phase Timeline
           GlassCard(
@@ -152,10 +199,15 @@ class _PCRDetailScreenState extends ConsumerState<PCRDetailScreen> {
               color: AppColorSchemes.pcrAccent,
             ),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 16),
+
+          // Control panel
+          const SizedBox(height: 12),
+          _buildControlPanel(context, state),
 
           // Temperature zones with gauges
           if (temperature != null && temperature.isNotEmpty) ...[
+            const SizedBox(height: 16),
             Text(
               'Temperature Zones',
               style: AppTextStyles.titleMedium.copyWith(
@@ -163,19 +215,23 @@ class _PCRDetailScreenState extends ConsumerState<PCRDetailScreen> {
                   context,
                 ).colorScheme.onSurface.withValues(alpha: 0.8),
               ),
+              textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
             ...List.generate(temperature.length, (index) {
-              final temp = temperature[index] as double? ?? 0.0;
+              final temp = (temperature[index] as num?)?.toDouble() ?? 0.0;
               final setpoint = setpoints != null && index < setpoints.length
-                  ? setpoints[index] as double?
+                  ? (setpoints[index] as num?)?.toDouble()
                   : null;
 
               return Padding(
-                padding: const EdgeInsets.only(bottom: 24),
+                key: ValueKey('zone_$index'),
+                padding: const EdgeInsets.only(bottom: 16),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     TemperatureGauge(
+                      key: ValueKey('gauge_$index'),
                       value: temp,
                       minValue: 0,
                       maxValue: 100,
@@ -183,7 +239,7 @@ class _PCRDetailScreenState extends ConsumerState<PCRDetailScreen> {
                       color: AppColorSchemes.pcrAccent,
                       setpoint: setpoint,
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 10),
                     Consumer(
                       builder: (context, ref, child) {
                         return GlassButton(
@@ -194,7 +250,7 @@ class _PCRDetailScreenState extends ConsumerState<PCRDetailScreen> {
                               context: context,
                               builder: (context) => SetpointDialog(
                                 label: 'Zone ${index + 1} Setpoint',
-                                currentValue: setpoint ?? 95.0,
+                                currentValue: setpoint ?? 37.0,
                                 minValue: 0,
                                 maxValue: 100,
                                 color: AppColorSchemes.pcrAccent,
@@ -234,12 +290,168 @@ class _PCRDetailScreenState extends ConsumerState<PCRDetailScreen> {
             }),
           ],
 
-          // Control panel
-          const SizedBox(height: 16),
-          _buildControlPanel(context, state),
+          // Diagnostics — only when idle
+          if (state == 'IDLE') ...[
+            const SizedBox(height: 16),
+            _buildDiagnosticsPanel(context, telemetry),
+          ],
         ],
       ),
     );
+  }
+
+  Widget _buildActivePhaseCard(
+    BuildContext context, {
+    required String state,
+    required String phase,
+    required int cycleNumber,
+    required int totalCycles,
+    required int phaseTimeRemaining,
+    required double progress,
+    required String programName,
+  }) {
+    final isPaused = state == 'PAUSED';
+    final phaseLabel = _phaseFriendlyName(phase);
+    final phaseIcon = _phaseIcon(phase);
+
+    return GlassCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (programName.isNotEmpty) ...[
+            Text(
+              programName,
+              style: AppTextStyles.bodySmall.copyWith(
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.5),
+                letterSpacing: 0.4,
+              ),
+            ),
+            const SizedBox(height: 6),
+          ],
+          Row(
+            children: [
+              Icon(phaseIcon, size: 20, color: AppColorSchemes.pcrAccent),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  phaseLabel,
+                  style: AppTextStyles.titleMedium.copyWith(
+                    color: AppColorSchemes.pcrAccent,
+                  ),
+                ),
+              ),
+              if (isPaused)
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 3,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.orange.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: Colors.orange.withValues(alpha: 0.4),
+                    ),
+                  ),
+                  child: Text(
+                    'PAUSED',
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: Colors.orange,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                )
+              else ...[
+                Text(
+                  'Cycle ',
+                  style: AppTextStyles.bodySmall.copyWith(
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.5),
+                  ),
+                ),
+                Text(
+                  '$cycleNumber',
+                  style: AppTextStyles.titleMedium.copyWith(
+                    color: AppColorSchemes.pcrAccent,
+                  ),
+                ),
+                Text(
+                  ' / $totalCycles',
+                  style: AppTextStyles.bodySmall.copyWith(
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.5),
+                  ),
+                ),
+              ],
+            ],
+          ),
+          if (phaseTimeRemaining > 0) ...[
+            const SizedBox(height: 6),
+            Text(
+              'Phase ends in ${_formatTime(phaseTimeRemaining)}',
+              style: AppTextStyles.bodySmall.copyWith(
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.55),
+              ),
+            ),
+          ],
+          const SizedBox(height: 10),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: LinearProgressIndicator(
+              value: (progress / 100.0).clamp(0.0, 1.0),
+              minHeight: 5,
+              color: isPaused ? Colors.orange : AppColorSchemes.pcrAccent,
+              backgroundColor: AppColorSchemes.pcrAccent.withValues(
+                alpha: 0.12,
+              ),
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            '${progress.toStringAsFixed(0)}% complete',
+            style: AppTextStyles.bodySmall.copyWith(
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.4),
+              fontSize: 10,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _phaseFriendlyName(String phase) {
+    final p = phase.toUpperCase();
+    if (p.contains('HOT') && p.contains('START')) return 'Hot Start';
+    if (p.contains('INITIAL')) return 'Initial Denaturation';
+    if (p.contains('DENATURE') || p.contains('DENATUR')) return 'Denaturation';
+    if (p.contains('ANNEAL') && p.contains('EXTEND'))
+      return 'Annealing + Extension';
+    if (p.contains('ANNEAL')) return 'Annealing';
+    if (p.contains('FINAL') && p.contains('EXTEND')) return 'Final Extension';
+    if (p.contains('EXTEND')) return 'Extension';
+    if (p.contains('HOLD')) return 'Hold';
+    if (p.contains('COMPLETE')) return 'Complete';
+    return 'Running';
+  }
+
+  IconData _phaseIcon(String phase) {
+    final p = phase.toUpperCase();
+    if (p.contains('DENATURE') || p.contains('HOT') || p.contains('INITIAL')) {
+      return Icons.local_fire_department_outlined;
+    }
+    if (p.contains('ANNEAL')) return Icons.ac_unit;
+    if (p.contains('EXTEND')) return Icons.science_outlined;
+    if (p.contains('HOLD')) return Icons.pause_circle_outline;
+    if (p.contains('COMPLETE')) return Icons.check_circle_outline;
+    return Icons.biotech_outlined;
   }
 
   Widget _buildControlPanel(BuildContext context, String state) {
@@ -344,6 +556,99 @@ class _PCRDetailScreenState extends ConsumerState<PCRDetailScreen> {
           },
         );
       },
+    );
+  }
+
+  Widget _buildDiagnosticsPanel(
+    BuildContext context,
+    Map<String, dynamic> telemetry,
+  ) {
+    return Consumer(
+      builder: (context, ref, child) {
+        final repository = ref.watch(deviceRepositoryProvider(widget.device));
+
+        return GlassCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    Icons.build_outlined,
+                    size: 16,
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.6),
+                  ),
+                  const SizedBox(width: 6),
+                  Text('Diagnostics', style: AppTextStyles.titleMedium),
+                ],
+              ),
+              const SizedBox(height: 14),
+              if (_fanTestRunning)
+                _buildFanTestProgress()
+              else
+                Center(
+                  child: GlassButton(
+                    label: 'Test Fan',
+                    icon: Icons.air,
+                    onPressed: () async {
+                      try {
+                        await repository.runTest('fan');
+                        _startFanTestTimer();
+                      } catch (e) {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(
+                            context,
+                          ).showSnackBar(SnackBar(content: Text('Error: $e')));
+                        }
+                      }
+                    },
+                  ),
+                ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildFanTestProgress() {
+    final secondsLeft = ((1.0 - _fanTestProgress) * 10).ceil();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            const Icon(Icons.air, size: 16, color: AppColorSchemes.pcrAccent),
+            const SizedBox(width: 8),
+            Text(
+              'Fan running…',
+              style: AppTextStyles.bodySmall.copyWith(
+                color: AppColorSchemes.pcrAccent,
+              ),
+            ),
+            const Spacer(),
+            Text(
+              '${secondsLeft}s',
+              style: AppTextStyles.bodySmall.copyWith(
+                color: AppColorSchemes.pcrAccent,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(4),
+          child: LinearProgressIndicator(
+            value: _fanTestProgress,
+            minHeight: 6,
+            color: AppColorSchemes.pcrAccent,
+            backgroundColor: AppColorSchemes.pcrAccent.withValues(alpha: 0.15),
+          ),
+        ),
+      ],
     );
   }
 

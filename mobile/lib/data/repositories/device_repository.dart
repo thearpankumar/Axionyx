@@ -72,4 +72,7 @@ class DeviceRepository {
 
   /// Factory reset device
   Future<void> factoryReset() => deviceApi.factoryReset();
+
+  /// Run a diagnostic test on a hardware component (e.g. "fan")
+  Future<void> runTest(String component) => deviceApi.runTest(component);
 }

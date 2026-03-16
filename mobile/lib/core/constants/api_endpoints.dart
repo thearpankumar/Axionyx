@@ -13,6 +13,9 @@ class ApiEndpoints {
   static const String deviceResume = '$apiBasePath/device/resume';
   static const String deviceSetpoint = '$apiBasePath/device/setpoint';
 
+  // Diagnostic test endpoint
+  static const String deviceTest = '$apiBasePath/device/test';
+
   // PCR program endpoints
   static const String programTemplates =
       '$apiBasePath/device/program/templates';
