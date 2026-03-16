@@ -1,9 +1,7 @@
 /**
- * pcr_demo.ino
- * Axionyx PCR Machine Demo Firmware
- * 3-zone thermal cycler with realistic PCR cycling
- *
- * ESP32-WROOM-32
+ * pcr.ino
+ * Axionyx PCR Machine Firmware
+ * ESP8266MOD — single heater (D5) + fan (D6) + NTC3950 (A0)
  * Part of Axionyx Biotech IoT Platform
  */
 
@@ -16,152 +14,146 @@
 #include "../../common/device/DeviceIdentity.h"
 #include "../../common/utils/Logger.h"
 
+#define PIN_LED  2   // GPIO2 / D4 — NodeMCU v2 onboard LED (active LOW)
+
 // Global instances
-DeviceConfig config;
-WiFiManager wifiManager(config);
-PCRDevice pcrDevice;
-HTTPServer httpServer(config, pcrDevice, wifiManager);
+DeviceConfig    config;
+WiFiManager     wifiManager(config);
+PCRDevice       pcrDevice;
+HTTPServer      httpServer(config, pcrDevice, wifiManager);
 WebSocketServer wsServer(pcrDevice);
-mDNSService mdnsService(config);
+mDNSService     mdnsService(config);
 
 void setup() {
-    // Initialize serial communication
+    pinMode(PIN_LED, OUTPUT);
+    digitalWrite(PIN_LED, HIGH);  // LED off until WiFi is up (active LOW)
+
     Serial.begin(115200);
     delay(1000);
 
     Logger::setLevel(Logger::DEBUG);
     Logger::info("===========================================");
-    Logger::info("Axionyx PCR Machine Demo");
-    Logger::info("Firmware Version: " + DeviceIdentity::getFirmwareVersion());
+    Logger::info("Axionyx PCR Machine");
+    Logger::info("Hardware: ESP8266MOD");
+    Logger::info("Firmware: " + DeviceIdentity::getFirmwareVersion());
     Logger::info("===========================================");
 
-    // Initialize configuration
+    // Load or initialise configuration
     if (!config.load()) {
         Logger::warning("No config found, using defaults");
 
-        // Set device information
-        config.device.type = "PCR";
-        config.device.id = DeviceIdentity::getDeviceID("PCR");
-        config.device.name = "Lab PCR #1";
-        config.device.serialNumber = DeviceIdentity::generateSerialNumber("PCR");
+        config.device.type           = "PCR";
+        config.device.id             = DeviceIdentity::getDeviceID("PCR");
+        config.device.name           = "Lab PCR #1";
+        config.device.serialNumber   = DeviceIdentity::generateSerialNumber("PCR");
         config.device.firmwareVersion = DeviceIdentity::getFirmwareVersion();
 
-        // Set default WiFi configuration
-        config.wifi.apSSID = DeviceIdentity::generateAPSSID("PCR");
-        config.wifi.apPassword = "axionyx123";
-        config.wifi.mode = DeviceConfig::AP_ONLY;
+        config.wifi.apSSID           = DeviceIdentity::generateAPSSID("PCR");
+        config.wifi.apPassword       = "axionyx123";
+        config.wifi.mode             = DeviceConfig::AP_ONLY;
 
-        // Set default network configuration
-        config.network.httpPort = 80;
-        config.network.wsPort = 81;
-        config.network.mdnsEnabled = true;
-        config.network.mdnsName = DeviceIdentity::generateMDNSName("PCR");
+        config.network.httpPort      = 80;
+        config.network.wsPort        = 81;
+        config.network.mdnsEnabled   = true;
+        config.network.mdnsName      = DeviceIdentity::generateMDNSName("PCR");
 
-        // Save default configuration
         config.save();
     }
 
-    // Display device information
-    Logger::info("Device ID: " + config.device.id);
-    Logger::info("Device Type: " + config.device.type);
+    Logger::info("Device ID:   " + config.device.id);
     Logger::info("Device Name: " + config.device.name);
-    Logger::info("Serial Number: " + config.device.serialNumber);
-    Logger::info("AP SSID: " + config.wifi.apSSID);
-    Logger::info("Chip ID: " + DeviceIdentity::getChipID());
-    Logger::info("MAC Address: " + DeviceIdentity::getMAC());
+    Logger::info("AP SSID:     " + config.wifi.apSSID);
+    Logger::info("MAC:         " + DeviceIdentity::getMAC());
 
-    // Initialize PCR device
+    // Boot hardware
     pcrDevice.begin();
-    Logger::info("PCR device initialized with 3 temperature zones");
+    Logger::info("PCR device ready");
 
-    // Initialize WiFi
     wifiManager.begin();
     wifiManager.setMDNSService(&mdnsService);
-    Logger::info("WiFi manager initialized");
+    Logger::info("WiFi manager started");
 
-    // Initialize HTTP server
     httpServer.begin();
-    Logger::info("HTTP server initialized");
+    Logger::info("HTTP server on port " + String(config.network.httpPort));
 
-    // Initialize WebSocket server
     wsServer.begin(config.network.wsPort);
-    Logger::info("WebSocket server initialized");
+    Logger::info("WebSocket server on port " + String(config.network.wsPort));
 
     Logger::info("===========================================");
-    Logger::info("Setup complete!");
     Logger::info("Connect to WiFi: " + config.wifi.apSSID);
-    Logger::info("Password: " + config.wifi.apPassword);
-    Logger::info("HTTP API: http://192.168.4.1/api/v1/");
-    Logger::info("WebSocket: ws://192.168.4.1:" + String(config.network.wsPort));
-    Logger::info("===========================================");
-    Logger::info("PCR Program Defaults:");
-    Logger::info("  Cycles: 35");
-    Logger::info("  Denature: 95°C for 30s");
-    Logger::info("  Anneal: 60°C for 30s");
-    Logger::info("  Extend: 72°C for 60s");
+    Logger::info("Password: "        + config.wifi.apPassword);
+    Logger::info("AP IP:  192.168.4.1");
+    Logger::info("API:  http://192.168.4.1/api/v1/");
+    Logger::info("WS:   ws://192.168.4.1:" + String(config.network.wsPort));
+    Logger::info("---");
+    Logger::info("Default PCR program:");
+    Logger::info("  Initial denature: 70°C x 3 min");
+    Logger::info("  35 cycles — denature: 70°C/30s  anneal: 50°C/30s  extend: 70°C/60s");
+    Logger::info("  Final extend: 70°C x 5 min");
     Logger::info("===========================================");
 }
 
 void loop() {
-    // Update WiFi manager
     wifiManager.loop();
-
-    // mDNS service is now started automatically by WiFiManager when connected.
-
-    // Update PCR device
     pcrDevice.loop();
-
-    // Update HTTP server
     httpServer.loop();
-
-    // Update WebSocket server
     wsServer.loop();
-
-    // Update mDNS service
     mdnsService.loop();
 
     // Broadcast telemetry every second
-    static unsigned long lastTelemetryBroadcast = 0;
-    if (millis() - lastTelemetryBroadcast > 1000) {
+    static unsigned long lastTelemetry = 0;
+    if (millis() - lastTelemetry >= 1000) {
         wsServer.broadcastTelemetry();
-        lastTelemetryBroadcast = millis();
+        lastTelemetry = millis();
     }
 
-    // Display status periodically
-    static unsigned long lastStatusPrint = 0;
-    if (millis() - lastStatusPrint > 10000) { // Every 10 seconds
+    // Serial status every 10 seconds
+    static unsigned long lastStatus = 0;
+    if (millis() - lastStatus >= 10000) {
         JsonDocument status = pcrDevice.getStatus();
 
-        Logger::info("Status - WiFi: " + String(wifiManager.getState()) +
-                    ", Device: " + pcrDevice.getStateString() +
-                    ", Phase: " + status["currentPhase"].as<String>() +
-                    ", Cycle: " + String(status["cycleNumber"].as<int>()) + "/" +
-                    String(status["totalCycles"].as<int>()) +
-                    ", Progress: " + String(status["progress"].as<float>(), 1) + "%");
+        Logger::info("── Status ──────────────────────────────");
+        Logger::info("WiFi:    " + String(wifiManager.getState()));
+        Logger::info("Device:  " + pcrDevice.getStateString() +
+                     "  Phase: " + status["currentPhase"].as<String>() +
+                     "  Cycle: " + String(status["cycleNumber"].as<int>()) +
+                     "/" + String(status["totalCycles"].as<int>()));
+        Logger::info("Temp:    " + String(pcrDevice.getCurrentTemp(), 1) + " °C" +
+                     "  →  " + String(pcrDevice.getTargetTemp(), 1) + " °C (target)");
+        Logger::info("Heater: " + String(pcrDevice.isHeaterOn() ? "ON" : "OFF") +
+                     "  Fan: "  + String(pcrDevice.isFanOn()    ? "ON" : "OFF"));
 
         if (pcrDevice.getState() == DeviceBase::RUNNING) {
-            Logger::info("Temperatures: [" +
-                        String(status["temperature"][0].as<float>(), 1) + ", " +
-                        String(status["temperature"][1].as<float>(), 1) + ", " +
-                        String(status["temperature"][2].as<float>(), 1) + "] °C");
-            Logger::info("Time remaining: " + String(status["totalTimeRemaining"].as<int>()) + "s");
+            Logger::info("Progress: " + String(status["progress"].as<float>(), 1) + "%" +
+                         "  Remaining: " + String(status["totalTimeRemaining"].as<int>()) + "s");
         }
 
+        Logger::info("AP IP:   192.168.4.1  Clients: " + String(wifiManager.getAPClients()));
         if (wifiManager.isConnected()) {
-            Logger::info("WiFi: " + wifiManager.getSSID() +
-                        ", IP: " + wifiManager.getIP() +
-                        ", RSSI: " + String(wifiManager.getRSSI()) + " dBm");
+            Logger::info("STA:     " + wifiManager.getSSID() +
+                         "  IP: " + wifiManager.getIP() +
+                         "  RSSI: " + String(wifiManager.getRSSI()) + " dBm");
         }
 
-        if (wifiManager.getAPClients() > 0) {
-            Logger::info("AP Clients: " + String(wifiManager.getAPClients()));
-        }
+        Logger::info("Free heap: " + String(DeviceIdentity::getFreeHeap()) + " bytes");
+        Logger::info("────────────────────────────────────────");
 
-        Logger::info("Free Heap: " + String(DeviceIdentity::getFreeHeap()) + " bytes");
-
-        lastStatusPrint = millis();
+        lastStatus = millis();
     }
 
-    // Small delay to prevent watchdog reset
-    delay(10);
+    // Blink onboard LED every 500 ms while WiFi is active (AP or connected)
+    static unsigned long lastBlink = 0;
+    WiFiManager::State wifiState = wifiManager.getState();
+    bool wifiActive = (wifiState == WiFiManager::WIFI_AP_MODE ||
+                       wifiState == WiFiManager::WIFI_CONNECTED);
+    if (wifiActive) {
+        if (millis() - lastBlink >= 500) {
+            digitalWrite(PIN_LED, !digitalRead(PIN_LED));
+            lastBlink = millis();
+        }
+    } else {
+        digitalWrite(PIN_LED, HIGH);  // LED off when WiFi not ready
+    }
+
+    yield();  // Service WiFi stack without blocking PID timing
 }

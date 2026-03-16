@@ -9,7 +9,9 @@
 
 #include <Arduino.h>
 #include <ArduinoOTA.h>
+#ifdef ESP32
 #include <Update.h>
+#endif
 #include <functional>
 
 class OTAManager {

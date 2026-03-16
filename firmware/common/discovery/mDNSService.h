@@ -8,8 +8,13 @@
 #define MDNS_SERVICE_H
 
 #include <Arduino.h>
-#include <ESPmDNS.h>
-#include <WiFiUdp.h>
+#ifdef ESP32
+  #include <ESPmDNS.h>
+  #include <WiFiUdp.h>
+#else
+  #include <ESP8266mDNS.h>
+  #include <WiFiUdp.h>
+#endif
 #include "../config/Config.h"
 
 class mDNSService {

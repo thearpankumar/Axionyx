@@ -232,14 +232,21 @@ uint16_t PCRCycler::getPhaseTimeRemaining() const {
     }
 
     unsigned long now = millis();
-    unsigned long elapsed = (now - phaseStartTime - totalPausedTime) / 1000;
+
+    // Include the current ongoing pause so the countdown freezes while paused
+    unsigned long pausedTime = totalPausedTime;
+    if (paused && pauseStartTime > 0) {
+        pausedTime += (now - pauseStartTime);
+    }
+
+    unsigned long elapsed = (now - phaseStartTime - pausedTime) / 1000;
     uint16_t duration = getCurrentPhaseDuration();
 
     if (elapsed >= duration) {
         return 0;
     }
 
-    return duration - elapsed;
+    return duration - (uint16_t)elapsed;
 }
 
 uint16_t PCRCycler::getTotalTimeRemaining() const {

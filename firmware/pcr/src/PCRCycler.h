@@ -115,19 +115,19 @@ public:
 
         Program() :
             type(STANDARD_PCR),
-            initialDenatureTemp(95.0),
+            initialDenatureTemp(70.0),
             initialDenatureTime(180),  // 3 minutes
             cycles(35),
-            denatureTemp(95.0),
+            denatureTemp(70.0),
             denatureTime(30),
-            annealTemp(60.0),
+            annealTemp(50.0),
             annealTime(30),
-            extendTemp(72.0),
+            extendTemp(70.0),
             extendTime(60),
             twoStepEnabled(false),
-            annealExtendTemp(65.0),
+            annealExtendTemp(60.0),
             annealExtendTime(45),
-            finalExtendTemp(72.0),
+            finalExtendTemp(70.0),
             finalExtendTime(300),  // 5 minutes
             holdTemp(4.0) {}
     };

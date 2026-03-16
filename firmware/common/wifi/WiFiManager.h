@@ -9,7 +9,11 @@
 #define WIFI_MANAGER_H
 
 #include <Arduino.h>
-#include <WiFi.h>
+#ifdef ESP32
+  #include <WiFi.h>
+#else
+  #include <ESP8266WiFi.h>
+#endif
 #include <DNSServer.h>
 #include "../config/Config.h"
 #include "../discovery/mDNSService.h"
@@ -59,6 +63,11 @@ private:
     uint8_t reconnectAttempts;
     static const uint8_t MAX_RECONNECT_ATTEMPTS = 5;
     static const unsigned long RECONNECT_DELAYS[];
+
+    // State-entry flags — stored as members so setState() can reset them
+    bool apStarted;       // AP has been initialised in the current AP_MODE entry
+    bool staConnecting;   // STA connection attempt is in progress
+    bool apConfigured;    // AP/STA mode has been configured for CONNECTED state
 
     // State handlers
     void handleStateInit();

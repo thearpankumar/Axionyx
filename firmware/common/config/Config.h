@@ -43,8 +43,8 @@ public:
         String gateway;         // Gateway address
         String subnet;          // Subnet mask
 
-        WiFi() : mode(AP_ONLY), staticIP(false),
-                 apPassword("axionyx123") {}
+        WiFi() : mode(AP_ONLY), apPassword("axionyx123"),
+                 staticIP(false) {}
     };
 
     // Network services configuration

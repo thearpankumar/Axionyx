@@ -34,6 +34,11 @@ public:
     virtual bool resume() = 0;
     virtual bool setSetpoint(uint8_t zone, float value) = 0;
 
+    // Optional: device-specific diagnostic/test commands
+    // Override in device subclass to handle (e.g. "fan", "heater")
+    // Returns false if command is unsupported
+    virtual bool runTest(JsonDocument& params) { return false; }
+
     // Common functionality
     State getState() const {
         return state;

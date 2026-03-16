@@ -45,6 +45,7 @@ private:
     void handleDevicePause(AsyncWebServerRequest* request);
     void handleDeviceResume(AsyncWebServerRequest* request);
     void handleSetSetpoint(AsyncWebServerRequest* request, uint8_t* data, size_t len, size_t index, size_t total);
+    void handleDeviceTest(AsyncWebServerRequest* request, uint8_t* data, size_t len, size_t index, size_t total);
 
     // Route handlers - Program Management (PCR)
     void handleProgramValidate(AsyncWebServerRequest* request, uint8_t* data, size_t len, size_t index, size_t total);

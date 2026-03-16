@@ -17,7 +17,10 @@ WiFiManager::WiFiManager(DeviceConfig& cfg)
       dnsServer(nullptr),
       mdns(nullptr),
       lastReconnectAttempt(0),
-      reconnectAttempts(0) {
+      reconnectAttempts(0),
+      apStarted(false),
+      staConnecting(false),
+      apConfigured(false) {
 }
 
 WiFiManager::~WiFiManager() {
@@ -78,8 +81,6 @@ void WiFiManager::handleStateInit() {
 }
 
 void WiFiManager::handleStateAPMode() {
-    static bool apStarted = false;
-
     if (!apStarted) {
         startAP();
         startCaptivePortal();
@@ -92,25 +93,24 @@ void WiFiManager::handleStateAPMode() {
 
 void WiFiManager::handleStateConnecting() {
     static unsigned long connectStartTime = 0;
-    static bool connecting = false;
 
-    if (!connecting) {
+    if (!staConnecting) {
         Logger::info("WiFiManager: Connecting to " + config.wifi.ssid);
         startSTA();
         connectStartTime = millis();
-        connecting = true;
+        staConnecting = true;
     }
 
     // Check connection status
     if (WiFi.status() == WL_CONNECTED) {
         Logger::info("WiFiManager: Connected! IP: " + WiFi.localIP().toString());
         reconnectAttempts = 0;
-        connecting = false;
+        staConnecting = false;
         setState(WIFI_CONNECTED);
     } else if (millis() - connectStartTime > 10000) {
         // Timeout after 10 seconds
         Logger::warning("WiFiManager: Connection timeout");
-        connecting = false;
+        staConnecting = false;
         setState(WIFI_RECONNECT);
     }
 }
@@ -128,7 +128,6 @@ void WiFiManager::handleStateConnected() {
     }
 
     // Handle AP mode based on configuration
-    static bool apConfigured = false;
     if (!apConfigured) {
         if (config.wifi.mode == DeviceConfig::AP_STA_DUAL) {
             Logger::info("WiFiManager: Starting AP in dual mode");
@@ -325,10 +324,10 @@ void WiFiManager::setState(State newState) {
         Logger::info("WiFiManager: State transition: " + String(currentState) + " -> " + String(newState));
         currentState = newState;
 
-        // Reset state-specific variables
-        if (newState == WIFI_CONNECTING) {
-            reconnectAttempts = 0;
-        }
+        // Reset state-entry flags so handlers re-initialise on every entry
+        if (newState == WIFI_AP_MODE)   apStarted    = false;
+        if (newState == WIFI_CONNECTING) staConnecting = false;
+        if (newState == WIFI_CONNECTED) apConfigured  = false;
 
         // Start mDNS when connected
         if (newState == WIFI_CONNECTED && mdns) {

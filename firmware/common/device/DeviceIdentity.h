@@ -8,8 +8,12 @@
 #define DEVICE_IDENTITY_H
 
 #include <Arduino.h>
-#include <esp_system.h>
-#include <WiFi.h>
+#ifdef ESP32
+  #include <esp_system.h>
+  #include <WiFi.h>
+#else
+  #include <ESP8266WiFi.h>
+#endif
 
 class DeviceIdentity {
 public:
@@ -18,10 +22,16 @@ public:
      * @return Chip ID (e.g., "A1B2C3D4")
      */
     static String getChipID() {
+#ifdef ESP32
         uint64_t chipid = ESP.getEfuseMac();
         char chipidStr[9];
         snprintf(chipidStr, sizeof(chipidStr), "%08X", (uint32_t)chipid);
         return String(chipidStr);
+#else
+        char chipidStr[9];
+        snprintf(chipidStr, sizeof(chipidStr), "%08X", ESP.getChipId());
+        return String(chipidStr);
+#endif
     }
 
     /**
@@ -99,7 +109,11 @@ public:
      * @return Total heap in bytes
      */
     static uint32_t getHeapSize() {
+#ifdef ESP32
         return ESP.getHeapSize();
+#else
+        return 81920; // ESP8266 typical heap size
+#endif
     }
 };
 

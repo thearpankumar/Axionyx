@@ -7,7 +7,15 @@
 #include "Config.h"
 #include "../utils/Logger.h"
 #include <ArduinoJson.h>
-#include <SPIFFS.h>
+#ifdef ESP32
+  #include <SPIFFS.h>
+  #define FSYS         SPIFFS
+  #define FS_BEGIN()   SPIFFS.begin(true)
+#else
+  #include <LittleFS.h>
+  #define FSYS         LittleFS
+  #define FS_BEGIN()   LittleFS.begin()
+#endif
 
 const char* DeviceConfig::CONFIG_FILE = "/config.json";
 
@@ -25,17 +33,17 @@ void DeviceConfig::setDefaults() {
 }
 
 bool DeviceConfig::load() {
-    if (!SPIFFS.begin(true)) {
-        Logger::error("Failed to mount SPIFFS");
+    if (!FS_BEGIN()) {
+        Logger::error("Failed to mount filesystem");
         return false;
     }
 
-    if (!SPIFFS.exists(CONFIG_FILE)) {
+    if (!FSYS.exists(CONFIG_FILE)) {
         Logger::warning("Config file does not exist, using defaults");
         return false;
     }
 
-    File file = SPIFFS.open(CONFIG_FILE, "r");
+    File file = FSYS.open(CONFIG_FILE, "r");
     if (!file) {
         Logger::error("Failed to open config file for reading");
         return false;
@@ -55,14 +63,14 @@ bool DeviceConfig::load() {
 }
 
 bool DeviceConfig::save() {
-    if (!SPIFFS.begin(true)) {
-        Logger::error("Failed to mount SPIFFS");
+    if (!FS_BEGIN()) {
+        Logger::error("Failed to mount filesystem");
         return false;
     }
 
     String jsonStr = toJSON();
 
-    File file = SPIFFS.open(CONFIG_FILE, "w");
+    File file = FSYS.open(CONFIG_FILE, "w");
     if (!file) {
         Logger::error("Failed to open config file for writing");
         return false;
@@ -83,9 +91,9 @@ bool DeviceConfig::save() {
 void DeviceConfig::reset() {
     Logger::info("Performing factory reset");
 
-    if (SPIFFS.begin(true)) {
-        if (SPIFFS.exists(CONFIG_FILE)) {
-            SPIFFS.remove(CONFIG_FILE);
+    if (FS_BEGIN()) {
+        if (FSYS.exists(CONFIG_FILE)) {
+            FSYS.remove(CONFIG_FILE);
         }
     }
 

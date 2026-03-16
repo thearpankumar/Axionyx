@@ -171,6 +171,16 @@ void HTTPServer::setupRoutes() {
             handleSetConfig(request, data, len, index, total);
         });
 
+    // Diagnostic / Test Endpoints
+    server->on("/api/v1/device/test", HTTP_POST,
+        [this](AsyncWebServerRequest* request) {
+            sendSuccess(request, "Test command received");
+        },
+        NULL,
+        [this](AsyncWebServerRequest* request, uint8_t* data, size_t len, size_t index, size_t total) {
+            handleDeviceTest(request, data, len, index, total);
+        });
+
     // Provisioning page (captive portal)
     server->on("/", HTTP_GET,
         [this](AsyncWebServerRequest* request) { handleProvisioningPage(request); });
@@ -307,6 +317,28 @@ void HTTPServer::handleDeviceResume(AsyncWebServerRequest* request) {
         sendSuccess(request, "Device resumed successfully");
     } else {
         sendError(request, 400, "Cannot resume device in current state");
+    }
+}
+
+void HTTPServer::handleDeviceTest(AsyncWebServerRequest* request, uint8_t* data, size_t len, size_t index, size_t total) {
+    if (index + len != total) return;
+
+    Logger::info("HTTPServer: POST /api/v1/device/test");
+
+    JsonDocument doc;
+    DeserializationError error = deserializeJson(doc, data, len);
+
+    if (error) {
+        sendError(request, 400, "Invalid JSON");
+        return;
+    }
+
+    bool success = device.runTest(doc);
+
+    if (success) {
+        sendSuccess(request, "Test command executed");
+    } else {
+        sendError(request, 400, "Test command not supported or device is busy");
     }
 }
 
@@ -557,18 +589,25 @@ void HTTPServer::handleProgramTemplates(AsyncWebServerRequest* request) {
 
     // Only provide PCR templates if device type is PCR
     if (config.device.type == "PCR") {
+        // All templates are calibrated for this device's hardware range:
+        // Denaturation max = 70 °C, Annealing min = 50 °C, Extension = 70 °C
+
         // Standard PCR
         JsonObject standard = templates.add<JsonObject>();
         standard["name"] = "Standard PCR";
         standard["type"] = "standard";
         standard["description"] = "Basic PCR protocol for general amplification";
         standard["cycles"] = 35;
-        standard["denatureTemp"] = 95.0;
+        standard["initialDenatureTemp"] = 70.0;
+        standard["initialDenatureTime"] = 180;   // 3 min
+        standard["denatureTemp"] = 70.0;
         standard["denatureTime"] = 30;
-        standard["annealTemp"] = 60.0;
+        standard["annealTemp"] = 55.0;
         standard["annealTime"] = 30;
-        standard["extendTemp"] = 72.0;
+        standard["extendTemp"] = 70.0;
         standard["extendTime"] = 60;
+        standard["finalExtendTemp"] = 70.0;
+        standard["finalExtendTime"] = 300;       // 5 min
 
         // Fast PCR (Two-Step)
         JsonObject fast = templates.add<JsonObject>();
@@ -577,61 +616,69 @@ void HTTPServer::handleProgramTemplates(AsyncWebServerRequest* request) {
         fast["description"] = "Faster cycling for amplicons <500bp";
         fast["twoStepEnabled"] = true;
         fast["cycles"] = 30;
-        fast["denatureTemp"] = 95.0;
+        fast["initialDenatureTemp"] = 70.0;
+        fast["initialDenatureTime"] = 120;       // 2 min
+        fast["denatureTemp"] = 70.0;
         fast["denatureTime"] = 15;
-        fast["annealExtendTemp"] = 65.0;
+        fast["annealExtendTemp"] = 62.0;
         fast["annealExtendTime"] = 30;
+        fast["finalExtendTemp"] = 70.0;
+        fast["finalExtendTime"] = 180;
 
-        // Gradient Optimization
-        JsonObject gradient = templates.add<JsonObject>();
-        gradient["name"] = "Gradient Optimization";
-        gradient["type"] = "gradient";
-        gradient["description"] = "Optimize annealing temperature across gradient";
-        gradient["cycles"] = 25;
-        gradient["denatureTemp"] = 95.0;
-        gradient["denatureTime"] = 30;
-        gradient["extendTemp"] = 72.0;
-        gradient["extendTime"] = 60;
-        JsonObject gradConfig = gradient["gradient"].to<JsonObject>();
-        gradConfig["enabled"] = true;
-        gradConfig["tempLow"] = 55.0;
-        gradConfig["tempHigh"] = 65.0;
-        gradConfig["positions"] = 12;
-
-        // High Specificity (Touchdown)
+        // Touchdown PCR (High Specificity)
         JsonObject touchdown = templates.add<JsonObject>();
         touchdown["name"] = "High Specificity";
         touchdown["type"] = "touchdown";
-        touchdown["description"] = "Reduce non-specific amplification";
+        touchdown["description"] = "Reduce non-specific amplification via touchdown";
         touchdown["cycles"] = 35;
-        touchdown["denatureTemp"] = 95.0;
+        touchdown["initialDenatureTemp"] = 70.0;
+        touchdown["initialDenatureTime"] = 180;
+        touchdown["denatureTemp"] = 70.0;
         touchdown["denatureTime"] = 30;
-        touchdown["extendTemp"] = 72.0;
+        touchdown["extendTemp"] = 70.0;
         touchdown["extendTime"] = 60;
+        touchdown["finalExtendTemp"] = 70.0;
+        touchdown["finalExtendTime"] = 300;
         JsonObject tdConfig = touchdown["touchdown"].to<JsonObject>();
         tdConfig["enabled"] = true;
-        tdConfig["startAnnealTemp"] = 72.0;
-        tdConfig["endAnnealTemp"] = 60.0;
+        tdConfig["startAnnealTemp"] = 65.0;
+        tdConfig["endAnnealTemp"] = 50.0;
         tdConfig["stepSize"] = 1.0;
-        tdConfig["touchdownCycles"] = 12;
+        tdConfig["touchdownCycles"] = 15;
 
-        // Colony PCR (Hot Start)
-        JsonObject colony = templates.add<JsonObject>();
-        colony["name"] = "Colony PCR";
-        colony["type"] = "standard";
-        colony["description"] = "For amplification from bacterial colonies";
-        colony["cycles"] = 35;
-        colony["denatureTemp"] = 95.0;
-        colony["denatureTime"] = 30;
-        colony["annealTemp"] = 60.0;
-        colony["annealTime"] = 30;
-        colony["extendTemp"] = 72.0;
-        colony["extendTime"] = 60;
-        colony["initialDenatureTime"] = 300;  // 5 minutes for colony lysis
-        JsonObject hsConfig = colony["hotStart"].to<JsonObject>();
-        hsConfig["enabled"] = true;
-        hsConfig["activationTemp"] = 95.0;
-        hsConfig["activationTime"] = 900;  // 15 minutes
+        // Sensitive Detection (more cycles, lower anneal)
+        JsonObject sensitive = templates.add<JsonObject>();
+        sensitive["name"] = "Sensitive Detection";
+        sensitive["type"] = "standard";
+        sensitive["description"] = "More cycles for low-copy templates";
+        sensitive["cycles"] = 40;
+        sensitive["initialDenatureTemp"] = 70.0;
+        sensitive["initialDenatureTime"] = 180;
+        sensitive["denatureTemp"] = 70.0;
+        sensitive["denatureTime"] = 30;
+        sensitive["annealTemp"] = 50.0;
+        sensitive["annealTime"] = 45;
+        sensitive["extendTemp"] = 70.0;
+        sensitive["extendTime"] = 90;
+        sensitive["finalExtendTemp"] = 70.0;
+        sensitive["finalExtendTime"] = 300;
+
+        // Long Amplicon
+        JsonObject longAmp = templates.add<JsonObject>();
+        longAmp["name"] = "Long Amplicon";
+        longAmp["type"] = "standard";
+        longAmp["description"] = "Extended extension time for fragments >1 kb";
+        longAmp["cycles"] = 30;
+        longAmp["initialDenatureTemp"] = 70.0;
+        longAmp["initialDenatureTime"] = 240;
+        longAmp["denatureTemp"] = 70.0;
+        longAmp["denatureTime"] = 30;
+        longAmp["annealTemp"] = 55.0;
+        longAmp["annealTime"] = 30;
+        longAmp["extendTemp"] = 70.0;
+        longAmp["extendTime"] = 120;             // 2 min extension
+        longAmp["finalExtendTemp"] = 70.0;
+        longAmp["finalExtendTime"] = 600;        // 10 min
     }
 
     sendJSON(request, 200, doc);
@@ -828,7 +875,7 @@ void HTTPServer::handleGetAlarmHistory(AsyncWebServerRequest* request) {
     }
 
     JsonDocument doc;
-    JsonArray history = doc["history"].to<JsonArray>();
+    doc["history"].to<JsonArray>();
     // Alarm history would come from device implementation
 
     sendJSON(request, 200, doc);

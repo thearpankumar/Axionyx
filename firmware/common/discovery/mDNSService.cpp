@@ -5,7 +5,11 @@
  */
 
 #include "mDNSService.h"
-#include <WiFi.h>
+#ifdef ESP32
+  #include <WiFi.h>
+#else
+  #include <ESP8266WiFi.h>
+#endif
 #include "../utils/Logger.h"
 #include "../device/DeviceIdentity.h"
 
@@ -21,8 +25,12 @@ bool mDNSService::begin() {
 
     Logger::info("mDNSService: Starting mDNS responder");
 
-    // Disable WiFi sleep for discovery reliability (research-backed fix)
+    // Disable WiFi sleep for discovery reliability
+#ifdef ESP32
     WiFi.setSleep(false);
+#else
+    WiFi.setSleepMode(WIFI_NONE_SLEEP);
+#endif
 
     // Start mDNS with hostname
     if (!MDNS.begin(config.network.mdnsName.c_str())) {
@@ -57,6 +65,11 @@ bool mDNSService::begin() {
 
 void mDNSService::loop() {
     if (!started) return;
+
+    // ESP8266 mDNS requires explicit update() call in the main loop
+#ifndef ESP32
+    MDNS.update();
+#endif
 
     // --- UDP DISCOVERY RESPONDER ---
     int packetSize = udp.parsePacket();

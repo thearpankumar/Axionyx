@@ -7,7 +7,9 @@
 #include "DeviceAuth.h"
 #include "../utils/Logger.h"
 #include "../device/DeviceIdentity.h"
+#ifdef ESP32
 #include <mbedtls/md.h>
+#endif
 
 DeviceAuth::DeviceAuth(DeviceConfig& cfg)
     : config(cfg), pairingCodeExpiry(0) {
@@ -126,6 +128,7 @@ String DeviceAuth::generateRandomCode(uint8_t length) {
 }
 
 String DeviceAuth::hashString(const String& input) {
+#ifdef ESP32
     // Simple hash using mbedtls SHA256
     byte hash[32];
     mbedtls_md_context_t ctx;
@@ -145,6 +148,9 @@ String DeviceAuth::hashString(const String& input) {
         sprintf(hex, "%02x", hash[i]);
         hashStr += hex;
     }
-
     return hashStr;
+#else
+    // Stub for ESP8266 — auth/pairing not used by PCR firmware
+    return input;
+#endif
 }

@@ -1,16 +1,23 @@
 # PCR Machine Firmware
 
-3-zone thermal cycler for DNA amplification.
+Single-zone thermal cycler for DNA amplification — ESP8266MOD (NodeMCU v2).
+
+**Hardware:**
+- NTC3950 thermistor → A0 (10kΩ series resistor)
+- Ceramic cartridge heater via IRFZ44N MOSFET → D5 (GPIO14)
+- Fan via IRFZ44N MOSFET → D6 (GPIO12)
 
 ---
 
 ## Quick Flash
 
 ```bash
-cd pcr_demo
+cd firmware/pcr
 pio run --target upload
-pio device monitor
+pio device monitor --baud 115200
 ```
+
+Upload speed is set to 921600 in `platformio.ini`. If upload fails, try lowering it to `460800`.
 
 ---
 
