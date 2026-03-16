@@ -432,8 +432,9 @@ class _PCRDetailScreenState extends ConsumerState<PCRDetailScreen> {
     if (p.contains('HOT') && p.contains('START')) return 'Hot Start';
     if (p.contains('INITIAL')) return 'Initial Denaturation';
     if (p.contains('DENATURE') || p.contains('DENATUR')) return 'Denaturation';
-    if (p.contains('ANNEAL') && p.contains('EXTEND'))
+    if (p.contains('ANNEAL') && p.contains('EXTEND')) {
       return 'Annealing + Extension';
+    }
     if (p.contains('ANNEAL')) return 'Annealing';
     if (p.contains('FINAL') && p.contains('EXTEND')) return 'Final Extension';
     if (p.contains('EXTEND')) return 'Extension';
