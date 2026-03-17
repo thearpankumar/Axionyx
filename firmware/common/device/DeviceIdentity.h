@@ -60,7 +60,7 @@ public:
      * @return Firmware version string
      */
     static String getFirmwareVersion() {
-        return "1.0.0";
+        return "1.2.1";
     }
 
     /**

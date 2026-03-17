@@ -28,7 +28,7 @@ public:
         String serialNumber;    // Serial number
         String firmwareVersion; // Firmware version
 
-        Device() : firmwareVersion("1.0.0") {}
+        Device() : firmwareVersion("1.2.1") {}
     };
 
     // WiFi configuration structure

@@ -165,7 +165,7 @@ bool DeviceConfig::fromJSON(const String& json) {
         device.type = deviceObj["type"] | "";
         device.name = deviceObj["name"] | "";
         device.serialNumber = deviceObj["serialNumber"] | "";
-        device.firmwareVersion = deviceObj["firmwareVersion"] | "1.0.0";
+        device.firmwareVersion = deviceObj["firmwareVersion"] | "1.2.1";
     }
 
     // WiFi configuration
