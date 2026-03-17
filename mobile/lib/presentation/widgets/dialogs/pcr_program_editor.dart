@@ -417,27 +417,31 @@ class _PcrProgramEditorState extends ConsumerState<PcrProgramEditor> {
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
-                color: (_mode == 'standard'
-                        ? AppColorSchemes.info
-                        : AppColorSchemes.warning)
-                    .withValues(alpha: 0.08),
+                color:
+                    (_mode == 'standard'
+                            ? AppColorSchemes.info
+                            : AppColorSchemes.warning)
+                        .withValues(alpha: 0.08),
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
-                  color: (_mode == 'standard'
-                          ? AppColorSchemes.info
-                          : AppColorSchemes.warning)
-                      .withValues(alpha: 0.2),
+                  color:
+                      (_mode == 'standard'
+                              ? AppColorSchemes.info
+                              : AppColorSchemes.warning)
+                          .withValues(alpha: 0.2),
                 ),
               ),
               child: Text(
                 _mode == 'standard'
                     ? 'Classic 3-step cycle: Denaturation → Annealing → Extension. '
-                        'Best for most applications — higher specificity and works with '
-                        'a wide range of primer pairs.'
+                          'Best for most applications — higher specificity and works with '
+                          'a wide range of primer pairs.'
                     : 'Faster 2-step cycle: Denaturation → Anneal+Extend (combined). '
-                        'Saves time for amplicons under 1 kb and primers with a high Tm (≥60°C).',
+                          'Saves time for amplicons under 1 kb and primers with a high Tm (≥60°C).',
                 style: AppTextStyles.bodySmall.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.75),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.75),
                 ),
               ),
             ),

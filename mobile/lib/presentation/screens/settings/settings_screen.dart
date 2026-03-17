@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/text_styles.dart';
 import '../../widgets/common/glass_card.dart';
-import '../../providers/theme_provider.dart';
 import '../../providers/settings_provider.dart';
 
 /// Settings screen
@@ -11,7 +10,6 @@ class SettingsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final themeMode = ref.watch(themeModeProvider);
     final settings = ref.watch(settingsProvider);
 
     return Scaffold(
@@ -34,61 +32,6 @@ class SettingsScreen extends ConsumerWidget {
           child: ListView(
             padding: const EdgeInsets.all(16),
             children: [
-              // Appearance Section
-              Text(
-                'Appearance',
-                style: AppTextStyles.titleMedium.copyWith(
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-              ),
-              const SizedBox(height: 12),
-
-              // Theme Mode
-              GlassCard(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text('Theme', style: AppTextStyles.titleSmall),
-                    const SizedBox(height: 16),
-                    SegmentedButton<ThemeMode>(
-                      segments: const [
-                        ButtonSegment<ThemeMode>(
-                          value: ThemeMode.system,
-                          label: FittedBox(
-                            fit: BoxFit.scaleDown,
-                            child: Text('System', softWrap: false),
-                          ),
-                          icon: Icon(Icons.brightness_auto),
-                        ),
-                        ButtonSegment<ThemeMode>(
-                          value: ThemeMode.light,
-                          label: FittedBox(
-                            fit: BoxFit.scaleDown,
-                            child: Text('Light', softWrap: false),
-                          ),
-                          icon: Icon(Icons.light_mode),
-                        ),
-                        ButtonSegment<ThemeMode>(
-                          value: ThemeMode.dark,
-                          label: FittedBox(
-                            fit: BoxFit.scaleDown,
-                            child: Text('Dark', softWrap: false),
-                          ),
-                          icon: Icon(Icons.dark_mode),
-                        ),
-                      ],
-                      selected: {themeMode},
-                      onSelectionChanged: (Set<ThemeMode> newSelection) {
-                        ref
-                            .read(themeModeProvider.notifier)
-                            .setThemeMode(newSelection.first);
-                      },
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 24),
-
               // About Section
               Text(
                 'About',
@@ -104,7 +47,7 @@ class SettingsScreen extends ConsumerWidget {
                   children: [
                     _buildInfoRow(context, 'App Name', 'Axionyx Mobile'),
                     const SizedBox(height: 12),
-                    _buildInfoRow(context, 'Version', '1.0.0'),
+                    _buildInfoRow(context, 'Version', '1.2.1'),
                     const SizedBox(height: 12),
                     _buildInfoRow(context, 'Build', '1'),
                   ],

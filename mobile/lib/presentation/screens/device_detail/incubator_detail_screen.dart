@@ -103,7 +103,9 @@ class _IncubatorDetailScreenState extends ConsumerState<IncubatorDetailScreen> {
   }) {
     if (!isConnecting && !isOffline) return const SizedBox.shrink();
 
-    final color = isConnecting ? AppColorSchemes.warning : AppColorSchemes.error;
+    final color = isConnecting
+        ? AppColorSchemes.warning
+        : AppColorSchemes.error;
     final icon = isConnecting ? Icons.wifi_find : Icons.wifi_off;
     final message = isConnecting
         ? 'Connecting to ${widget.device.name}…'

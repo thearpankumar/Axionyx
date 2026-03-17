@@ -60,45 +60,6 @@ class AppColorSchemes {
     inversePrimary: Color(0xFFE63946),
   );
 
-  /// Light Color Scheme
-  static const ColorScheme lightColorScheme = ColorScheme.light(
-    brightness: Brightness.light,
-    primary: primary,
-    onPrimary: Colors.white,
-    primaryContainer: Color(0xFFFFEBEE),
-    onPrimaryContainer: Color(0xFFC62828),
-
-    secondary: secondary,
-    onSecondary: Colors.white,
-    secondaryContainer: Color(0xFFFFCDD2),
-    onSecondaryContainer: Color(0xFFB71C1C),
-
-    tertiary: accent,
-    onTertiary: Colors.white,
-    tertiaryContainer: Color(0xFFF5F5F5),
-    onTertiaryContainer: Color(0xFF212121),
-
-    error: error,
-    onError: Colors.white,
-    errorContainer: Color(0xFFFFDAD6),
-    onErrorContainer: Color(0xFF410002),
-
-    surface: Color(0xFFFFF9C4), // Light Yellow (Yellow 100)
-    onSurface: Color(0xFF000000), // Pure Black text on yellow
-    surfaceContainerHighest: Color(0xFFF9FBE7), // Lime 50
-    onSurfaceVariant: Color(0xFF263238),
-
-    outline: Color(0xFFBDBDBD),
-    outlineVariant: Color(0xFFE0E0E0),
-
-    shadow: Colors.black26,
-    scrim: Colors.black54,
-
-    inverseSurface: Color(0xFF263238),
-    onInverseSurface: Color(0xFFFFF9C4),
-    inversePrimary: Color(0xFFFF8A80),
-  );
-
   /// Glassmorphism overlay colors for dark mode
   static const Color glassDark = Color(0x0DFFFFFF); // White 5%
   static const Color glassDarkStrong = Color(0x1AFFFFFF); // White 10%

@@ -135,7 +135,9 @@ class _PCRDetailScreenState extends ConsumerState<PCRDetailScreen> {
   }) {
     if (!isConnecting && !isOffline) return const SizedBox.shrink();
 
-    final color = isConnecting ? AppColorSchemes.warning : AppColorSchemes.error;
+    final color = isConnecting
+        ? AppColorSchemes.warning
+        : AppColorSchemes.error;
     final icon = isConnecting ? Icons.wifi_find : Icons.wifi_off;
     final message = isConnecting
         ? 'Connecting to ${widget.device.name}…'
@@ -158,10 +160,7 @@ class _PCRDetailScreenState extends ConsumerState<PCRDetailScreen> {
             SizedBox(
               width: 14,
               height: 14,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                color: color,
-              ),
+              child: CircularProgressIndicator(strokeWidth: 2, color: color),
             ),
           if (isOffline)
             TextButton(
@@ -602,7 +601,10 @@ class _PCRDetailScreenState extends ConsumerState<PCRDetailScreen> {
             }
           },
           onStop: () async {
-            if (!_isDeviceReachable) { _showNotConnectedSnackbar(context); return; }
+            if (!_isDeviceReachable) {
+              _showNotConnectedSnackbar(context);
+              return;
+            }
             try {
               await repository.stopDevice();
               if (context.mounted) {
@@ -619,7 +621,10 @@ class _PCRDetailScreenState extends ConsumerState<PCRDetailScreen> {
             }
           },
           onPause: () async {
-            if (!_isDeviceReachable) { _showNotConnectedSnackbar(context); return; }
+            if (!_isDeviceReachable) {
+              _showNotConnectedSnackbar(context);
+              return;
+            }
             try {
               await repository.pauseDevice();
               if (context.mounted) {
@@ -636,7 +641,10 @@ class _PCRDetailScreenState extends ConsumerState<PCRDetailScreen> {
             }
           },
           onResume: () async {
-            if (!_isDeviceReachable) { _showNotConnectedSnackbar(context); return; }
+            if (!_isDeviceReachable) {
+              _showNotConnectedSnackbar(context);
+              return;
+            }
             try {
               await repository.resumeDevice();
               if (context.mounted) {
