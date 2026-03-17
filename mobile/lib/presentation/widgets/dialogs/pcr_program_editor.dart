@@ -57,27 +57,61 @@ class _PcrProgramEditorState extends ConsumerState<PcrProgramEditor> {
     _mode = p?.mode ?? 'standard';
     _nameCtrl = TextEditingController(text: p?.name ?? '');
     _cyclesCtrl = TextEditingController(text: (p?.cycles ?? 35).toString());
-    _initDenTempCtrl = TextEditingController(text: (p?.initialDenatureTemp ?? 95.0).toStringAsFixed(1));
-    _initDenTimeCtrl = TextEditingController(text: (p?.initialDenatureTime ?? 180).toString());
-    _denTempCtrl = TextEditingController(text: (p?.denatureTemp ?? 95.0).toStringAsFixed(1));
-    _denTimeCtrl = TextEditingController(text: (p?.denatureTime ?? 30).toString());
-    _annealTempCtrl = TextEditingController(text: (p?.annealTemp ?? 55.0).toStringAsFixed(1));
-    _annealTimeCtrl = TextEditingController(text: (p?.annealTime ?? 30).toString());
-    _extendTempCtrl = TextEditingController(text: (p?.extendTemp ?? 72.0).toStringAsFixed(1));
-    _extendTimeCtrl = TextEditingController(text: (p?.extendTime ?? 60).toString());
-    _annealExtTempCtrl = TextEditingController(text: (p?.annealExtendTemp ?? 68.0).toStringAsFixed(1));
-    _annealExtTimeCtrl = TextEditingController(text: (p?.annealExtendTime ?? 30).toString());
-    _finalExtTempCtrl = TextEditingController(text: (p?.finalExtendTemp ?? 72.0).toStringAsFixed(1));
-    _finalExtTimeCtrl = TextEditingController(text: (p?.finalExtendTime ?? 300).toString());
+    _initDenTempCtrl = TextEditingController(
+      text: (p?.initialDenatureTemp ?? 95.0).toStringAsFixed(1),
+    );
+    _initDenTimeCtrl = TextEditingController(
+      text: (p?.initialDenatureTime ?? 180).toString(),
+    );
+    _denTempCtrl = TextEditingController(
+      text: (p?.denatureTemp ?? 95.0).toStringAsFixed(1),
+    );
+    _denTimeCtrl = TextEditingController(
+      text: (p?.denatureTime ?? 30).toString(),
+    );
+    _annealTempCtrl = TextEditingController(
+      text: (p?.annealTemp ?? 55.0).toStringAsFixed(1),
+    );
+    _annealTimeCtrl = TextEditingController(
+      text: (p?.annealTime ?? 30).toString(),
+    );
+    _extendTempCtrl = TextEditingController(
+      text: (p?.extendTemp ?? 72.0).toStringAsFixed(1),
+    );
+    _extendTimeCtrl = TextEditingController(
+      text: (p?.extendTime ?? 60).toString(),
+    );
+    _annealExtTempCtrl = TextEditingController(
+      text: (p?.annealExtendTemp ?? 68.0).toStringAsFixed(1),
+    );
+    _annealExtTimeCtrl = TextEditingController(
+      text: (p?.annealExtendTime ?? 30).toString(),
+    );
+    _finalExtTempCtrl = TextEditingController(
+      text: (p?.finalExtendTemp ?? 72.0).toStringAsFixed(1),
+    );
+    _finalExtTimeCtrl = TextEditingController(
+      text: (p?.finalExtendTime ?? 300).toString(),
+    );
   }
 
   @override
   void dispose() {
     for (final c in [
-      _nameCtrl, _cyclesCtrl, _initDenTempCtrl, _initDenTimeCtrl,
-      _denTempCtrl, _denTimeCtrl, _annealTempCtrl, _annealTimeCtrl,
-      _extendTempCtrl, _extendTimeCtrl, _annealExtTempCtrl, _annealExtTimeCtrl,
-      _finalExtTempCtrl, _finalExtTimeCtrl,
+      _nameCtrl,
+      _cyclesCtrl,
+      _initDenTempCtrl,
+      _initDenTimeCtrl,
+      _denTempCtrl,
+      _denTimeCtrl,
+      _annealTempCtrl,
+      _annealTimeCtrl,
+      _extendTempCtrl,
+      _extendTimeCtrl,
+      _annealExtTempCtrl,
+      _annealExtTimeCtrl,
+      _finalExtTempCtrl,
+      _finalExtTimeCtrl,
     ]) {
       c.dispose();
     }
@@ -95,13 +129,21 @@ class _PcrProgramEditorState extends ConsumerState<PcrProgramEditor> {
     if (val < _tempMin || val > _tempMax) return AppColorSchemes.error;
     switch (phase) {
       case 'denature':
-        return (val >= 94 && val <= 98) ? AppColorSchemes.success : AppColorSchemes.warning;
+        return (val >= 94 && val <= 98)
+            ? AppColorSchemes.success
+            : AppColorSchemes.warning;
       case 'anneal':
-        return (val >= 45 && val <= 72) ? AppColorSchemes.success : AppColorSchemes.warning;
+        return (val >= 45 && val <= 72)
+            ? AppColorSchemes.success
+            : AppColorSchemes.warning;
       case 'extend':
-        return (val >= 68 && val <= 75) ? AppColorSchemes.success : AppColorSchemes.warning;
+        return (val >= 68 && val <= 75)
+            ? AppColorSchemes.success
+            : AppColorSchemes.warning;
       case 'annealExtend':
-        return (val >= 60 && val <= 75) ? AppColorSchemes.success : AppColorSchemes.warning;
+        return (val >= 60 && val <= 75)
+            ? AppColorSchemes.success
+            : AppColorSchemes.warning;
       default:
         return AppColorSchemes.success;
     }
@@ -110,32 +152,45 @@ class _PcrProgramEditorState extends ConsumerState<PcrProgramEditor> {
   // ─── Tip content ─────────────────────────────────────────────────────────────
 
   static const Map<String, String> _tips = {
-    'initDenTemp': 'Fully unwinds the DNA double helix before cycling begins. '
+    'initDenTemp':
+        'Fully unwinds the DNA double helix before cycling begins. '
         '95°C for 2–5 min is standard. Lower temp may leave template partially double-stranded.',
-    'initDenTime': 'Duration of initial denaturation. 180 s (3 min) works for most templates. '
+    'initDenTime':
+        'Duration of initial denaturation. 180 s (3 min) works for most templates. '
         'GC-rich or long templates may need 300 s.',
-    'cycles': '35 cycles is standard. Use 30 for abundant template, '
+    'cycles':
+        '35 cycles is standard. Use 30 for abundant template, '
         '40 for low-copy or difficult templates. More cycles = higher risk of artefacts.',
-    'denTemp': 'Separates DNA strands each cycle. 94–98°C for 15–30 s works for '
+    'denTemp':
+        'Separates DNA strands each cycle. 94–98°C for 15–30 s works for '
         'most templates. Higher temp helps denature GC-rich regions.',
-    'denTime': 'Duration per denaturation step. 30 s is usually enough. '
+    'denTime':
+        'Duration per denaturation step. 30 s is usually enough. '
         'Increase to 45–60 s for GC-rich templates.',
-    'annealTemp': 'Temperature at which primers bind to the template. Typically '
+    'annealTemp':
+        'Temperature at which primers bind to the template. Typically '
         '5°C below the primer Tm. Lower = more product but less specific; '
         'higher = fewer but more specific bands.',
-    'annealTime': 'Duration of annealing step. 30 s is sufficient for most primers. '
+    'annealTime':
+        'Duration of annealing step. 30 s is sufficient for most primers. '
         'Longer primers (>25 nt) may benefit from 45–60 s.',
-    'extendTemp': 'Temperature at which DNA polymerase synthesises the new strand. '
+    'extendTemp':
+        'Temperature at which DNA polymerase synthesises the new strand. '
         '72°C is the Taq optimum. Allow ~1 min per 1 kb of expected product.',
-    'extendTime': 'Duration of extension per cycle. Rule of thumb: 60 s per 1 kb for '
+    'extendTime':
+        'Duration of extension per cycle. Rule of thumb: 60 s per 1 kb for '
         'Taq, 30 s per 1 kb for high-fidelity polymerases.',
-    'annealExtTemp': 'Combined annealing and extension temperature for Fast PCR (two-step). '
+    'annealExtTemp':
+        'Combined annealing and extension temperature for Fast PCR (two-step). '
         '65–68°C works for most primer pairs and polymerases. Saves time vs. separate steps.',
-    'annealExtTime': 'Duration of the combined anneal+extend step. '
+    'annealExtTime':
+        'Duration of the combined anneal+extend step. '
         '30–45 s is typical for amplicons <500 bp.',
-    'finalExtTemp': 'Temperature for final extension. 72°C ensures all partially '
+    'finalExtTemp':
+        'Temperature for final extension. 72°C ensures all partially '
         'extended strands are completed before the run ends.',
-    'finalExtTime': '300 s (5 min) is standard. Use 600 s (10 min) for amplicons >1 kb.',
+    'finalExtTime':
+        '300 s (5 min) is standard. Use 600 s (10 min) for amplicons >1 kb.',
   };
 
   // ─── Build ────────────────────────────────────────────────────────────────────
@@ -146,9 +201,7 @@ class _PcrProgramEditorState extends ConsumerState<PcrProgramEditor> {
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
-        ),
+        decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface),
         child: SafeArea(
           child: Column(
             children: [
@@ -157,7 +210,10 @@ class _PcrProgramEditorState extends ConsumerState<PcrProgramEditor> {
                 child: Form(
                   key: _formKey,
                   child: ListView(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
                     children: [
                       _buildNameAndMode(),
                       const SizedBox(height: 12),
@@ -237,10 +293,17 @@ class _PcrProgramEditorState extends ConsumerState<PcrProgramEditor> {
                       const SizedBox(height: 10),
                       // Hold phase is always 4°C - shown as info only
                       GlassCard(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
                         child: Row(
                           children: [
-                            Icon(Icons.ac_unit, color: Colors.blueAccent.shade100, size: 20),
+                            Icon(
+                              Icons.ac_unit,
+                              color: Colors.blueAccent.shade100,
+                              size: 20,
+                            ),
                             const SizedBox(width: 10),
                             Expanded(
                               child: Column(
@@ -250,7 +313,10 @@ class _PcrProgramEditorState extends ConsumerState<PcrProgramEditor> {
                                   Text(
                                     '4°C — indefinite storage after program completes',
                                     style: AppTextStyles.bodySmall.copyWith(
-                                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurface
+                                          .withValues(alpha: 0.5),
                                     ),
                                   ),
                                 ],
@@ -310,24 +376,30 @@ class _PcrProgramEditorState extends ConsumerState<PcrProgramEditor> {
               prefixIcon: Icon(Icons.label_outline),
               border: OutlineInputBorder(),
             ),
-            validator: (v) => (v == null || v.trim().isEmpty) ? 'Name is required' : null,
+            validator: (v) =>
+                (v == null || v.trim().isEmpty) ? 'Name is required' : null,
             textCapitalization: TextCapitalization.words,
           ),
           const SizedBox(height: 16),
-          Text('Mode', style: AppTextStyles.bodySmall.copyWith(
-            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-          )),
+          Text(
+            'Mode',
+            style: AppTextStyles.bodySmall.copyWith(
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.6),
+            ),
+          ),
           const SizedBox(height: 8),
           SegmentedButton<String>(
             segments: const [
               ButtonSegment(
                 value: 'standard',
-                label: Text('Standard  (3-step)'),
+                label: Text('Standard PCR'),
                 icon: Icon(Icons.looks_3_outlined, size: 18),
               ),
               ButtonSegment(
                 value: 'twostep',
-                label: Text('Fast  (2-step)'),
+                label: Text('Fast PCR'),
                 icon: Icon(Icons.bolt, size: 18),
               ),
             ],
@@ -336,6 +408,39 @@ class _PcrProgramEditorState extends ConsumerState<PcrProgramEditor> {
               _mode = sel.first;
               _visibleTip = null;
             }),
+          ),
+          const SizedBox(height: 10),
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 200),
+            child: Container(
+              key: ValueKey(_mode),
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: (_mode == 'standard'
+                        ? AppColorSchemes.info
+                        : AppColorSchemes.warning)
+                    .withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: (_mode == 'standard'
+                          ? AppColorSchemes.info
+                          : AppColorSchemes.warning)
+                      .withValues(alpha: 0.2),
+                ),
+              ),
+              child: Text(
+                _mode == 'standard'
+                    ? 'Classic 3-step cycle: Denaturation → Annealing → Extension. '
+                        'Best for most applications — higher specificity and works with '
+                        'a wide range of primer pairs.'
+                    : 'Faster 2-step cycle: Denaturation → Anneal+Extend (combined). '
+                        'Saves time for amplicons under 1 kb and primers with a high Tm (≥60°C).',
+                style: AppTextStyles.bodySmall.copyWith(
+                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.75),
+                ),
+              ),
+            ),
           ),
         ],
       ),
@@ -352,7 +457,11 @@ class _PcrProgramEditorState extends ConsumerState<PcrProgramEditor> {
         children: [
           Row(
             children: [
-              const Icon(Icons.repeat, size: 20, color: AppColorSchemes.pcrAccent),
+              const Icon(
+                Icons.repeat,
+                size: 20,
+                color: AppColorSchemes.pcrAccent,
+              ),
               const SizedBox(width: 8),
               const Text('Cycles', style: AppTextStyles.titleMedium),
               const Spacer(),
@@ -399,10 +508,7 @@ class _PcrProgramEditorState extends ConsumerState<PcrProgramEditor> {
       builder: (ctx, setLocal) {
         return GlassCard(
           padding: const EdgeInsets.all(16),
-          border: Border.all(
-            color: color.withValues(alpha: 0.25),
-            width: 1,
-          ),
+          border: Border.all(color: color.withValues(alpha: 0.25), width: 1),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -416,9 +522,14 @@ class _PcrProgramEditorState extends ConsumerState<PcrProgramEditor> {
                       children: [
                         Text(title, style: AppTextStyles.titleMedium),
                         if (subtitle != null)
-                          Text(subtitle, style: AppTextStyles.bodySmall.copyWith(
-                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
-                          )),
+                          Text(
+                            subtitle,
+                            style: AppTextStyles.bodySmall.copyWith(
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurface.withValues(alpha: 0.5),
+                            ),
+                          ),
                       ],
                     ),
                   ),
@@ -444,7 +555,9 @@ class _PcrProgramEditorState extends ConsumerState<PcrProgramEditor> {
               // Time field
               Row(
                 children: [
-                  Expanded(child: _timeField(ctrl: timeCtrl, label: 'Duration')),
+                  Expanded(
+                    child: _timeField(ctrl: timeCtrl, label: 'Duration'),
+                  ),
                   const SizedBox(width: 6),
                   _tipButton(timeTipKey),
                 ],
@@ -471,7 +584,9 @@ class _PcrProgramEditorState extends ConsumerState<PcrProgramEditor> {
         return TextFormField(
           controller: ctrl,
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[\d.]'))],
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp(r'[\d.]')),
+          ],
           decoration: InputDecoration(
             labelText: label,
             suffixText: '°C',
@@ -561,7 +676,10 @@ class _PcrProgramEditorState extends ConsumerState<PcrProgramEditor> {
           ? Padding(
               padding: const EdgeInsets.only(top: 6),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
                   color: AppColorSchemes.info.withValues(alpha: 0.08),
                   borderRadius: BorderRadius.circular(8),
@@ -572,7 +690,9 @@ class _PcrProgramEditorState extends ConsumerState<PcrProgramEditor> {
                 child: Text(
                   _tips[key] ?? '',
                   style: AppTextStyles.bodySmall.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.75),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.75),
                   ),
                 ),
               ),
@@ -594,6 +714,7 @@ class _PcrProgramEditorState extends ConsumerState<PcrProgramEditor> {
               icon: Icons.bookmark_outline,
               isLoading: _isSaving,
               onPressed: _onSave,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
             ),
           ),
           const SizedBox(width: 12),
@@ -604,6 +725,7 @@ class _PcrProgramEditorState extends ConsumerState<PcrProgramEditor> {
               isPrimary: true,
               isLoading: _isSaving,
               onPressed: _onSaveAndStart,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
             ),
           ),
         ],
@@ -626,12 +748,20 @@ class _PcrProgramEditorState extends ConsumerState<PcrProgramEditor> {
       initialDenatureTime: int.parse(_initDenTimeCtrl.text),
       denatureTemp: double.parse(_denTempCtrl.text),
       denatureTime: int.parse(_denTimeCtrl.text),
-      annealTemp: _mode == 'standard' ? double.parse(_annealTempCtrl.text) : null,
+      annealTemp: _mode == 'standard'
+          ? double.parse(_annealTempCtrl.text)
+          : null,
       annealTime: _mode == 'standard' ? int.parse(_annealTimeCtrl.text) : null,
-      extendTemp: _mode == 'standard' ? double.parse(_extendTempCtrl.text) : null,
+      extendTemp: _mode == 'standard'
+          ? double.parse(_extendTempCtrl.text)
+          : null,
       extendTime: _mode == 'standard' ? int.parse(_extendTimeCtrl.text) : null,
-      annealExtendTemp: _mode == 'twostep' ? double.parse(_annealExtTempCtrl.text) : null,
-      annealExtendTime: _mode == 'twostep' ? int.parse(_annealExtTimeCtrl.text) : null,
+      annealExtendTemp: _mode == 'twostep'
+          ? double.parse(_annealExtTempCtrl.text)
+          : null,
+      annealExtendTime: _mode == 'twostep'
+          ? int.parse(_annealExtTimeCtrl.text)
+          : null,
       finalExtendTemp: double.parse(_finalExtTempCtrl.text),
       finalExtendTime: int.parse(_finalExtTimeCtrl.text),
       createdAt: existing?.createdAt ?? DateTime.now(),

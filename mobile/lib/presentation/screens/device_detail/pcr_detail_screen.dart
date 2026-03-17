@@ -30,6 +30,23 @@ class PCRDetailScreen extends ConsumerStatefulWidget {
 class _PCRDetailScreenState extends ConsumerState<PCRDetailScreen> {
   bool _isDialogShowing = false;
 
+  // Updated in build() — true only when a live telemetry value is available
+  bool _isDeviceReachable = false;
+
+  static const Map<String, dynamic> _emptyTelemetry = {
+    'state': 'IDLE',
+    'uptime': 0,
+    'temperature': [0.0],
+    'setpoint': [0.0],
+    'currentPhase': 'IDLE',
+    'cycleNumber': 0,
+    'totalCycles': 0,
+    'phaseTimeRemaining': 0,
+    'totalTimeRemaining': 0,
+    'progress': 0.0,
+    'errors': [],
+  };
+
   // Fan test state
   bool _fanTestRunning = false;
   double _fanTestProgress = 0.0;
@@ -68,6 +85,11 @@ class _PCRDetailScreenState extends ConsumerState<PCRDetailScreen> {
   Widget build(BuildContext context) {
     final telemetryAsync = ref.watch(telemetryStreamProvider(widget.device));
 
+    _isDeviceReachable = telemetryAsync.hasValue && !telemetryAsync.isLoading;
+    final isConnecting = telemetryAsync.isLoading;
+    final isOffline = telemetryAsync.hasError;
+    final telemetry = telemetryAsync.asData?.value ?? _emptyTelemetry;
+
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -91,12 +113,74 @@ class _PCRDetailScreenState extends ConsumerState<PCRDetailScreen> {
           ),
         ),
         child: SafeArea(
-          child: telemetryAsync.when(
-            data: (telemetry) => _buildContent(context, telemetry),
-            loading: () => const Center(child: CircularProgressIndicator()),
-            error: (error, stack) => _buildOfflineState(context),
+          child: Column(
+            children: [
+              _buildConnectionBanner(
+                context,
+                isConnecting: isConnecting,
+                isOffline: isOffline,
+              ),
+              Expanded(child: _buildContent(context, telemetry)),
+            ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildConnectionBanner(
+    BuildContext context, {
+    required bool isConnecting,
+    required bool isOffline,
+  }) {
+    if (!isConnecting && !isOffline) return const SizedBox.shrink();
+
+    final color = isConnecting ? AppColorSchemes.warning : AppColorSchemes.error;
+    final icon = isConnecting ? Icons.wifi_find : Icons.wifi_off;
+    final message = isConnecting
+        ? 'Connecting to ${widget.device.name}…'
+        : 'Device offline — check that it is powered on and on the same network';
+
+    return Container(
+      color: color.withValues(alpha: 0.12),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Row(
+        children: [
+          Icon(icon, size: 16, color: color),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              message,
+              style: AppTextStyles.bodySmall.copyWith(color: color),
+            ),
+          ),
+          if (isConnecting)
+            SizedBox(
+              width: 14,
+              height: 14,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: color,
+              ),
+            ),
+          if (isOffline)
+            TextButton(
+              onPressed: () =>
+                  ref.invalidate(telemetryStreamProvider(widget.device)),
+              style: TextButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                minimumSize: Size.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
+              child: Text(
+                'Retry',
+                style: AppTextStyles.bodySmall.copyWith(
+                  color: color,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }
@@ -246,6 +330,10 @@ class _PCRDetailScreenState extends ConsumerState<PCRDetailScreen> {
                           label: 'Adjust Setpoint',
                           icon: Icons.tune,
                           onPressed: () async {
+                            if (!_isDeviceReachable) {
+                              _showNotConnectedSnackbar(context);
+                              return;
+                            }
                             final newSetpoint = await showDialog<double>(
                               context: context,
                               builder: (context) => SetpointDialog(
@@ -484,6 +572,12 @@ class _PCRDetailScreenState extends ConsumerState<PCRDetailScreen> {
 
               if (selected == null) return;
 
+              // Check reachability only when about to send the command
+              if (!_isDeviceReachable) {
+                if (context.mounted) _showNotConnectedSnackbar(context);
+                return;
+              }
+
               // Start device with selected program
               try {
                 await repository.startDevice(selected);
@@ -508,6 +602,7 @@ class _PCRDetailScreenState extends ConsumerState<PCRDetailScreen> {
             }
           },
           onStop: () async {
+            if (!_isDeviceReachable) { _showNotConnectedSnackbar(context); return; }
             try {
               await repository.stopDevice();
               if (context.mounted) {
@@ -524,6 +619,7 @@ class _PCRDetailScreenState extends ConsumerState<PCRDetailScreen> {
             }
           },
           onPause: () async {
+            if (!_isDeviceReachable) { _showNotConnectedSnackbar(context); return; }
             try {
               await repository.pauseDevice();
               if (context.mounted) {
@@ -540,6 +636,7 @@ class _PCRDetailScreenState extends ConsumerState<PCRDetailScreen> {
             }
           },
           onResume: () async {
+            if (!_isDeviceReachable) { _showNotConnectedSnackbar(context); return; }
             try {
               await repository.resumeDevice();
               if (context.mounted) {
@@ -594,6 +691,10 @@ class _PCRDetailScreenState extends ConsumerState<PCRDetailScreen> {
                     label: 'Test Fan',
                     icon: Icons.air,
                     onPressed: () async {
+                      if (!_isDeviceReachable) {
+                        _showNotConnectedSnackbar(context);
+                        return;
+                      }
                       try {
                         await repository.runTest('fan');
                         _startFanTestTimer();
@@ -697,43 +798,18 @@ class _PCRDetailScreenState extends ConsumerState<PCRDetailScreen> {
     }
   }
 
-  Widget _buildOfflineState(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.cloud_off,
-            size: 80,
-            color: Theme.of(
-              context,
-            ).colorScheme.onSurface.withValues(alpha: 0.3),
-          ),
-          const SizedBox(height: 16),
-          const Text('Device Offline', style: AppTextStyles.titleMedium),
-          const SizedBox(height: 8),
-          Text(
-            'Cannot connect to ${widget.device.name}',
-            style: AppTextStyles.bodyMedium.copyWith(
-              color: Theme.of(
-                context,
-              ).colorScheme.onSurface.withValues(alpha: 0.6),
-            ),
-          ),
-          const SizedBox(height: 24),
-          Consumer(
-            builder: (context, ref, child) {
-              return GlassButton(
-                label: 'Retry',
-                icon: Icons.refresh,
-                onPressed: () {
-                  // Refresh the provider to reconnect
-                  ref.invalidate(telemetryStreamProvider(widget.device));
-                },
-              );
-            },
-          ),
-        ],
+  void _showNotConnectedSnackbar(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.wifi_off, color: Colors.white, size: 18),
+            const SizedBox(width: 10),
+            const Text('Device is not connected'),
+          ],
+        ),
+        backgroundColor: AppColorSchemes.error,
+        behavior: SnackBarBehavior.floating,
       ),
     );
   }

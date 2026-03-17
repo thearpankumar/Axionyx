@@ -42,7 +42,7 @@ final telemetryStreamProvider =
     ) async* {
       // Seed immediately via HTTP so the screen renders without waiting for WS
       final repo = ref.read(deviceRepositoryProvider(deviceInfo));
-      yield await repo.getDeviceStatus().timeout(const Duration(seconds: 5));
+      yield await repo.getDeviceStatus().timeout(const Duration(seconds: 3));
 
       // Stream live updates from WebSocket.
       // Only pass through telemetry frames — discard pings, pongs, and any

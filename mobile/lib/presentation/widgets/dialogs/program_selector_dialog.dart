@@ -101,9 +101,7 @@ class _ProgramSelectorDialogState extends ConsumerState<ProgramSelectorDialog>
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-      ),
+      decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface),
       child: SafeArea(
         child: Column(
           children: [
@@ -113,7 +111,10 @@ class _ProgramSelectorDialogState extends ConsumerState<ProgramSelectorDialog>
               child: Row(
                 children: [
                   const Expanded(
-                    child: Text('Select PCR Program', style: AppTextStyles.titleLarge),
+                    child: Text(
+                      'Select PCR Program',
+                      style: AppTextStyles.titleLarge,
+                    ),
                   ),
                   IconButton(
                     icon: const Icon(Icons.close),
@@ -184,8 +185,11 @@ class _MyProgramsTab extends ConsumerWidget {
       error: (e, _) => Center(
         child: Padding(
           padding: const EdgeInsets.all(32),
-          child: Text('Error loading profiles: $e',
-              style: AppTextStyles.bodyMedium, textAlign: TextAlign.center),
+          child: Text(
+            'Error loading profiles: $e',
+            style: AppTextStyles.bodyMedium,
+            textAlign: TextAlign.center,
+          ),
         ),
       ),
       data: (profiles) {
@@ -243,7 +247,9 @@ class _EmptyProfiles extends StatelessWidget {
             Icon(
               Icons.science_outlined,
               size: 64,
-              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.25),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.25),
             ),
             const SizedBox(height: 16),
             const Text('No Saved Programs', style: AppTextStyles.titleMedium),
@@ -251,7 +257,9 @@ class _EmptyProfiles extends StatelessWidget {
             Text(
               'Create a custom program with your own temperatures and times.',
               style: AppTextStyles.bodySmall.copyWith(
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.55),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.55),
               ),
               textAlign: TextAlign.center,
             ),
@@ -312,12 +320,12 @@ class _ProfileCard extends ConsumerWidget {
               children: [
                 Text(profile.name, style: AppTextStyles.titleMedium),
                 const SizedBox(height: 3),
-                Row(
+                Wrap(
+                  spacing: 6,
+                  runSpacing: 4,
                   children: [
-                    _badge(isTwoStep ? 'Fast 2-step' : 'Standard 3-step'),
-                    const SizedBox(width: 6),
+                    _badge(isTwoStep ? 'Fast PCR' : 'Standard PCR'),
                     _badge('${profile.cycles} cycles'),
-                    const SizedBox(width: 6),
                     _badge('Den ${profile.denatureTemp.toStringAsFixed(0)}°C'),
                   ],
                 ),
@@ -325,6 +333,15 @@ class _ProfileCard extends ConsumerWidget {
             ),
           ),
           // Actions
+          // Quick start
+          IconButton(
+            icon: const Icon(
+              Icons.play_circle_fill,
+              color: AppColorSchemes.pcrAccent,
+            ),
+            onPressed: onStart,
+            tooltip: 'Start',
+          ),
           PopupMenuButton<String>(
             icon: const Icon(Icons.more_vert, size: 20),
             onSelected: (v) {
@@ -337,15 +354,12 @@ class _ProfileCard extends ConsumerWidget {
               const PopupMenuItem(value: 'edit', child: Text('Edit')),
               const PopupMenuItem(
                 value: 'delete',
-                child: Text('Delete', style: TextStyle(color: AppColorSchemes.error)),
+                child: Text(
+                  'Delete',
+                  style: TextStyle(color: AppColorSchemes.error),
+                ),
               ),
             ],
-          ),
-          // Quick start
-          IconButton(
-            icon: const Icon(Icons.play_circle_fill, color: AppColorSchemes.pcrAccent),
-            onPressed: onStart,
-            tooltip: 'Start',
           ),
         ],
       ),
@@ -357,10 +371,15 @@ class _ProfileCard extends ConsumerWidget {
       builder: (context) => Container(
         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.07),
+          color: Theme.of(
+            context,
+          ).colorScheme.onSurface.withValues(alpha: 0.07),
           borderRadius: BorderRadius.circular(4),
         ),
-        child: Text(label, style: AppTextStyles.bodySmall.copyWith(fontSize: 10)),
+        child: Text(
+          label,
+          style: AppTextStyles.bodySmall.copyWith(fontSize: 10),
+        ),
       ),
     );
   }
@@ -398,13 +417,28 @@ class _TemplatesTab extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.error_outline, size: 56, color: AppColorSchemes.error),
+              const Icon(
+                Icons.error_outline,
+                size: 56,
+                color: AppColorSchemes.error,
+              ),
               const SizedBox(height: 16),
-              const Text('Failed to load templates', style: AppTextStyles.titleMedium),
+              const Text(
+                'Failed to load templates',
+                style: AppTextStyles.titleMedium,
+              ),
               const SizedBox(height: 8),
-              Text(error!, style: AppTextStyles.bodySmall, textAlign: TextAlign.center),
+              Text(
+                error!,
+                style: AppTextStyles.bodySmall,
+                textAlign: TextAlign.center,
+              ),
               const SizedBox(height: 24),
-              GlassButton(label: 'Retry', icon: Icons.refresh, onPressed: onRetry),
+              GlassButton(
+                label: 'Retry',
+                icon: Icons.refresh,
+                onPressed: onRetry,
+              ),
             ],
           ),
         ),
@@ -418,10 +452,18 @@ class _TemplatesTab extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.science_outlined, size: 56,
-                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.25)),
+              Icon(
+                Icons.science_outlined,
+                size: 56,
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.25),
+              ),
               const SizedBox(height: 16),
-              const Text('No Templates Available', style: AppTextStyles.titleMedium),
+              const Text(
+                'No Templates Available',
+                style: AppTextStyles.titleMedium,
+              ),
             ],
           ),
         ),
@@ -457,13 +499,18 @@ class _TemplatesTab extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(t['name'] ?? 'Unnamed', style: AppTextStyles.titleMedium),
+                    Text(
+                      t['name'] ?? 'Unnamed',
+                      style: AppTextStyles.titleMedium,
+                    ),
                     if (t['description'] != null) ...[
                       const SizedBox(height: 3),
                       Text(
                         t['description'],
                         style: AppTextStyles.bodySmall.copyWith(
-                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.55),
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withValues(alpha: 0.55),
                         ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
@@ -471,16 +518,23 @@ class _TemplatesTab extends StatelessWidget {
                     ],
                     if (t['cycles'] != null) ...[
                       const SizedBox(height: 4),
-                      Text('${t['cycles']} cycles',
-                          style: AppTextStyles.bodySmall.copyWith(
-                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.45),
-                          )),
+                      Text(
+                        '${t['cycles']} cycles',
+                        style: AppTextStyles.bodySmall.copyWith(
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withValues(alpha: 0.45),
+                        ),
+                      ),
                     ],
                   ],
                 ),
               ),
               IconButton(
-                icon: const Icon(Icons.play_circle_fill, color: AppColorSchemes.pcrAccent),
+                icon: const Icon(
+                  Icons.play_circle_fill,
+                  color: AppColorSchemes.pcrAccent,
+                ),
                 onPressed: () => onStart(t),
                 tooltip: 'Start',
               ),

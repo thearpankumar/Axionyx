@@ -57,8 +57,12 @@ abstract class PcrProfile with _$PcrProfile {
     };
 
     if (mode == 'twostep') {
-      if (annealExtendTemp != null) params['annealExtendTemp'] = annealExtendTemp;
-      if (annealExtendTime != null) params['annealExtendTime'] = annealExtendTime;
+      if (annealExtendTemp != null) {
+        params['annealExtendTemp'] = annealExtendTemp;
+      }
+      if (annealExtendTime != null) {
+        params['annealExtendTime'] = annealExtendTime;
+      }
       params['twoStepEnabled'] = true;
     } else {
       if (annealTemp != null) params['annealTemp'] = annealTemp;
