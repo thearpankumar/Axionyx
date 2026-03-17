@@ -32,6 +32,7 @@ abstract class PCRTelemetry with _$PCRTelemetry {
 abstract class PCRProgram with _$PCRProgram {
   const factory PCRProgram({
     required String type,
+    @Default('') String name,
     required int cycles,
     required double denatureTemp,
     required int denatureTime,

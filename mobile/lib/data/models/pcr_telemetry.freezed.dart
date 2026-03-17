@@ -380,7 +380,7 @@ $PCRMetricsCopyWith<$Res>? get metrics {
 /// @nodoc
 mixin _$PCRProgram {
 
- String get type; int get cycles; double get denatureTemp; int get denatureTime; double get annealTemp; int get annealTime; double get extendTemp; int get extendTime; bool get twoStepEnabled; double? get annealExtendTemp; int? get annealExtendTime; HotStartConfig? get hotStart; TouchdownConfig? get touchdown; GradientConfig? get gradient;
+ String get type; String get name; int get cycles; double get denatureTemp; int get denatureTime; double get annealTemp; int get annealTime; double get extendTemp; int get extendTime; bool get twoStepEnabled; double? get annealExtendTemp; int? get annealExtendTime; HotStartConfig? get hotStart; TouchdownConfig? get touchdown; GradientConfig? get gradient;
 /// Create a copy of PCRProgram
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -393,16 +393,16 @@ $PCRProgramCopyWith<PCRProgram> get copyWith => _$PCRProgramCopyWithImpl<PCRProg
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PCRProgram&&(identical(other.type, type) || other.type == type)&&(identical(other.cycles, cycles) || other.cycles == cycles)&&(identical(other.denatureTemp, denatureTemp) || other.denatureTemp == denatureTemp)&&(identical(other.denatureTime, denatureTime) || other.denatureTime == denatureTime)&&(identical(other.annealTemp, annealTemp) || other.annealTemp == annealTemp)&&(identical(other.annealTime, annealTime) || other.annealTime == annealTime)&&(identical(other.extendTemp, extendTemp) || other.extendTemp == extendTemp)&&(identical(other.extendTime, extendTime) || other.extendTime == extendTime)&&(identical(other.twoStepEnabled, twoStepEnabled) || other.twoStepEnabled == twoStepEnabled)&&(identical(other.annealExtendTemp, annealExtendTemp) || other.annealExtendTemp == annealExtendTemp)&&(identical(other.annealExtendTime, annealExtendTime) || other.annealExtendTime == annealExtendTime)&&(identical(other.hotStart, hotStart) || other.hotStart == hotStart)&&(identical(other.touchdown, touchdown) || other.touchdown == touchdown)&&(identical(other.gradient, gradient) || other.gradient == gradient));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PCRProgram&&(identical(other.type, type) || other.type == type)&&(identical(other.name, name) || other.name == name)&&(identical(other.cycles, cycles) || other.cycles == cycles)&&(identical(other.denatureTemp, denatureTemp) || other.denatureTemp == denatureTemp)&&(identical(other.denatureTime, denatureTime) || other.denatureTime == denatureTime)&&(identical(other.annealTemp, annealTemp) || other.annealTemp == annealTemp)&&(identical(other.annealTime, annealTime) || other.annealTime == annealTime)&&(identical(other.extendTemp, extendTemp) || other.extendTemp == extendTemp)&&(identical(other.extendTime, extendTime) || other.extendTime == extendTime)&&(identical(other.twoStepEnabled, twoStepEnabled) || other.twoStepEnabled == twoStepEnabled)&&(identical(other.annealExtendTemp, annealExtendTemp) || other.annealExtendTemp == annealExtendTemp)&&(identical(other.annealExtendTime, annealExtendTime) || other.annealExtendTime == annealExtendTime)&&(identical(other.hotStart, hotStart) || other.hotStart == hotStart)&&(identical(other.touchdown, touchdown) || other.touchdown == touchdown)&&(identical(other.gradient, gradient) || other.gradient == gradient));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,type,cycles,denatureTemp,denatureTime,annealTemp,annealTime,extendTemp,extendTime,twoStepEnabled,annealExtendTemp,annealExtendTime,hotStart,touchdown,gradient);
+int get hashCode => Object.hash(runtimeType,type,name,cycles,denatureTemp,denatureTime,annealTemp,annealTime,extendTemp,extendTime,twoStepEnabled,annealExtendTemp,annealExtendTime,hotStart,touchdown,gradient);
 
 @override
 String toString() {
-  return 'PCRProgram(type: $type, cycles: $cycles, denatureTemp: $denatureTemp, denatureTime: $denatureTime, annealTemp: $annealTemp, annealTime: $annealTime, extendTemp: $extendTemp, extendTime: $extendTime, twoStepEnabled: $twoStepEnabled, annealExtendTemp: $annealExtendTemp, annealExtendTime: $annealExtendTime, hotStart: $hotStart, touchdown: $touchdown, gradient: $gradient)';
+  return 'PCRProgram(type: $type, name: $name, cycles: $cycles, denatureTemp: $denatureTemp, denatureTime: $denatureTime, annealTemp: $annealTemp, annealTime: $annealTime, extendTemp: $extendTemp, extendTime: $extendTime, twoStepEnabled: $twoStepEnabled, annealExtendTemp: $annealExtendTemp, annealExtendTime: $annealExtendTime, hotStart: $hotStart, touchdown: $touchdown, gradient: $gradient)';
 }
 
 
@@ -413,7 +413,7 @@ abstract mixin class $PCRProgramCopyWith<$Res>  {
   factory $PCRProgramCopyWith(PCRProgram value, $Res Function(PCRProgram) _then) = _$PCRProgramCopyWithImpl;
 @useResult
 $Res call({
- String type, int cycles, double denatureTemp, int denatureTime, double annealTemp, int annealTime, double extendTemp, int extendTime, bool twoStepEnabled, double? annealExtendTemp, int? annealExtendTime, HotStartConfig? hotStart, TouchdownConfig? touchdown, GradientConfig? gradient
+ String type, String name, int cycles, double denatureTemp, int denatureTime, double annealTemp, int annealTime, double extendTemp, int extendTime, bool twoStepEnabled, double? annealExtendTemp, int? annealExtendTime, HotStartConfig? hotStart, TouchdownConfig? touchdown, GradientConfig? gradient
 });
 
 
@@ -430,9 +430,10 @@ class _$PCRProgramCopyWithImpl<$Res>
 
 /// Create a copy of PCRProgram
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? type = null,Object? cycles = null,Object? denatureTemp = null,Object? denatureTime = null,Object? annealTemp = null,Object? annealTime = null,Object? extendTemp = null,Object? extendTime = null,Object? twoStepEnabled = null,Object? annealExtendTemp = freezed,Object? annealExtendTime = freezed,Object? hotStart = freezed,Object? touchdown = freezed,Object? gradient = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? type = null,Object? name = null,Object? cycles = null,Object? denatureTemp = null,Object? denatureTime = null,Object? annealTemp = null,Object? annealTime = null,Object? extendTemp = null,Object? extendTime = null,Object? twoStepEnabled = null,Object? annealExtendTemp = freezed,Object? annealExtendTime = freezed,Object? hotStart = freezed,Object? touchdown = freezed,Object? gradient = freezed,}) {
   return _then(_self.copyWith(
 type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
+as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,cycles: null == cycles ? _self.cycles : cycles // ignore: cast_nullable_to_non_nullable
 as int,denatureTemp: null == denatureTemp ? _self.denatureTemp : denatureTemp // ignore: cast_nullable_to_non_nullable
 as double,denatureTime: null == denatureTime ? _self.denatureTime : denatureTime // ignore: cast_nullable_to_non_nullable
@@ -567,10 +568,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String type,  int cycles,  double denatureTemp,  int denatureTime,  double annealTemp,  int annealTime,  double extendTemp,  int extendTime,  bool twoStepEnabled,  double? annealExtendTemp,  int? annealExtendTime,  HotStartConfig? hotStart,  TouchdownConfig? touchdown,  GradientConfig? gradient)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String type,  String name,  int cycles,  double denatureTemp,  int denatureTime,  double annealTemp,  int annealTime,  double extendTemp,  int extendTime,  bool twoStepEnabled,  double? annealExtendTemp,  int? annealExtendTime,  HotStartConfig? hotStart,  TouchdownConfig? touchdown,  GradientConfig? gradient)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _PCRProgram() when $default != null:
-return $default(_that.type,_that.cycles,_that.denatureTemp,_that.denatureTime,_that.annealTemp,_that.annealTime,_that.extendTemp,_that.extendTime,_that.twoStepEnabled,_that.annealExtendTemp,_that.annealExtendTime,_that.hotStart,_that.touchdown,_that.gradient);case _:
+return $default(_that.type,_that.name,_that.cycles,_that.denatureTemp,_that.denatureTime,_that.annealTemp,_that.annealTime,_that.extendTemp,_that.extendTime,_that.twoStepEnabled,_that.annealExtendTemp,_that.annealExtendTime,_that.hotStart,_that.touchdown,_that.gradient);case _:
   return orElse();
 
 }
@@ -588,10 +589,10 @@ return $default(_that.type,_that.cycles,_that.denatureTemp,_that.denatureTime,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String type,  int cycles,  double denatureTemp,  int denatureTime,  double annealTemp,  int annealTime,  double extendTemp,  int extendTime,  bool twoStepEnabled,  double? annealExtendTemp,  int? annealExtendTime,  HotStartConfig? hotStart,  TouchdownConfig? touchdown,  GradientConfig? gradient)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String type,  String name,  int cycles,  double denatureTemp,  int denatureTime,  double annealTemp,  int annealTime,  double extendTemp,  int extendTime,  bool twoStepEnabled,  double? annealExtendTemp,  int? annealExtendTime,  HotStartConfig? hotStart,  TouchdownConfig? touchdown,  GradientConfig? gradient)  $default,) {final _that = this;
 switch (_that) {
 case _PCRProgram():
-return $default(_that.type,_that.cycles,_that.denatureTemp,_that.denatureTime,_that.annealTemp,_that.annealTime,_that.extendTemp,_that.extendTime,_that.twoStepEnabled,_that.annealExtendTemp,_that.annealExtendTime,_that.hotStart,_that.touchdown,_that.gradient);case _:
+return $default(_that.type,_that.name,_that.cycles,_that.denatureTemp,_that.denatureTime,_that.annealTemp,_that.annealTime,_that.extendTemp,_that.extendTime,_that.twoStepEnabled,_that.annealExtendTemp,_that.annealExtendTime,_that.hotStart,_that.touchdown,_that.gradient);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -608,10 +609,10 @@ return $default(_that.type,_that.cycles,_that.denatureTemp,_that.denatureTime,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String type,  int cycles,  double denatureTemp,  int denatureTime,  double annealTemp,  int annealTime,  double extendTemp,  int extendTime,  bool twoStepEnabled,  double? annealExtendTemp,  int? annealExtendTime,  HotStartConfig? hotStart,  TouchdownConfig? touchdown,  GradientConfig? gradient)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String type,  String name,  int cycles,  double denatureTemp,  int denatureTime,  double annealTemp,  int annealTime,  double extendTemp,  int extendTime,  bool twoStepEnabled,  double? annealExtendTemp,  int? annealExtendTime,  HotStartConfig? hotStart,  TouchdownConfig? touchdown,  GradientConfig? gradient)?  $default,) {final _that = this;
 switch (_that) {
 case _PCRProgram() when $default != null:
-return $default(_that.type,_that.cycles,_that.denatureTemp,_that.denatureTime,_that.annealTemp,_that.annealTime,_that.extendTemp,_that.extendTime,_that.twoStepEnabled,_that.annealExtendTemp,_that.annealExtendTime,_that.hotStart,_that.touchdown,_that.gradient);case _:
+return $default(_that.type,_that.name,_that.cycles,_that.denatureTemp,_that.denatureTime,_that.annealTemp,_that.annealTime,_that.extendTemp,_that.extendTime,_that.twoStepEnabled,_that.annealExtendTemp,_that.annealExtendTime,_that.hotStart,_that.touchdown,_that.gradient);case _:
   return null;
 
 }
@@ -623,10 +624,11 @@ return $default(_that.type,_that.cycles,_that.denatureTemp,_that.denatureTime,_t
 @JsonSerializable()
 
 class _PCRProgram implements PCRProgram {
-  const _PCRProgram({required this.type, required this.cycles, required this.denatureTemp, required this.denatureTime, required this.annealTemp, required this.annealTime, required this.extendTemp, required this.extendTime, this.twoStepEnabled = false, this.annealExtendTemp, this.annealExtendTime, this.hotStart, this.touchdown, this.gradient});
+  const _PCRProgram({required this.type, this.name = '', required this.cycles, required this.denatureTemp, required this.denatureTime, required this.annealTemp, required this.annealTime, required this.extendTemp, required this.extendTime, this.twoStepEnabled = false, this.annealExtendTemp, this.annealExtendTime, this.hotStart, this.touchdown, this.gradient});
   factory _PCRProgram.fromJson(Map<String, dynamic> json) => _$PCRProgramFromJson(json);
 
 @override final  String type;
+@override@JsonKey() final  String name;
 @override final  int cycles;
 @override final  double denatureTemp;
 @override final  int denatureTime;
@@ -654,16 +656,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PCRProgram&&(identical(other.type, type) || other.type == type)&&(identical(other.cycles, cycles) || other.cycles == cycles)&&(identical(other.denatureTemp, denatureTemp) || other.denatureTemp == denatureTemp)&&(identical(other.denatureTime, denatureTime) || other.denatureTime == denatureTime)&&(identical(other.annealTemp, annealTemp) || other.annealTemp == annealTemp)&&(identical(other.annealTime, annealTime) || other.annealTime == annealTime)&&(identical(other.extendTemp, extendTemp) || other.extendTemp == extendTemp)&&(identical(other.extendTime, extendTime) || other.extendTime == extendTime)&&(identical(other.twoStepEnabled, twoStepEnabled) || other.twoStepEnabled == twoStepEnabled)&&(identical(other.annealExtendTemp, annealExtendTemp) || other.annealExtendTemp == annealExtendTemp)&&(identical(other.annealExtendTime, annealExtendTime) || other.annealExtendTime == annealExtendTime)&&(identical(other.hotStart, hotStart) || other.hotStart == hotStart)&&(identical(other.touchdown, touchdown) || other.touchdown == touchdown)&&(identical(other.gradient, gradient) || other.gradient == gradient));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PCRProgram&&(identical(other.type, type) || other.type == type)&&(identical(other.name, name) || other.name == name)&&(identical(other.cycles, cycles) || other.cycles == cycles)&&(identical(other.denatureTemp, denatureTemp) || other.denatureTemp == denatureTemp)&&(identical(other.denatureTime, denatureTime) || other.denatureTime == denatureTime)&&(identical(other.annealTemp, annealTemp) || other.annealTemp == annealTemp)&&(identical(other.annealTime, annealTime) || other.annealTime == annealTime)&&(identical(other.extendTemp, extendTemp) || other.extendTemp == extendTemp)&&(identical(other.extendTime, extendTime) || other.extendTime == extendTime)&&(identical(other.twoStepEnabled, twoStepEnabled) || other.twoStepEnabled == twoStepEnabled)&&(identical(other.annealExtendTemp, annealExtendTemp) || other.annealExtendTemp == annealExtendTemp)&&(identical(other.annealExtendTime, annealExtendTime) || other.annealExtendTime == annealExtendTime)&&(identical(other.hotStart, hotStart) || other.hotStart == hotStart)&&(identical(other.touchdown, touchdown) || other.touchdown == touchdown)&&(identical(other.gradient, gradient) || other.gradient == gradient));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,type,cycles,denatureTemp,denatureTime,annealTemp,annealTime,extendTemp,extendTime,twoStepEnabled,annealExtendTemp,annealExtendTime,hotStart,touchdown,gradient);
+int get hashCode => Object.hash(runtimeType,type,name,cycles,denatureTemp,denatureTime,annealTemp,annealTime,extendTemp,extendTime,twoStepEnabled,annealExtendTemp,annealExtendTime,hotStart,touchdown,gradient);
 
 @override
 String toString() {
-  return 'PCRProgram(type: $type, cycles: $cycles, denatureTemp: $denatureTemp, denatureTime: $denatureTime, annealTemp: $annealTemp, annealTime: $annealTime, extendTemp: $extendTemp, extendTime: $extendTime, twoStepEnabled: $twoStepEnabled, annealExtendTemp: $annealExtendTemp, annealExtendTime: $annealExtendTime, hotStart: $hotStart, touchdown: $touchdown, gradient: $gradient)';
+  return 'PCRProgram(type: $type, name: $name, cycles: $cycles, denatureTemp: $denatureTemp, denatureTime: $denatureTime, annealTemp: $annealTemp, annealTime: $annealTime, extendTemp: $extendTemp, extendTime: $extendTime, twoStepEnabled: $twoStepEnabled, annealExtendTemp: $annealExtendTemp, annealExtendTime: $annealExtendTime, hotStart: $hotStart, touchdown: $touchdown, gradient: $gradient)';
 }
 
 
@@ -674,7 +676,7 @@ abstract mixin class _$PCRProgramCopyWith<$Res> implements $PCRProgramCopyWith<$
   factory _$PCRProgramCopyWith(_PCRProgram value, $Res Function(_PCRProgram) _then) = __$PCRProgramCopyWithImpl;
 @override @useResult
 $Res call({
- String type, int cycles, double denatureTemp, int denatureTime, double annealTemp, int annealTime, double extendTemp, int extendTime, bool twoStepEnabled, double? annealExtendTemp, int? annealExtendTime, HotStartConfig? hotStart, TouchdownConfig? touchdown, GradientConfig? gradient
+ String type, String name, int cycles, double denatureTemp, int denatureTime, double annealTemp, int annealTime, double extendTemp, int extendTime, bool twoStepEnabled, double? annealExtendTemp, int? annealExtendTime, HotStartConfig? hotStart, TouchdownConfig? touchdown, GradientConfig? gradient
 });
 
 
@@ -691,9 +693,10 @@ class __$PCRProgramCopyWithImpl<$Res>
 
 /// Create a copy of PCRProgram
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? type = null,Object? cycles = null,Object? denatureTemp = null,Object? denatureTime = null,Object? annealTemp = null,Object? annealTime = null,Object? extendTemp = null,Object? extendTime = null,Object? twoStepEnabled = null,Object? annealExtendTemp = freezed,Object? annealExtendTime = freezed,Object? hotStart = freezed,Object? touchdown = freezed,Object? gradient = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? type = null,Object? name = null,Object? cycles = null,Object? denatureTemp = null,Object? denatureTime = null,Object? annealTemp = null,Object? annealTime = null,Object? extendTemp = null,Object? extendTime = null,Object? twoStepEnabled = null,Object? annealExtendTemp = freezed,Object? annealExtendTime = freezed,Object? hotStart = freezed,Object? touchdown = freezed,Object? gradient = freezed,}) {
   return _then(_PCRProgram(
 type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
+as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,cycles: null == cycles ? _self.cycles : cycles // ignore: cast_nullable_to_non_nullable
 as int,denatureTemp: null == denatureTemp ? _self.denatureTemp : denatureTemp // ignore: cast_nullable_to_non_nullable
 as double,denatureTime: null == denatureTime ? _self.denatureTime : denatureTime // ignore: cast_nullable_to_non_nullable

@@ -77,6 +77,7 @@ const _$PCRPhaseEnumMap = {
 
 _PCRProgram _$PCRProgramFromJson(Map<String, dynamic> json) => _PCRProgram(
   type: json['type'] as String,
+  name: json['name'] as String? ?? '',
   cycles: (json['cycles'] as num).toInt(),
   denatureTemp: (json['denatureTemp'] as num).toDouble(),
   denatureTime: (json['denatureTime'] as num).toInt(),
@@ -101,6 +102,7 @@ _PCRProgram _$PCRProgramFromJson(Map<String, dynamic> json) => _PCRProgram(
 Map<String, dynamic> _$PCRProgramToJson(_PCRProgram instance) =>
     <String, dynamic>{
       'type': instance.type,
+      'name': instance.name,
       'cycles': instance.cycles,
       'denatureTemp': instance.denatureTemp,
       'denatureTime': instance.denatureTime,
