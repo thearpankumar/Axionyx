@@ -517,27 +517,24 @@ void HTTPServer::handleProgramValidate(AsyncWebServerRequest* request, uint8_t* 
         }
     }
 
-    // Validate temperatures
-    if (!doc["denatureTemp"].isNull()) {
-        float temp = doc["denatureTemp"];
-        if (temp < 90.0 || temp > 100.0) {
-            warnings.add("Denaturation temperature should be between 90-100°C");
+    // Helper lambda: check a temperature field against hardware range and biological ideal
+    auto checkTemp = [&](const char* field, float idealLow, float idealHigh, const char* idealHint) {
+        if (doc[field].isNull()) return;
+        float temp = doc[field];
+        if (temp < 37.0 || temp > 110.0) {
+            errors.add(String(field) + " out of hardware range (37-110°C)");
+            isValid = false;
+        } else if (temp < idealLow || temp > idealHigh) {
+            warnings.add(String(field) + " — " + idealHint);
         }
-    }
+    };
 
-    if (!doc["annealTemp"].isNull()) {
-        float temp = doc["annealTemp"];
-        if (temp < 45.0 || temp > 75.0) {
-            warnings.add("Annealing temperature should be between 45-75°C");
-        }
-    }
-
-    if (!doc["extendTemp"].isNull()) {
-        float temp = doc["extendTemp"];
-        if (temp < 68.0 || temp > 76.0) {
-            warnings.add("Extension temperature should be between 68-76°C");
-        }
-    }
+    checkTemp("initialDenatureTemp", 90.0, 100.0, "initial denaturation typically 94-98°C");
+    checkTemp("denatureTemp",        90.0, 100.0, "denaturation typically 94-98°C");
+    checkTemp("annealTemp",          45.0,  75.0, "annealing typically 45-75°C (5°C below primer Tm)");
+    checkTemp("extendTemp",          65.0,  75.0, "extension typically 68-74°C (72°C for Taq)");
+    checkTemp("annealExtendTemp",    60.0,  75.0, "combined anneal+extend typically 60-75°C");
+    checkTemp("finalExtendTemp",     65.0,  75.0, "final extension typically 68-74°C");
 
     // Validate touchdown parameters
     if (!doc["touchdown"].isNull() && doc["touchdown"]["enabled"]) {
@@ -589,24 +586,21 @@ void HTTPServer::handleProgramTemplates(AsyncWebServerRequest* request) {
 
     // Only provide PCR templates if device type is PCR
     if (config.device.type == "PCR") {
-        // All templates are calibrated for this device's hardware range:
-        // Denaturation max = 70 °C, Annealing min = 50 °C, Extension = 70 °C
-
         // Standard PCR
         JsonObject standard = templates.add<JsonObject>();
         standard["name"] = "Standard PCR";
         standard["type"] = "standard";
         standard["description"] = "Basic PCR protocol for general amplification";
         standard["cycles"] = 35;
-        standard["initialDenatureTemp"] = 70.0;
+        standard["initialDenatureTemp"] = 95.0;
         standard["initialDenatureTime"] = 180;   // 3 min
-        standard["denatureTemp"] = 70.0;
+        standard["denatureTemp"] = 95.0;
         standard["denatureTime"] = 30;
         standard["annealTemp"] = 55.0;
         standard["annealTime"] = 30;
-        standard["extendTemp"] = 70.0;
+        standard["extendTemp"] = 72.0;
         standard["extendTime"] = 60;
-        standard["finalExtendTemp"] = 70.0;
+        standard["finalExtendTemp"] = 72.0;
         standard["finalExtendTime"] = 300;       // 5 min
 
         // Fast PCR (Two-Step)
@@ -616,13 +610,13 @@ void HTTPServer::handleProgramTemplates(AsyncWebServerRequest* request) {
         fast["description"] = "Faster cycling for amplicons <500bp";
         fast["twoStepEnabled"] = true;
         fast["cycles"] = 30;
-        fast["initialDenatureTemp"] = 70.0;
+        fast["initialDenatureTemp"] = 95.0;
         fast["initialDenatureTime"] = 120;       // 2 min
-        fast["denatureTemp"] = 70.0;
+        fast["denatureTemp"] = 95.0;
         fast["denatureTime"] = 15;
-        fast["annealExtendTemp"] = 62.0;
+        fast["annealExtendTemp"] = 68.0;
         fast["annealExtendTime"] = 30;
-        fast["finalExtendTemp"] = 70.0;
+        fast["finalExtendTemp"] = 72.0;
         fast["finalExtendTime"] = 180;
 
         // Touchdown PCR (High Specificity)
@@ -631,13 +625,13 @@ void HTTPServer::handleProgramTemplates(AsyncWebServerRequest* request) {
         touchdown["type"] = "touchdown";
         touchdown["description"] = "Reduce non-specific amplification via touchdown";
         touchdown["cycles"] = 35;
-        touchdown["initialDenatureTemp"] = 70.0;
+        touchdown["initialDenatureTemp"] = 95.0;
         touchdown["initialDenatureTime"] = 180;
-        touchdown["denatureTemp"] = 70.0;
+        touchdown["denatureTemp"] = 95.0;
         touchdown["denatureTime"] = 30;
-        touchdown["extendTemp"] = 70.0;
+        touchdown["extendTemp"] = 72.0;
         touchdown["extendTime"] = 60;
-        touchdown["finalExtendTemp"] = 70.0;
+        touchdown["finalExtendTemp"] = 72.0;
         touchdown["finalExtendTime"] = 300;
         JsonObject tdConfig = touchdown["touchdown"].to<JsonObject>();
         tdConfig["enabled"] = true;
@@ -652,15 +646,15 @@ void HTTPServer::handleProgramTemplates(AsyncWebServerRequest* request) {
         sensitive["type"] = "standard";
         sensitive["description"] = "More cycles for low-copy templates";
         sensitive["cycles"] = 40;
-        sensitive["initialDenatureTemp"] = 70.0;
+        sensitive["initialDenatureTemp"] = 95.0;
         sensitive["initialDenatureTime"] = 180;
-        sensitive["denatureTemp"] = 70.0;
+        sensitive["denatureTemp"] = 95.0;
         sensitive["denatureTime"] = 30;
         sensitive["annealTemp"] = 50.0;
         sensitive["annealTime"] = 45;
-        sensitive["extendTemp"] = 70.0;
+        sensitive["extendTemp"] = 72.0;
         sensitive["extendTime"] = 90;
-        sensitive["finalExtendTemp"] = 70.0;
+        sensitive["finalExtendTemp"] = 72.0;
         sensitive["finalExtendTime"] = 300;
 
         // Long Amplicon
@@ -669,15 +663,15 @@ void HTTPServer::handleProgramTemplates(AsyncWebServerRequest* request) {
         longAmp["type"] = "standard";
         longAmp["description"] = "Extended extension time for fragments >1 kb";
         longAmp["cycles"] = 30;
-        longAmp["initialDenatureTemp"] = 70.0;
+        longAmp["initialDenatureTemp"] = 95.0;
         longAmp["initialDenatureTime"] = 240;
-        longAmp["denatureTemp"] = 70.0;
+        longAmp["denatureTemp"] = 95.0;
         longAmp["denatureTime"] = 30;
         longAmp["annealTemp"] = 55.0;
         longAmp["annealTime"] = 30;
-        longAmp["extendTemp"] = 70.0;
+        longAmp["extendTemp"] = 68.0;
         longAmp["extendTime"] = 120;             // 2 min extension
-        longAmp["finalExtendTemp"] = 70.0;
+        longAmp["finalExtendTemp"] = 68.0;
         longAmp["finalExtendTime"] = 600;        // 10 min
     }
 

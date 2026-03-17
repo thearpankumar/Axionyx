@@ -152,15 +152,17 @@ JsonDocument PCRDevice::getStatus() {
 
     // Program parameters
     JsonObject prog = doc["program"].to<JsonObject>();
-    prog["name"]            = currentProgramName;
-    prog["type"]            = "standard";
-    prog["cycles"]          = currentProgram.cycles;
-    prog["denatureTemp"]    = currentProgram.denatureTemp;
-    prog["denatureTime"]    = currentProgram.denatureTime;
-    prog["annealTemp"]      = currentProgram.annealTemp;
-    prog["annealTime"]      = currentProgram.annealTime;
-    prog["extendTemp"]      = currentProgram.extendTemp;
-    prog["extendTime"]      = currentProgram.extendTime;
+    prog["name"]              = currentProgramName;
+    prog["type"]              = currentProgram.twoStepEnabled ? "twostep" : "standard";
+    prog["cycles"]            = currentProgram.cycles;
+    prog["denatureTemp"]      = currentProgram.denatureTemp;
+    prog["denatureTime"]      = currentProgram.denatureTime;
+    prog["annealTemp"]        = currentProgram.annealTemp;
+    prog["annealTime"]        = currentProgram.annealTime;
+    prog["extendTemp"]        = currentProgram.extendTemp;
+    prog["extendTime"]        = currentProgram.extendTime;
+    prog["annealExtendTemp"]  = currentProgram.annealExtendTemp;
+    prog["annealExtendTime"]  = currentProgram.annealExtendTime;
 
     doc["errors"].to<JsonArray>();  // empty array
 
@@ -187,10 +189,17 @@ bool PCRDevice::start(JsonDocument& params) {
     if (!params["initialDenatureTime"].isNull()) currentProgram.initialDenatureTime = params["initialDenatureTime"];
     if (!params["finalExtendTemp"].isNull())     currentProgram.finalExtendTemp     = params["finalExtendTemp"];
     if (!params["finalExtendTime"].isNull())     currentProgram.finalExtendTime     = params["finalExtendTime"];
+    if (!params["annealExtendTemp"].isNull())    currentProgram.annealExtendTemp    = params["annealExtendTemp"];
+    if (!params["annealExtendTime"].isNull())    currentProgram.annealExtendTime    = params["annealExtendTime"];
 
-    // Force standard PCR type — no gradient/touchdown/two-step with single zone
-    currentProgram.type          = PCRCycler::STANDARD_PCR;
-    currentProgram.twoStepEnabled = false;
+    // Apply program type: support standard and two-step; gradient/touchdown not supported on single zone
+    if (!params["type"].isNull() && params["type"].as<String>() == "twostep") {
+        currentProgram.type           = PCRCycler::TWOSTEP_PCR;
+        currentProgram.twoStepEnabled = true;
+    } else {
+        currentProgram.type           = PCRCycler::STANDARD_PCR;
+        currentProgram.twoStepEnabled = false;
+    }
     currentProgram.hotStart.enabled = false;
 
     // Cancel any active fan test
@@ -203,10 +212,16 @@ bool PCRDevice::start(JsonDocument& params) {
     cycler.start(currentProgram);
     setState(RUNNING);
 
-    Logger::info("PCRDevice: Cycles=" + String(currentProgram.cycles) +
-                 " Den=" + String(currentProgram.denatureTemp) + "°C/" + String(currentProgram.denatureTime) + "s" +
-                 " Ann=" + String(currentProgram.annealTemp)   + "°C/" + String(currentProgram.annealTime)   + "s" +
-                 " Ext=" + String(currentProgram.extendTemp)   + "°C/" + String(currentProgram.extendTime)   + "s");
+    if (currentProgram.twoStepEnabled) {
+        Logger::info("PCRDevice: [Two-Step] Cycles=" + String(currentProgram.cycles) +
+                     " Den=" + String(currentProgram.denatureTemp) + "°C/" + String(currentProgram.denatureTime) + "s" +
+                     " AnnExt=" + String(currentProgram.annealExtendTemp) + "°C/" + String(currentProgram.annealExtendTime) + "s");
+    } else {
+        Logger::info("PCRDevice: [Standard] Cycles=" + String(currentProgram.cycles) +
+                     " Den=" + String(currentProgram.denatureTemp) + "°C/" + String(currentProgram.denatureTime) + "s" +
+                     " Ann=" + String(currentProgram.annealTemp)   + "°C/" + String(currentProgram.annealTime)   + "s" +
+                     " Ext=" + String(currentProgram.extendTemp)   + "°C/" + String(currentProgram.extendTime)   + "s");
+    }
 
     return true;
 }
